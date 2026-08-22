@@ -2583,32 +2583,15 @@ function removeCustomSentence(idx){
   saveState();
 }
 function renderSentenceManager(){
-  const langSel = document.getElementById('new-sentence-lang');
-  if(langSel && editingSentenceIndex === null) langSel.value = currentLang;
-  const dl = document.getElementById('sentence-category-suggestions');
-  if(dl) dl.innerHTML = sentenceCategoriesForLang(currentLang).map(c=>`<option value="${c}">`).join('');
-  const el = document.getElementById('sentences-list');
-  if(customSentences.length === 0){
-    el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it' ? 'Non hai ancora aggiunto nessuna frase.' : "Tu n'as pas encore ajouté de phrase."}</p>`;
-    return;
-  }
-  el.innerHTML = '';
-  customSentences.forEach((s,idx)=>{
-    const item = document.createElement('div');
-    item.className = 'story-item';
-    item.style.cursor = 'default';
-    const cat = s.category || (s.lang==='it' ? 'Generale' : 'Général');
-    item.innerHTML = `
-      <div class="emoji">${iconHtml(s, 40)}</div>
-      <div class="info" style="flex:1;">
-        <h4>${s.words.join(' ')} <span class="tag">${s.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span> <span class="tag">🏷️ ${cat}</span></h4>
-      </div>
-      <button class="icon-btn" style="background:var(--ocean);" onclick="event.stopPropagation(); startSentenceGame([customSentences[${idx}]])" title="Jouer">📝</button>
-      <button class="icon-btn" style="background:var(--sunshine);" onclick="event.stopPropagation(); editCustomSentence(${idx})" title="Modifier">✏️</button>
-      <button class="icon-btn" style="background:var(--coral);" onclick="event.stopPropagation(); removeCustomSentence(${idx})" title="Supprimer">🗑️</button>
-    `;
-    el.appendChild(item);
-  });
+  const langSel=document.getElementById('new-sentence-lang');
+  if(langSel&&editingSentenceIndex===null) langSel.value=currentLang;
+  const dl=document.getElementById('sentence-category-suggestions');
+  if(dl) dl.innerHTML=sentenceCategoriesForLang(currentLang).map(c=>`<option value="${c}">`).join('');
+  const el=document.getElementById('sentences-list');
+  const all=sentencePool(currentLang);
+  el.innerHTML='';
+  if(all.length===0){el.innerHTML=`<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it'?'Nessuna frase disponibile.':'Aucune phrase disponible.'}</p>`;return;}
+  all.forEach((s)=>{const idx=customSentences.indexOf(s);const custom=idx!==-1;const cat=s.category||(s.lang==='it'?'Generale':'Général');const item=document.createElement('div');item.className='story-item';item.innerHTML=`<div class="emoji">${iconHtml(s,40)}</div><div class="info" style="flex:1;"><h4>${s.words.join(' ')}</h4><div><span class="tag">${s.lang==='it'?'🇮🇹 Italiano':'🇫🇷 Français'}</span> <span class="tag">🏷️ ${cat}</span> ${custom?'<span class="tag">✨ Mia</span>':'<span class="tag">📚 Base</span>'}</div></div>${custom?`<button class="icon-btn" style="background:var(--sunshine);" onclick="editCustomSentence(${idx})">✏️</button><button class="icon-btn" style="background:var(--coral);" onclick="removeCustomSentence(${idx})">🗑️</button>`:''}`;el.appendChild(item);});
 }
 
 /* ---------------- INITIAL SOUND GAME ---------------- */
