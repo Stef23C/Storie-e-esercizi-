@@ -352,6 +352,26 @@ select, input[type=range]{
   display:inline-block;font-size:12px;font-weight:700;background:var(--sky);color:var(--ocean-dark);
   padding:3px 10px;border-radius:999px;margin-left:8px;
 }
+
+/* V3 sentence archive / topic picker */
+.sentence-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 14px}
+.sentence-toolbar input,.sentence-toolbar select{flex:1;min-width:190px;margin:0!important}
+.sentence-count{font-weight:800;color:#7a6b8a;margin:4px 0 10px}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:12px 0}
+.topic-card{background:#fff;border:2px solid #eadff7;border-radius:16px;padding:12px;cursor:pointer;transition:.15s;box-shadow:0 3px 10px rgba(50,30,80,.06)}
+.topic-card.selected{border-color:var(--ocean);box-shadow:0 0 0 3px rgba(14,165,160,.12)}
+.topic-card .topic-top{display:flex;align-items:center;gap:9px}
+.topic-card input{width:20px;height:20px;margin:0}
+.topic-name{font-weight:800;font-size:17px;flex:1}
+.topic-count{font-size:12px;color:#7a6b8a;font-weight:700;margin-top:6px}
+.topic-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.checklist-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.checklist-toolbar input{flex:1;min-width:180px}
+.sentence-check-row{display:flex;align-items:center;gap:8px;padding:7px 5px;border-radius:9px}
+.sentence-check-row:hover{background:#f1ebfb}
+.sentence-check-row input{width:19px;height:19px;margin:0}
+.small-action{padding:8px 12px;border:0;border-radius:10px;font-weight:800;cursor:pointer}
+
 </style>
 </head>
 <body>
@@ -515,6 +535,11 @@ select, input[type=range]{
         <button class="big-btn btn-coral" onclick="startSentenceGame(customSentences.filter(s=>s.lang===currentLang).length ? customSentences.filter(s=>s.lang===currentLang) : null)" data-i18n="btn_play_sentences_mine">📝 Jouer avec mes phrases</button>
         <button class="big-btn btn-lilac" onclick="showScreen('screen-sentence-groups'); renderSentenceGroupsScreen();" data-i18n="btn_manage_sentence_groups">👥 Gérer mes groupes de phrases</button>
       </div>
+      <div class="sentence-toolbar">
+        <input id="sentence-manager-search" type="search" placeholder="🔎 Cerca tra tutte le frasi..." oninput="renderSentenceManager()">
+        <select id="sentence-manager-category" onchange="renderSentenceManager()"><option value="">🏷️ Tutti gli argomenti</option></select>
+      </div>
+      <div id="sentence-manager-count" class="sentence-count"></div>
       <div class="story-list" id="sentences-list"></div>
     </div>
   </div>
@@ -660,25 +685,38 @@ select, input[type=range]{
   <div class="screen" id="screen-sentence-groups">
     <div class="back-row">
       <button class="back-btn" onclick="showScreen('screen-sentence-manager'); renderSentenceManager();" data-i18n="back">← Retour</button>
-      <h2 class="screen-title" data-i18n="title_sentence_groups">Mes groupes de phrases</h2>
+      <h2 class="screen-title" data-i18n="title_sentence_groups">Gruppi e argomenti</h2>
     </div>
     <div class="panel">
-      <p style="font-weight:600;color:#7a6b8a;margin-top:0;" data-i18n="sgroups_intro">Crée un petit groupe de phrases choisies à la main — au lieu de jouer avec toutes tes phrases en même temps.</p>
-      <div class="add-story-box">
-        <h3 style="margin-top:0;font-family:'Baloo 2';" id="sgroup-form-title" data-i18n="sgroup_form_add_title">➕ Créer un groupe de phrases</h3>
-        <input id="new-sgroup-name" data-i18n-ph="sgroup_ph_name" placeholder="Nom du groupe (ex : Phrases faciles)">
+      <p style="font-weight:600;color:#7a6b8a;margin-top:0;" data-i18n="sgroups_intro_v3">Scegli uno o più argomenti per creare un gioco. Puoi selezionare fino a 6 argomenti.</p>
+      <div class="topic-actions">
+        <button class="small-action" style="background:var(--leaf);color:#fff;" onclick="selectAllSentenceTopics()" data-i18n="select_all_topics">☑️ Seleziona tutti</button>
+        <button class="small-action" style="background:var(--lilac);color:#fff;" onclick="clearSentenceTopics()" data-i18n="clear_topics">✖️ Azzera</button>
+        <button class="small-action" style="background:var(--ocean);color:#fff;" onclick="playSelectedSentenceTopics()" data-i18n="play_selected_topics">▶️ Gioca con gli argomenti selezionati</button>
+      </div>
+      <div id="sentence-topic-summary" class="sentence-count"></div>
+      <div id="sentence-topic-grid" class="topic-grid"></div>
+
+      <div class="add-story-box" style="margin-top:20px;">
+        <h3 style="margin-top:0;font-family:'Baloo 2';" id="sgroup-form-title" data-i18n="sgroup_form_add_title">➕ Crea un gruppo personalizzato</h3>
+        <input id="new-sgroup-name" data-i18n-ph="sgroup_ph_name" placeholder="Nome del gruppo (es: Frasi facili)">
         <select id="new-sgroup-lang" style="width:100%;margin-bottom:10px;" onchange="renderSentenceGroupChecklist()">
           <option value="fr">🇫🇷 Français</option>
           <option value="it">🇮🇹 Italiano</option>
         </select>
-        <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="sgroups_pick_hint">Coche les phrases à inclure :</p>
-        <div id="sgroup-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
-        <div style="display:flex;gap:10px;">
-          <button class="big-btn btn-leaf" id="sgroup-form-submit" onclick="saveSentenceGroup()" data-i18n="sgroup_form_add_btn">✅ Enregistrer le groupe</button>
-          <button class="big-btn btn-lilac" id="sgroup-form-cancel" onclick="cancelEditSentenceGroup()" style="display:none;" data-i18n="btn_cancel">✖️ Annuler</button>
+        <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="sgroups_pick_hint">Seleziona le frasi da includere:</p>
+        <div class="checklist-toolbar">
+          <input id="sgroup-search" type="search" placeholder="🔎 Cerca una frase..." oninput="renderSentenceGroupChecklist()">
+          <button type="button" class="small-action" style="background:var(--sunshine);" onclick="checkAllSentenceChecklist(true)">☑️</button>
+          <button type="button" class="small-action" style="background:#eee;" onclick="checkAllSentenceChecklist(false)">☐</button>
+        </div>
+        <div id="sgroup-checklist" style="max-height:360px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="big-btn btn-leaf" id="sgroup-form-submit" onclick="saveSentenceGroup()" data-i18n="sgroup_form_add_btn">✅ Salva il gruppo</button>
+          <button class="big-btn btn-lilac" id="sgroup-form-cancel" onclick="cancelEditSentenceGroup()" style="display:none;" data-i18n="btn_cancel">✖️ Annulla</button>
         </div>
       </div>
-      <h3 style="font-family:'Baloo 2';" data-i18n="sgroups_list_title">Groupes créés</h3>
+      <h3 style="font-family:'Baloo 2';" data-i18n="sgroups_list_title">Gruppi personalizzati</h3>
       <div class="story-list" id="sgroups-list"></div>
     </div>
   </div>
@@ -877,6 +915,10 @@ const I18N = {
     btn_play_sentences_mine:"📝 Jouer avec mes phrases",
     btn_manage_sentence_groups:"👥 Gérer mes groupes de phrases",
     title_sentence_groups:"Mes groupes de phrases",
+    sgroups_intro_v3:"Choisis un ou plusieurs sujets pour créer un jeu. Tu peux sélectionner jusqu'à 6 sujets.",
+    select_all_topics:"☑️ Tout sélectionner",
+    clear_topics:"✖️ Effacer",
+    play_selected_topics:"▶️ Jouer avec les sujets sélectionnés",
     sgroups_intro:"Crée un petit groupe de phrases choisies à la main — au lieu de jouer avec toutes tes phrases en même temps.",
     sgroup_form_add_title:"➕ Créer un groupe de phrases",
     sgroup_ph_name:"Nom du groupe (ex : Phrases faciles)",
@@ -1019,6 +1061,10 @@ const I18N = {
     btn_play_sentences_mine:"📝 Gioca con le mie frasi",
     btn_manage_sentence_groups:"👥 Gestisci i miei gruppi di frasi",
     title_sentence_groups:"I miei gruppi di frasi",
+    sgroups_intro_v3:"Scegli uno o più argomenti per creare un gioco. Puoi selezionare fino a 6 argomenti.",
+    select_all_topics:"☑️ Seleziona tutti",
+    clear_topics:"✖️ Azzera",
+    play_selected_topics:"▶️ Gioca con gli argomenti selezionati",
     sgroups_intro:"Crea un piccolo gruppo di frasi scelte a mano — invece di giocare con tutte le tue frasi insieme.",
     sgroup_form_add_title:"➕ Crea un gruppo di frasi",
     sgroup_ph_name:"Nome del gruppo (es: Frasi facili)",
@@ -1305,12 +1351,8 @@ function wordExists(word, lang, excludeBaseKey, excludeCustomIdx){
   });
 }
 function sentenceExists(words, lang, excludeSentence){
-  const norm = words.join(' ').trim().toLowerCase();
-  return sentencePool(lang).some(s=>{
-    if(s.words.join(' ').trim().toLowerCase() !== norm) return false;
-    if(excludeSentence && s === excludeSentence) return false;
-    return true;
-  });
+  const norm=words.join(' ').trim().toLowerCase();
+  return sentencePool(lang).some(s=>{if(s.words.join(' ').trim().toLowerCase()!==norm)return false;if(excludeSentence&&s.words.join(' ').trim().toLowerCase()===excludeSentence.words.join(' ').trim().toLowerCase()&&s.isBase===excludeSentence.isBase)return false;return true;});
 }
 function storyExists(title, lang, excludeId){
   const norm = title.trim().toLowerCase();
@@ -1390,106 +1432,76 @@ const SENTENCES_IT = [
 let customSentences = []; // {words:[], emoji, lang, category}
 let editingSentenceIndex = null;
 function sentencePool(lang){
-  const base = lang === 'it' ? SENTENCES_IT : SENTENCES_FR;
-  return base.concat(customSentences.filter(s=>s.lang===lang));
+  const base=(lang==='it'?SENTENCES_IT:SENTENCES_FR).map(s=>({...s,isBase:true}));
+  return base.concat(customSentences.map((s,i)=>({...s,isBase:false,_customIndex:i})).filter(s=>s.lang===lang));
 }
 function sentenceCategoriesForLang(lang){
-  const cats = sentencePool(lang).map(s => s.category || (lang==='it' ? 'Generale' : 'Général'));
-  return [...new Set(cats)].sort();
+  const cats=sentencePool(lang).map(s=>s.category||(lang==='it'?'Generale':'Général'));
+  return [...new Set(cats)].sort((a,b)=>a.localeCompare(b,lang));
 }
-function sentenceKey(s){
-  return (s.lang || currentLang) + ':' + s.words.join(' ').toLowerCase();
+function sentenceKey(s){return (s.lang||currentLang)+':'+s.words.join(' ').toLowerCase();}
+let customSentenceGroups=[]; // {name, lang, sentenceKeys:[...]}
+let editingSentenceGroupIndex=null;
+let selectedSentenceTopics=new Set();
+function sentenceTopics(lang=currentLang){
+  const map=new Map();
+  sentencePool(lang).forEach(s=>{const c=s.category||(lang==='it'?'Generale':'Général');if(!map.has(c))map.set(c,[]);map.get(c).push(s);});
+  return [...map.entries()].sort((a,b)=>a[0].localeCompare(b[0],lang));
 }
-let customSentenceGroups = []; // {name, lang, sentenceKeys:[...]}
-let editingSentenceGroupIndex = null;
-function renderSentenceGroupChecklist(){
-  const lang = document.getElementById('new-sgroup-lang').value;
-  const container = document.getElementById('sgroup-checklist');
-  const sentences = sentencePool(lang);
-  const checkedKeys = (editingSentenceGroupIndex !== null) ? customSentenceGroups[editingSentenceGroupIndex].sentenceKeys : [];
-  container.innerHTML = sentences.map(s=>{
-    const key = sentenceKey(s);
-    const checked = checkedKeys.includes(key) ? 'checked' : '';
-    return `<label style="display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:600;">
-      <input type="checkbox" value="${key}" ${checked} style="width:18px;height:18px;">
-      ${iconHtml(s, 26)} ${s.words.join(' ')}
-    </label>`;
-  }).join('') || `<p style="font-weight:600;color:#7a6b8a;">${t('no_words_lang')}</p>`;
+function renderSentenceTopics(){
+  const grid=document.getElementById('sentence-topic-grid');if(!grid)return;
+  const topics=sentenceTopics(currentLang);
+  selectedSentenceTopics=new Set([...selectedSentenceTopics].filter(x=>topics.some(([c])=>c===x)));
+  grid.innerHTML=topics.map(([cat,list])=>`<label class="topic-card ${selectedSentenceTopics.has(cat)?'selected':''}"><div class="topic-top"><input type="checkbox" ${selectedSentenceTopics.has(cat)?'checked':''} onchange="toggleSentenceTopic(${JSON.stringify(cat)},this.checked)"><span class="topic-name">🏷️ ${escapeHtml(cat)}</span></div><div class="topic-count">${list.length} ${currentLang==='it'?'frasi':'phrases'}</div></label>`).join('')||`<p class="sentence-count">${currentLang==='it'?'Nessun argomento disponibile.':'Aucun sujet disponible.'}</p>`;
+  const sum=document.getElementById('sentence-topic-summary');if(sum)sum.textContent=currentLang==='it'?`Selezionati: ${selectedSentenceTopics.size}/6`:`Sélectionnés : ${selectedSentenceTopics.size}/6`;
 }
-function saveSentenceGroup(){
-  const name = document.getElementById('new-sgroup-name').value.trim();
-  const lang = document.getElementById('new-sgroup-lang').value;
-  if(!name){ alert(currentLang==='it' ? 'Scrivi un nome per il gruppo.' : 'Écris un nom pour le groupe.'); return; }
-  const checked = Array.from(document.querySelectorAll('#sgroup-checklist input:checked')).map(cb=>cb.value);
-  if(checked.length === 0){ alert(currentLang==='it' ? 'Seleziona almeno una frase.' : 'Sélectionne au moins une phrase.'); return; }
-  const groupData = {name, lang, sentenceKeys: checked};
-  if(editingSentenceGroupIndex !== null){ customSentenceGroups[editingSentenceGroupIndex] = groupData; }
-  else { customSentenceGroups.push(groupData); }
-  cancelEditSentenceGroup();
-  renderSentenceGroupsScreen();
-  saveState();
+function toggleSentenceTopic(cat,on){
+  if(on){if(selectedSentenceTopics.size>=6){alert(currentLang==='it'?'Puoi scegliere al massimo 6 argomenti.':'Tu peux choisir au maximum 6 sujets.');renderSentenceTopics();return;}selectedSentenceTopics.add(cat);}else selectedSentenceTopics.delete(cat);
+  renderSentenceTopics();
 }
-function editSentenceGroup(idx){
-  const g = customSentenceGroups[idx];
-  editingSentenceGroupIndex = idx;
-  document.getElementById('new-sgroup-name').value = g.name;
-  document.getElementById('new-sgroup-lang').value = g.lang;
-  renderSentenceGroupChecklist();
-  document.getElementById('sgroup-form-title').textContent = currentLang==='it' ? '✏️ Modifica il gruppo' : '✏️ Modifier le groupe';
-  document.getElementById('sgroup-form-submit').textContent = currentLang==='it' ? '💾 Salva le modifiche' : '💾 Enregistrer les modifications';
-  document.getElementById('sgroup-form-cancel').style.display = 'inline-flex';
-  document.getElementById('sgroup-form-title').scrollIntoView({behavior:'smooth', block:'center'});
-}
-function cancelEditSentenceGroup(){
-  editingSentenceGroupIndex = null;
-  document.getElementById('new-sgroup-name').value = '';
-  document.getElementById('sgroup-form-title').textContent = t('sgroup_form_add_title');
-  document.getElementById('sgroup-form-submit').textContent = t('sgroup_form_add_btn');
-  document.getElementById('sgroup-form-cancel').style.display = 'none';
-  renderSentenceGroupChecklist();
-}
-function deleteSentenceGroup(idx){
-  customSentenceGroups.splice(idx,1);
-  if(editingSentenceGroupIndex === idx) cancelEditSentenceGroup();
-  renderSentenceGroupsScreen();
-  saveState();
-}
-function sentenceGroupItems(idx){
-  const g = customSentenceGroups[idx];
-  return sentencePool(g.lang).filter(s => g.sentenceKeys.includes(sentenceKey(s)));
-}
-function playSentenceGroup(idx){
-  const list = sentenceGroupItems(idx);
-  if(list.length === 0){ alert(t('no_words_lang')); return; }
+function selectAllSentenceTopics(){selectedSentenceTopics=new Set(sentenceTopics(currentLang).map(([c])=>c).slice(0,6));renderSentenceTopics();}
+function clearSentenceTopics(){selectedSentenceTopics.clear();renderSentenceTopics();}
+function playSelectedSentenceTopics(){
+  const cats=[...selectedSentenceTopics];
+  if(!cats.length){alert(currentLang==='it'?'Seleziona almeno un argomento.':'Sélectionne au moins un sujet.');return;}
+  const list=sentencePool(currentLang).filter(s=>cats.includes(s.category||(currentLang==='it'?'Generale':'Général')));
+  if(!list.length){alert(t('no_words_lang'));return;}
   startSentenceGame(list);
 }
-function renderSentenceGroupsScreen(){
-  const langSel = document.getElementById('new-sgroup-lang');
-  if(langSel) langSel.value = currentLang;
-  renderSentenceGroupChecklist();
-  const el = document.getElementById('sgroups-list');
-  if(customSentenceGroups.length === 0){
-    el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it' ? 'Nessun gruppo creato ancora.' : "Aucun groupe créé pour l'instant."}</p>`;
-    return;
-  }
-  el.innerHTML = '';
-  customSentenceGroups.forEach((g,idx)=>{
-    const item = document.createElement('div');
-    item.className = 'story-item';
-    item.style.cursor = 'default';
-    item.style.flexWrap = 'wrap';
-    item.innerHTML = `
-      <div class="info" style="flex:1;min-width:160px;">
-        <h4>${g.name} <span class="tag">${g.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span></h4>
-        <p>${g.sentenceKeys.length} ${currentLang==='it' ? 'frasi' : 'phrases'}</p>
-      </div>
-      <button class="icon-btn" style="background:var(--ocean);" onclick="playSentenceGroup(${idx})" title="Jouer">📝</button>
-      <button class="icon-btn" style="background:var(--lilac);" onclick="editSentenceGroup(${idx})" title="Modifier">✏️</button>
-      <button class="icon-btn" style="background:var(--coral);" onclick="deleteSentenceGroup(${idx})" title="Supprimer">🗑️</button>
-    `;
-    el.appendChild(item);
-  });
+function checkAllSentenceChecklist(value){document.querySelectorAll('#sgroup-checklist input[type=checkbox]').forEach(cb=>cb.checked=value);}
+function renderSentenceGroupChecklist(){
+  const lang=document.getElementById('new-sgroup-lang').value,container=document.getElementById('sgroup-checklist');
+  const search=(document.getElementById('sgroup-search')?.value||'').trim().toLowerCase();
+  const checkedKeys=editingSentenceGroupIndex!==null?customSentenceGroups[editingSentenceGroupIndex].sentenceKeys:[];
+  const sentences=sentencePool(lang).filter(s=>!search||s.words.join(' ').toLowerCase().includes(search)||(s.category||'').toLowerCase().includes(search));
+  container.innerHTML=sentences.map(s=>{const key=sentenceKey(s),checked=checkedKeys.includes(key)?'checked':'';return `<label class="sentence-check-row"><input type="checkbox" value="${escapeAttr(key)}" ${checked}> ${iconHtml(s,26)} <span>${escapeHtml(s.words.join(' '))}</span><span class="tag" style="margin-left:auto">${escapeHtml(s.category||'')}</span></label>`;}).join('')||`<p style="font-weight:600;color:#7a6b8a;">${lang==='it'?'Nessuna frase trovata.':'Aucune phrase trouvée.'}</p>`;
 }
+function saveSentenceGroup(){
+  const name=document.getElementById('new-sgroup-name').value.trim(),lang=document.getElementById('new-sgroup-lang').value;
+  if(!name){alert(currentLang==='it'?'Scrivi un nome per il gruppo.':'Écris un nom pour le groupe.');return;}
+  const checked=Array.from(document.querySelectorAll('#sgroup-checklist input:checked')).map(cb=>cb.value),groupData={name,lang,sentenceKeys:checked};
+  if(editingSentenceGroupIndex!==null)customSentenceGroups[editingSentenceGroupIndex]=groupData;else customSentenceGroups.push(groupData);
+  cancelEditSentenceGroup();renderSentenceGroupsScreen();saveState();
+}
+function editSentenceGroup(idx){
+  const g=customSentenceGroups[idx];editingSentenceGroupIndex=idx;document.getElementById('new-sgroup-name').value=g.name;document.getElementById('new-sgroup-lang').value=g.lang;
+  document.getElementById('sgroup-form-title').textContent=currentLang==='it'?'✏️ Modifica il gruppo':'✏️ Modifier le groupe';document.getElementById('sgroup-form-submit').textContent=currentLang==='it'?'💾 Salva le modifiche':'💾 Enregistrer les modifications';document.getElementById('sgroup-form-cancel').style.display='inline-flex';
+  const search=document.getElementById('sgroup-search');if(search)search.value='';renderSentenceGroupChecklist();document.getElementById('sgroup-form-title').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function cancelEditSentenceGroup(){
+  editingSentenceGroupIndex=null;document.getElementById('new-sgroup-name').value='';const search=document.getElementById('sgroup-search');if(search)search.value='';
+  document.getElementById('sgroup-form-title').textContent=t('sgroup_form_add_title');document.getElementById('sgroup-form-submit').textContent=t('sgroup_form_add_btn');document.getElementById('sgroup-form-cancel').style.display='none';renderSentenceGroupChecklist();
+}
+function deleteSentenceGroup(idx){customSentenceGroups.splice(idx,1);if(editingSentenceGroupIndex===idx)cancelEditSentenceGroup();renderSentenceGroupsScreen();saveState();}
+function sentenceGroupItems(idx){const g=customSentenceGroups[idx];return sentencePool(g.lang).filter(s=>g.sentenceKeys.includes(sentenceKey(s)));}
+function playSentenceGroup(idx){const list=sentenceGroupItems(idx);if(!list.length){alert(t('no_words_lang'));return;}startSentenceGame(list);}
+function renderSentenceGroupsScreen(){
+  const langSel=document.getElementById('new-sgroup-lang');if(langSel)langSel.value=currentLang;renderSentenceTopics();renderSentenceGroupChecklist();
+  const el=document.getElementById('sgroups-list');if(!customSentenceGroups.length){el.innerHTML=`<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it'?'Nessun gruppo personalizzato creato ancora.':"Aucun groupe personnalisé pour l'instant."}</p>`;return;}
+  el.innerHTML='';customSentenceGroups.forEach((g,idx)=>{const item=document.createElement('div');item.className='story-item';item.style.cursor='default';item.style.flexWrap='wrap';item.innerHTML=`<div class="info" style="flex:1;min-width:160px;"><h4>${escapeHtml(g.name)} <span class="tag">${g.lang==='it'?'🇮🇹 Italiano':'🇫🇷 Français'}</span></h4><p>${g.sentenceKeys.length} ${currentLang==='it'?'frasi':'phrases'}</p></div><button class="icon-btn" style="background:var(--ocean);" onclick="playSentenceGroup(${idx})" title="Jouer">📝</button><button class="icon-btn" style="background:var(--lilac);" onclick="editSentenceGroup(${idx})" title="Modifier">✏️</button><button class="icon-btn" style="background:var(--coral);" onclick="deleteSentenceGroup(${idx})" title="Supprimer">🗑️</button>`;el.appendChild(item);});
+}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function escapeAttr(v){return escapeHtml(v).replace(/`/g,'&#96;');}
 
 let customGroups = []; // {name, lang, wordKeys:[...]}
 let editingGroupIndex = null;
@@ -1815,30 +1827,18 @@ function importStoriesTxt(evt){
 function downloadSentencesTemplate(){
   const content = currentLang==='it'
     ? "# Una frase per riga: frase|emoji|categoria (emoji e categoria facoltative)\nIl gatto dorme|\ud83d\udc31|Animali\nLa mela \u00e8 rossa|\ud83c\udf4e|Cibo\n"
-    : "# Une phrase par ligne : phrase|emoji|catégorie (emoji et catégorie facultatifs)\nLe chat dort|🐱|Animaux\nLa pomme est rouge|🍎|Nourriture\n";
+    : "# Groupe: Animaux\nLe chat dort|🐱\n\n# Groupe: Nourriture\nLa pomme est rouge|🍎\n";
   downloadTextFile('modele-phrases.txt', content);
 }
 function importSentencesTxt(evt){
-  const file = evt.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    const lang = document.getElementById('new-sentence-lang').value;
-    const rawLines = reader.result.split(/\r?\n/);
-    let currentGroup='';
-    let count=0, skipped=0;
-    const seenInFile=new Set();
-    const groupMap={};
-    rawLines.forEach(raw=>{ const line=raw.trim(); if(!line) return; if(line.startsWith('#')){ const m=line.match(/^#\s*(?:Gruppo|Group|Groupe)\s*:\s*(.+)$/i); if(m) currentGroup=m[1].trim(); return; } const parts=line.split('|').map(p=>p.trim()); const phrase=parts[0]; if(!phrase) return; const words=phrase.split(/\s+/).filter(Boolean); if(words.length<2) return; const norm=lang+':'+words.join(' ').toLowerCase(); const emoji=parts[1]||'📘'; const category=parts[2]||currentGroup||(lang==='it'?'Generale':'Général'); const key=lang+':'+words.join(' '); if(!(seenInFile.has(norm)||sentenceExists(words,lang))){ seenInFile.add(norm); customSentences.push({words,emoji,lang,category}); count++; } else skipped++; if(category){ if(!groupMap[category]) groupMap[category]=new Set(); groupMap[category].add(key); } });
-    Object.entries(groupMap).forEach(([name,keys])=>{ const arr=[...keys]; const ex=customSentenceGroups.find(g=>g.lang===lang&&g.name===name); if(ex) ex.sentenceKeys=[...new Set([...ex.sentenceKeys,...arr])]; else customSentenceGroups.push({name,lang,sentenceKeys:arr}); });
-    document.getElementById('sentences-txt-import').value = '';
-    document.getElementById('sentences-import-status').textContent = currentLang==='it'
-      ? `✅ ${count} frasi importate! ${skipped ? `(${skipped} già presenti, saltate)` : ''}`
-      : `✅ ${count} phrases importées ! ${skipped ? `(${skipped} déjà présentes, ignorées)` : ''}`;
-    renderSentenceManager();
-    saveState();
-  };
-  reader.readAsText(file, 'UTF-8');
+  const file=evt.target.files[0];if(!file)return;const reader=new FileReader();
+  reader.onload=()=>{
+    const lang=document.getElementById('new-sentence-lang').value,lines=reader.result.split(/\r?\n/);let count=0,skipped=0,currentCategory=null;const seenInFile=new Set();
+    lines.forEach(raw=>{const line=raw.trim();if(!line)return;const header=line.match(/^#\s*(?:Gruppo|Group|Groupe|Argomento|Sujet)\s*:?\s*(.+)$/i)||line.match(/^#\s*(.+)$/);if(header){currentCategory=header[1].trim();return;}
+      const parts=line.split('|').map(p=>p.trim()),phrase=parts[0];if(!phrase)return;const words=phrase.split(/\s+/).filter(Boolean);if(words.length<2)return;const norm=lang+':'+words.join(' ').toLowerCase();if(seenInFile.has(norm)||sentenceExists(words,lang)){skipped++;return;}seenInFile.add(norm);const emoji=parts[1]||'📘',category=parts[2]||currentCategory||(lang==='it'?'Generale':'Général');customSentences.push({words,emoji,lang,category});count++;});
+    document.getElementById('sentences-txt-import').value='';document.getElementById('sentences-import-status').textContent=currentLang==='it'?`✅ ${count} frasi importate! ${skipped?`(${skipped} già presenti, saltate)`:''}`:`✅ ${count} phrases importées ! ${skipped?`(${skipped} déjà présentes, ignorées)`:''}`;
+    renderSentenceManager();renderSentenceTopics();renderSentenceGroupChecklist();saveState();
+  };reader.readAsText(file,'UTF-8');
 }
 
 let gameWords = [];
@@ -1948,6 +1948,8 @@ function loadVoices(){
 }
 window.speechSynthesis.onvoiceschanged = loadVoices;
 loadState();
+renderSentenceManager();
+renderSentenceTopics();
 applyLoadedStateToUI();
 loadVoices();
 
@@ -2082,7 +2084,7 @@ function addStars(n){
 /* ---------------- SAVE / LOAD (localStorage) ---------------- */
 function buildBackupData(){
   return {
-    appVersion: 2,
+    appVersion: 3,
     stars,
     currentLang,
     contrastMode,
@@ -2159,7 +2161,7 @@ function importBackup(evt){
       if(Array.isArray(data.customSentences)) customSentences = data.customSentences;
       if(data.wordStats) wordStats = data.wordStats;
       if(Array.isArray(data.customGroups)) customGroups = data.customGroups;
-      if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = data.customSentenceGroups;
+      if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = data.customSentenceGroups.filter(g=>g && Array.isArray(g.sentenceKeys));
       if(Array.isArray(data.deletedBaseWordKeys)) deletedBaseWordKeys = data.deletedBaseWordKeys;
       if(data.baseWordOverrides) baseWordOverrides = data.baseWordOverrides;
       if(Array.isArray(data.allStories)){
@@ -2218,7 +2220,7 @@ function loadState(){
       if(Array.isArray(data.customSentences)) customSentences = data.customSentences;
       if(data.wordStats) wordStats = data.wordStats;
       if(Array.isArray(data.customGroups)) customGroups = data.customGroups;
-      if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = data.customSentenceGroups;
+      if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = data.customSentenceGroups.filter(g=>g && Array.isArray(g.sentenceKeys));
       if(Array.isArray(data.deletedBaseWordKeys)) deletedBaseWordKeys = data.deletedBaseWordKeys;
       if(data.baseWordOverrides) baseWordOverrides = data.baseWordOverrides;
     if(Array.isArray(data.allStories)){
@@ -2553,6 +2555,7 @@ function addCustomSentence(){
   }
   cancelEditSentence();
   renderSentenceManager();
+  renderSentenceTopics();
   saveState();
 }
 function editCustomSentence(idx){
@@ -2580,19 +2583,20 @@ function removeCustomSentence(idx){
   customSentences.splice(idx,1);
   if(editingSentenceIndex === idx) cancelEditSentence();
   renderSentenceManager();
+  renderSentenceTopics();
   saveState();
 }
 function renderSentenceManager(){
-  const langSel=document.getElementById('new-sentence-lang');
-  if(langSel&&editingSentenceIndex===null) langSel.value=currentLang;
-  const dl=document.getElementById('sentence-category-suggestions');
-  if(dl) dl.innerHTML=sentenceCategoriesForLang(currentLang).map(c=>`<option value="${c}">`).join('');
-  const el=document.getElementById('sentences-list');
-  const all=sentencePool(currentLang);
-  el.innerHTML='';
-  if(all.length===0){el.innerHTML=`<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it'?'Nessuna frase disponibile.':'Aucune phrase disponible.'}</p>`;return;}
-  all.forEach((s)=>{const idx=customSentences.indexOf(s);const custom=idx!==-1;const cat=s.category||(s.lang==='it'?'Generale':'Général');const item=document.createElement('div');item.className='story-item';item.innerHTML=`<div class="emoji">${iconHtml(s,40)}</div><div class="info" style="flex:1;"><h4>${s.words.join(' ')}</h4><div><span class="tag">${s.lang==='it'?'🇮🇹 Italiano':'🇫🇷 Français'}</span> <span class="tag">🏷️ ${cat}</span> ${custom?'<span class="tag">✨ Mia</span>':'<span class="tag">📚 Base</span>'}</div></div>${custom?`<button class="icon-btn" style="background:var(--sunshine);" onclick="editCustomSentence(${idx})">✏️</button><button class="icon-btn" style="background:var(--coral);" onclick="removeCustomSentence(${idx})">🗑️</button>`:''}`;el.appendChild(item);});
+  const langSel=document.getElementById('new-sentence-lang');if(langSel&&editingSentenceIndex===null)langSel.value=currentLang;
+  const dl=document.getElementById('sentence-category-suggestions');if(dl)dl.innerHTML=sentenceCategoriesForLang(currentLang).map(c=>`<option value="${escapeAttr(c)}">`).join('');
+  const catSel=document.getElementById('sentence-manager-category'),searchEl=document.getElementById('sentence-manager-search'),search=(searchEl?.value||'').trim().toLowerCase(),cat=catSel?.value||'';
+  if(catSel){const prev=cat;catSel.innerHTML=`<option value="">🏷️ ${currentLang==='it'?'Tutti gli argomenti':'Tous les sujets'}</option>`+sentenceCategoriesForLang(currentLang).map(c=>`<option value="${escapeAttr(c)}">${escapeHtml(c)}</option>`).join('');catSel.value=sentenceCategoriesForLang(currentLang).includes(prev)?prev:'';}
+  const all=sentencePool(currentLang),filtered=all.filter(s=>{const c=s.category||(currentLang==='it'?'Generale':'Général');return(!cat||c===cat)&&(!search||s.words.join(' ').toLowerCase().includes(search)||c.toLowerCase().includes(search));});
+  const countEl=document.getElementById('sentence-manager-count');if(countEl)countEl.textContent=currentLang==='it'?`${filtered.length} frasi visualizzate su ${all.length}`:`${filtered.length} phrases affichées sur ${all.length}`;
+  const el=document.getElementById('sentences-list');if(!el)return;if(!filtered.length){el.innerHTML=`<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it'?'Nessuna frase trovata.':'Aucune phrase trouvée.'}</p>`;return;}
+  el.innerHTML='';filtered.forEach(s=>{const idx=s._customIndex ?? customSentences.findIndex(x=>x===s),item=document.createElement('div');item.className='story-item';item.style.cursor='default';const catName=s.category||(s.lang==='it'?'Generale':'Général');item.innerHTML=`<div class="emoji">${iconHtml(s,40)}</div><div class="info" style="flex:1;"><h4>${escapeHtml(s.words.join(' '))} <span class="tag">${s.lang==='it'?'🇮🇹 Italiano':'🇫🇷 Français'}</span> <span class="tag">🏷️ ${escapeHtml(catName)}</span> ${s.isBase?'<span class="tag">📚 Base</span>':'<span class="tag">✨ Mia</span>'}</h4></div>${s.isBase?'':`<button class="icon-btn" style="background:var(--ocean);" onclick="event.stopPropagation(); startSentenceGame([customSentences[${idx}]])" title="Jouer">📝</button><button class="icon-btn" style="background:var(--sunshine);" onclick="event.stopPropagation(); editCustomSentence(${idx})" title="Modifier">✏️</button><button class="icon-btn" style="background:var(--coral);" onclick="event.stopPropagation(); removeCustomSentence(${idx})" title="Supprimer">🗑️</button>`}`;el.appendChild(item);});
 }
+
 
 /* ---------------- INITIAL SOUND GAME ---------------- */
 let soundQueue = [];
