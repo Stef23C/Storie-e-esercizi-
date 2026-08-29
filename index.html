@@ -493,8 +493,8 @@ select, input[type=range]{
         <button type="button" class="mini-btn mini-ocean" style="margin-bottom:10px;" onclick="openTranslateHelper('new-sentence-text','new-sentence-lang')" data-i18n="btn_translate">🌐 Traduire</button>
         <input id="new-sentence-emoji" placeholder="Un emoji (ex : 🐶)" maxlength="4" data-i18n-ph="word_ph_emoji">
         <select id="new-sentence-lang" style="width:100%;margin-bottom:10px;">
-          <option value="fr" data-i18n="lang_french">🇫🇷 Français</option>
-          <option value="it" data-i18n="lang_italian">🇮🇹 Italiano</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="it">🇮🇹 Italiano</option>
         </select>
         <input id="new-sentence-category" list="sentence-category-suggestions" data-i18n-ph="word_ph_category" placeholder="Catégorie (ex : Animaux, Facile...) — laisse vide pour Général">
         <datalist id="sentence-category-suggestions"></datalist>
@@ -510,30 +510,10 @@ select, input[type=range]{
           <p id="sentences-import-status" style="font-size:12px;color:#7a6b8a;font-weight:600;margin:8px 0 0;"></p>
         </div>
       </div>
-      <h3 style="font-family:'Baloo 2';" data-i18n="sentences_list_title">Mes phrases</h3>
-      <div class="game-controls" style="margin-bottom:12px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;">
-        <input id="sentence-search" data-i18n-ph="sentence_search_ph" placeholder="🔎 Cerca una frase..." oninput="renderSentenceManager()" style="margin:0;">
-        <select id="sentence-lang-filter" onchange="renderSentenceManager()" style="width:100%;margin:0;">
-          <option value="all" data-i18n="filter_all_languages">🌐 Tutte le lingue</option>
-          <option value="fr" data-i18n="lang_french">🇫🇷 Français</option>
-          <option value="it" data-i18n="lang_italian">🇮🇹 Italiano</option>
-        </select>
-        <select id="sentence-category-filter" onchange="renderSentenceManager()" style="width:100%;margin:0;">
-          <option value="all" data-i18n="filter_all_topics">🏷️ Tutti gli argomenti</option>
-        </select>
-      </div>
-      <div id="sentence-manager-count" style="font-size:13px;font-weight:700;color:#7a6b8a;margin-bottom:10px;"></div>
-      <div class="add-story-box" style="margin-bottom:14px;">
-        <h3 style="margin-top:0;font-family:'Baloo 2';" data-i18n="sentence_topics_title">🎮 Scegli gli argomenti per il gioco</h3>
-        <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="sentence_topics_hint">Seleziona da 1 a 6 argomenti. Il gioco userà tutte le frasi degli argomenti scelti.</p>
-        <div id="sentence-topic-picker" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;"></div>
-        <div style="font-size:12px;font-weight:700;color:#7a6b8a;margin-top:8px;" id="sentence-topic-count"></div>
-        <button class="big-btn btn-coral" style="margin-top:10px;" onclick="playSelectedSentenceTopics()" data-i18n="play_selected_topics">▶️ Gioca con gli argomenti selezionati</button>
-      </div>
+      <h3 style="font-family:'Baloo 2';" data-i18n="sentences_list_title">Mes phrases ajoutées</h3>
       <div class="game-controls" style="margin-bottom:14px;">
-        <button class="big-btn btn-coral" onclick="playFilteredSentences()" data-i18n="play_filtered_sentences">📝 Gioca con le frasi visualizzate</button>
+        <button class="big-btn btn-coral" onclick="startSentenceGame(customSentences.filter(s=>s.lang===currentLang).length ? customSentences.filter(s=>s.lang===currentLang) : null)" data-i18n="btn_play_sentences_mine">📝 Jouer avec mes phrases</button>
         <button class="big-btn btn-lilac" onclick="showScreen('screen-sentence-groups'); renderSentenceGroupsScreen();" data-i18n="btn_manage_sentence_groups">👥 Gérer mes groupes de phrases</button>
-        <button class="big-btn btn-leaf" onclick="openSentenceGroupManagerFromList()" data-i18n="btn_create_sentence_group">➕ Créer / gérer un gruppo</button>
       </div>
       <div class="story-list" id="sentences-list"></div>
     </div>
@@ -613,17 +593,17 @@ select, input[type=range]{
         <input type="file" id="new-word-image" accept="image/*" onchange="previewImage(event,'new-word-image-preview', 'word')" style="margin-bottom:10px;">
         <div id="new-word-image-preview" style="margin-bottom:10px;"></div>
         <select id="new-word-lang" style="width:100%;margin-bottom:10px;">
-          <option value="fr" data-i18n="lang_french">🇫🇷 Français</option>
-          <option value="it" data-i18n="lang_italian">🇮🇹 Italiano</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="it">🇮🇹 Italiano</option>
         </select>
         <input id="new-word-category" list="category-suggestions" data-i18n-ph="word_ph_category" placeholder="Catégorie (ex : Animaux, Facile...) — laisse vide pour Général" style="margin-bottom:10px;">
         <datalist id="category-suggestions"></datalist>
         <label style="display:block;font-size:13px;font-weight:700;color:#7a6b8a;margin-bottom:6px;">🎙️ Ou enregistre ta propre voix pour ce mot (contourne les voix synthétiques) :</label>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
-          <button type="button" class="big-btn btn-lilac" id="word-record-btn" onclick="toggleRecordWordAudio()" data-i18n="btn_record_word">🎙️ Enregistrer</button>
-          <button type="button" class="big-btn btn-leaf" onclick="document.getElementById('new-word-audio-upload').click()" data-i18n="btn_import_mp3">📁 Importer un MP3</button>
+          <button type="button" class="big-btn btn-lilac" id="word-record-btn" onclick="toggleRecordWordAudio()">🎙️ Enregistrer</button>
+          <button type="button" class="big-btn btn-leaf" onclick="document.getElementById('new-word-audio-upload').click()">📁 Importer un MP3</button>
           <input type="file" id="new-word-audio-upload" accept="audio/*" style="display:none;" onchange="uploadWordAudio(event)">
-          <button type="button" class="big-btn btn-sun" id="word-play-audio-btn" onclick="playNewWordAudio()" style="display:none;" data-i18n="btn_listen_myword">🔊 Écouter</button>
+          <button type="button" class="big-btn btn-sun" id="word-play-audio-btn" onclick="playNewWordAudio()" style="display:none;">🔊 Écouter</button>
         </div>
         <p id="word-audio-status" style="font-size:12px;color:#7a6b8a;font-weight:600;margin:0 0 10px;"></p>
         <div style="display:flex;gap:10px;">
@@ -661,8 +641,8 @@ select, input[type=range]{
         <h3 style="margin-top:0;font-family:'Baloo 2';" id="group-form-title" data-i18n="group_form_add_title">➕ Créer un groupe</h3>
         <input id="new-group-name" data-i18n-ph="group_ph_name" placeholder="Nom du groupe (ex : Leçon de lundi)">
         <select id="new-group-lang" style="width:100%;margin-bottom:10px;" onchange="renderGroupWordChecklist()">
-          <option value="fr" data-i18n="lang_french">🇫🇷 Français</option>
-          <option value="it" data-i18n="lang_italian">🇮🇹 Italiano</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="it">🇮🇹 Italiano</option>
         </select>
         <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="groups_pick_hint">Coche les mots à inclure :</p>
         <div id="group-word-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
@@ -673,29 +653,6 @@ select, input[type=range]{
       </div>
       <h3 style="font-family:'Baloo 2';" data-i18n="groups_list_title">Groupes créés</h3>
       <div class="story-list" id="groups-list"></div>
-    </div>
-  </div>
-
-  <!-- SENTENCE GROUP PICKER -->
-  <div class="screen" id="screen-sentence-group-picker">
-    <div class="back-row">
-      <button class="back-btn" onclick="closeSentenceGroupPicker()" data-i18n="back">← Retour</button>
-      <h2 class="screen-title" data-i18n="sgroup_picker_title">Aggiungi frasi a un gruppo</h2>
-    </div>
-    <div class="panel">
-      <p style="font-weight:600;color:#7a6b8a;margin-top:0;" data-i18n="sgroup_picker_hint">Seleziona uno o più gruppi. Puoi anche crearne uno nuovo.</p>
-      <div id="sentence-group-picker-list" style="display:grid;gap:8px;margin-bottom:14px;"></div>
-      <div class="add-story-box" style="margin-bottom:14px;">
-        <h3 style="margin-top:0;font-family:'Baloo 2';" data-i18n="sgroup_new_title">➕ Crea un nuovo gruppo</h3>
-        <input id="sentence-group-new-name" data-i18n-ph="sgroup_ph_name" placeholder="Nome del gruppo">
-        <select id="sentence-group-new-lang" style="width:100%;margin-bottom:10px;">
-          <option value="all" data-i18n="lang_all">🌍 Tutte le lingue</option>
-          <option value="fr" data-i18n="lang_french">🇫🇷 Français</option>
-          <option value="it" data-i18n="lang_italian">🇮🇹 Italiano</option>
-        </select>
-        <button class="big-btn btn-leaf" onclick="createSentenceGroupFromPicker()" data-i18n="sgroup_create_btn">Créer le groupe</button>
-      </div>
-      <button class="big-btn btn-ocean" onclick="saveSentenceGroupAssignments()" data-i18n="sgroup_assign_btn">💾 Enregistrer les groupes</button>
     </div>
   </div>
 
@@ -711,16 +668,11 @@ select, input[type=range]{
         <h3 style="margin-top:0;font-family:'Baloo 2';" id="sgroup-form-title" data-i18n="sgroup_form_add_title">➕ Créer un groupe de phrases</h3>
         <input id="new-sgroup-name" data-i18n-ph="sgroup_ph_name" placeholder="Nom du groupe (ex : Phrases faciles)">
         <select id="new-sgroup-lang" style="width:100%;margin-bottom:10px;" onchange="renderSentenceGroupChecklist()">
-          <option value="all" data-i18n="lang_all">🌍 Tutte le lingue</option>
-          <option value="fr" data-i18n="lang_french">🇫🇷 Français</option>
-          <option value="it" data-i18n="lang_italian">🇮🇹 Italiano</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="it">🇮🇹 Italiano</option>
         </select>
         <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="sgroups_pick_hint">Coche les phrases à inclure :</p>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
-          <input id="sgroup-search" data-i18n-ph="sentence_search_ph" placeholder="🔎 Cerca una frase..." oninput="renderSentenceGroupChecklist()" style="flex:1;min-width:180px;margin:0;">
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;white-space:nowrap;"><input id="sgroup-only-mine" type="checkbox" onchange="renderSentenceGroupChecklist()" style="width:18px;height:18px;"> <span data-i18n="sgroup_only_mine">✨ Solo le mie</span></label>
-        </div>
-        <div id="sgroup-checklist" style="max-height:360px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
+        <div id="sgroup-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
         <div style="display:flex;gap:10px;">
           <button class="big-btn btn-leaf" id="sgroup-form-submit" onclick="saveSentenceGroup()" data-i18n="sgroup_form_add_btn">✅ Enregistrer le groupe</button>
           <button class="big-btn btn-lilac" id="sgroup-form-cancel" onclick="cancelEditSentenceGroup()" style="display:none;" data-i18n="btn_cancel">✖️ Annuler</button>
@@ -747,6 +699,19 @@ select, input[type=range]{
       <h2 class="screen-title" data-i18n="title_stories">Histoires</h2>
     </div>
     <div class="panel">
+      <div class="add-story-box" style="margin-bottom:16px;">
+        <h3 style="margin-top:0;font-family:'Baloo 2';">🔎 Cerca e filtra le storie</h3>
+        <input id="story-search" type="search" placeholder="Cerca dalle prime lettere..." oninput="renderStoryList()" style="margin-bottom:10px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
+          <select id="story-filter-lang" onchange="renderStoryList()"><option value="all">🌍 Tutte le lingue</option><option value="it">🇮🇹 Italiano</option><option value="fr">🇫🇷 Français</option></select>
+          <select id="story-filter-topic" onchange="renderStoryList()"><option value="all">🏷️ Tutti gli argomenti</option></select>
+          <select id="story-filter-group" onchange="renderStoryList()"><option value="all">📁 Tutti i gruppi</option></select>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+          <button class="big-btn btn-lilac" onclick="showScreen('screen-story-groups'); renderStoryGroupsScreen();">📁 Gestisci i gruppi</button>
+          <button class="big-btn btn-coral" onclick="startStoryGameFromFilters();">🎮 Gioca con la selezione</button>
+        </div>
+      </div>
       <div class="story-list" id="story-list"></div>
       <div class="add-story-box">
         <h3 style="margin-top:0;font-family:'Baloo 2';" id="story-form-title" data-i18n="story_form_add_title">➕ Ajouter une histoire</h3>
@@ -755,12 +720,14 @@ select, input[type=range]{
         <textarea id="new-story-text" rows="4" placeholder="Écris ou colle le texte de l'histoire ici..." data-i18n-ph="story_ph_text"></textarea>
         <button type="button" class="mini-btn mini-ocean" style="margin-bottom:10px;" onclick="openTranslateHelper('new-story-text','new-story-lang')" data-i18n="btn_translate_text">🌐 Traduire le texte</button>
         <input id="new-story-emoji" placeholder="Un emoji pour l'histoire (ex : 🐱)" maxlength="4" data-i18n-ph="story_ph_emoji">
+        <input id="new-story-topic" placeholder="Argomento (es: Animali, Scuola...)" style="margin-top:10px;">
+        <div id="story-groups-checklist" style="margin:10px 0;"></div>
         <label style="display:block;font-size:13px;font-weight:700;color:#7a6b8a;margin-bottom:6px;" data-i18n="photo_label">📷 Ou ajoute une photo à toi (remplace l'emoji) :</label>
         <input type="file" id="new-story-image" accept="image/*" onchange="previewImage(event,'new-story-image-preview', 'story')" style="margin-bottom:10px;">
         <div id="new-story-image-preview" style="margin-bottom:10px;"></div>
         <select id="new-story-lang" style="width:100%;margin-bottom:10px;">
-          <option value="fr" data-i18n="lang_french">🇫🇷 Français</option>
-          <option value="it" data-i18n="lang_italian">🇮🇹 Italiano</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="it">🇮🇹 Italiano</option>
         </select>
         <div style="display:flex;gap:10px;">
           <button class="big-btn btn-leaf" id="story-form-submit" onclick="addStory()" data-i18n="story_form_add_btn">✅ Ajouter l'histoire</button>
@@ -781,7 +748,7 @@ select, input[type=range]{
   <div class="screen" id="screen-reader">
     <div class="back-row">
       <button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();" data-i18n="back">← Retour</button>
-      <h2 class="screen-title" id="reader-title" data-i18n="reader_story_title">Histoire</h2>
+      <h2 class="screen-title" id="reader-title">Histoire</h2>
     </div>
     <div class="panel">
       <div class="story-reader" id="reader-text"></div>
@@ -803,6 +770,24 @@ select, input[type=range]{
   </div>
 
   <!-- SETTINGS -->
+  <!-- STORY GROUPS -->
+  <div class="screen" id="screen-story-groups">
+    <div class="back-row"><button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();">← Retour</button><h2 class="screen-title">📁 Gruppi di storie</h2></div>
+    <div class="panel">
+      <div class="add-story-box">
+        <h3 style="margin-top:0;font-family:'Baloo 2';">➕ Crea o rinomina un gruppo</h3>
+        <input id="story-group-name" placeholder="Nome del gruppo"><input id="editing-story-group-id" type="hidden">
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;"><button class="big-btn btn-leaf" onclick="saveStoryGroup()">💾 Salva il gruppo</button><button class="big-btn btn-lilac" onclick="cancelStoryGroupEdit()">✖️ Annulla</button></div>
+      </div>
+      <h3 style="font-family:'Baloo 2';">I gruppi creati</h3><div class="story-list" id="story-groups-list"></div>
+    </div>
+  </div>
+  <!-- STORY GAME -->
+  <div class="screen" id="screen-story-game">
+    <div class="back-row"><button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();">← Retour</button><h2 class="screen-title">🎮 Gioco delle storie</h2></div>
+    <div class="panel" id="story-game-panel"></div>
+  </div>
+
   <div class="screen" id="screen-settings">
     <div class="back-row">
       <button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button>
@@ -931,14 +916,6 @@ const I18N = {
     sgroups_pick_hint:"Coche les phrases à inclure :",
     sgroup_form_add_btn:"✅ Enregistrer le groupe",
     sgroups_list_title:"Groupes créés",
-    btn_create_sentence_group:"➕ Créer / gérer un groupe",
-    sgroup_only_mine:"✨ Seulement mes phrases",
-    lang_all:"🌍 Toutes les langues",
-    sgroup_picker_title:"Ajouter des phrases à un groupe",
-    sgroup_picker_hint:"Sélectionne un ou plusieurs groupes. Tu peux aussi en créer un nouveau.",
-    sgroup_new_title:"➕ Créer un nouveau groupe",
-    sgroup_create_btn:"Créer le groupe",
-    sgroup_assign_btn:"💾 Enregistrer les groupes",
     btn_manage_sentences:"📝 Gérer mes phrases",
     title_sentence_manager:"Mes phrases",
     sentences_intro:"Ajoute, modifie ou supprime tes propres phrases pour le jeu \"Phrases\".",
@@ -1032,35 +1009,6 @@ const I18N = {
     quiz_again:"🔁 Rejouer",
     quiz_home:"🏠 Accueil",
     quiz_see_score:"🏁 Voir mon score",
-    sentence_search_ph:"🔎 Rechercher une phrase...",
-    save_changes:"💾 Enregistrer les modifications",
-    record_word:"🎙️ Enregistrer",
-    recording_added:"✅ Enregistrement ajouté à ce mot.",
-    recording_in_progress:"Enregistrement en cours... prononce le mot !",
-    choose_audio:"Choisis un fichier audio (MP3, WAV, M4A...).",
-    mic_unavailable:"⚠️ Le micro n'est pas accessible ici. Ouvre le fichier directement dans ton navigateur pour pouvoir enregistrer.",
-    no_sentence_match:"Aucune phrase ne correspond aux filtres.",
-    sentence_need_two:"Écris au moins deux mots.",
-    sentence_duplicate:"⚠️ Cette phrase existe déjà dans cette langue.",
-    add_word_prompt:"Écris un mot à ajouter !",
-    word_duplicate:"⚠️ Ce mot existe déjà dans cette langue.",
-    edit_sentence:"✏️ Modifier la phrase",
-    edit_story:"✏️ Modifier l'histoire",
-    edit_word:"✏️ Modifier le mot",
-    no_sentence_selected:"Aucune phrase dans les thèmes sélectionnés.",
-    select_topic:"Sélectionne au moins un thème.",
-    filter_all_languages:"🌐 Toutes les langues",
-    lang_french:"🇫🇷 Français",
-    lang_italian:"🇮🇹 Italien",
-    filter_all_topics:"🏷️ Tous les thèmes",
-    sentence_topics_title:"🎮 Choisir les thèmes du jeu",
-    sentence_topics_hint:"Sélectionne de 1 à 6 thèmes. Le jeu utilisera toutes les phrases des thèmes choisis.",
-    play_selected_topics:"▶️ Jouer avec les thèmes sélectionnés",
-    play_filtered_sentences:"📝 Jouer avec les phrases affichées",
-    btn_record_word:"🎙️ Enregistrer",
-    btn_listen_myword:"🔊 Écouter",
-    reader_story_title:"Histoire",
-    no_topics_available:"Aucun thème disponible.",
     no_words_lang:"Aucun mot disponible dans cette langue pour l'instant.",
     no_stories_lang:"Aucune histoire dans cette langue pour l'instant — ajoutes-en une ci-dessous !",
     no_mywords:"Tu n'as pas encore ajouté de mot.",
@@ -1103,8 +1051,6 @@ const I18N = {
     btn_import_sentences_txt:"📄 Importa un elenco di frasi (.txt)",
     btn_play_sentences_mine:"📝 Gioca con le mie frasi",
     btn_manage_sentence_groups:"👥 Gestisci i miei gruppi di frasi",
-    sgroup_only_mine:"✨ Solo le mie",
-    lang_all:"🌍 Tutte le lingue",
     title_sentence_groups:"I miei gruppi di frasi",
     sgroups_intro:"Crea un piccolo gruppo di frasi scelte a mano — invece di giocare con tutte le tue frasi insieme.",
     sgroup_form_add_title:"➕ Crea un gruppo di frasi",
@@ -1112,12 +1058,6 @@ const I18N = {
     sgroups_pick_hint:"Seleziona le frasi da includere:",
     sgroup_form_add_btn:"✅ Salva il gruppo",
     sgroups_list_title:"Gruppi creati",
-    btn_create_sentence_group:"➕ Crea / gestisci un gruppo",
-    sgroup_picker_title:"Aggiungi le frasi a un gruppo",
-    sgroup_picker_hint:"Seleziona uno o più gruppi. Puoi anche crearne uno nuovo.",
-    sgroup_new_title:"➕ Crea un nuovo gruppo",
-    sgroup_create_btn:"Crea il gruppo",
-    sgroup_assign_btn:"💾 Salva i gruppi",
     btn_manage_sentences:"📝 Gestisci le mie frasi",
     title_sentence_manager:"Le mie frasi",
     sentences_intro:"Aggiungi, modifica o elimina le tue frasi per il gioco \"Frasi\".",
@@ -1211,35 +1151,6 @@ const I18N = {
     quiz_again:"🔁 Rigioca",
     quiz_home:"🏠 Home",
     quiz_see_score:"🏁 Vedi il punteggio",
-    sentence_search_ph:"🔎 Cerca una frase...",
-    save_changes:"💾 Salva le modifiche",
-    record_word:"🎙️ Registra",
-    recording_added:"✅ Registrazione aggiunta a questa parola.",
-    recording_in_progress:"Registrazione in corso... pronuncia la parola!",
-    choose_audio:"Scegli un file audio (MP3, WAV, M4A...).",
-    mic_unavailable:"⚠️ Il microfono non è accessibile qui. Apri direttamente il file nel browser per poter registrare.",
-    no_sentence_match:"Nessuna frase corrisponde ai filtri.",
-    sentence_need_two:"Scrivi almeno due parole.",
-    sentence_duplicate:"⚠️ Questa frase esiste già in questa lingua.",
-    add_word_prompt:"Scrivi una parola da aggiungere!",
-    word_duplicate:"⚠️ Questa parola esiste già in questa lingua.",
-    edit_sentence:"✏️ Modifica la frase",
-    edit_story:"✏️ Modifica la storia",
-    edit_word:"✏️ Modifica la parola",
-    no_sentence_selected:"Nessuna frase negli argomenti selezionati.",
-    select_topic:"Seleziona almeno un argomento.",
-    filter_all_languages:"🌐 Tutte le lingue",
-    lang_french:"🇫🇷 Francese",
-    lang_italian:"🇮🇹 Italiano",
-    filter_all_topics:"🏷️ Tutti gli argomenti",
-    sentence_topics_title:"🎮 Scegli gli argomenti del gioco",
-    sentence_topics_hint:"Seleziona da 1 a 6 argomenti. Il gioco userà tutte le frasi degli argomenti scelti.",
-    play_selected_topics:"▶️ Gioca con gli argomenti selezionati",
-    play_filtered_sentences:"📝 Gioca con le frasi visualizzate",
-    btn_record_word:"🎙️ Registra",
-    btn_listen_myword:"🔊 Ascolta",
-    reader_story_title:"Storia",
-    no_topics_available:"Nessun argomento disponibile.",
     no_words_lang:"Nessuna parola disponibile in questa lingua per il momento.",
     no_stories_lang:"Nessuna storia in questa lingua per il momento — aggiungine una qui sotto!",
     no_mywords:"Non hai ancora aggiunto nessuna parola.",
@@ -1259,7 +1170,6 @@ function applyUILang(){
 function t(key){
   return (I18N[currentLang] && I18N[currentLang][key]) || I18N.fr[key] || key;
 }
-function langLabel(lang){ return lang==='it' ? (currentLang==='it' ? '🇮🇹 Italiano' : '🇮🇹 Italien') : (currentLang==='it' ? '🇫🇷 Francese' : '🇫🇷 Français'); }
 
 const WORDS_FR = [
   {word:"maison", syllables:["mai","son"], emoji:"🏠", lang:"fr", category:"Maison"},
@@ -1512,106 +1422,38 @@ const SENTENCES_IT = [
 ];
 let customSentences = []; // {words:[], emoji, lang, category}
 let editingSentenceIndex = null;
-function normalizeCustomSentences(list, fallbackLang=currentLang){
-  if(!Array.isArray(list)) return [];
-  return list.map(s=>{
-    if(!s || typeof s!=='object') return null;
-    let words=Array.isArray(s.words) ? s.words.map(x=>String(x).trim()).filter(Boolean) : null;
-    if(!words){
-      const text=s.text ?? s.phrase ?? s.sentence ?? s.content ?? '';
-      words=String(text).trim().split(/\s+/).filter(Boolean);
-    }
-    if(words.length<2) return null;
-    const rawLang=s.lang ?? s.language ?? s.langue ?? s.languageCode ?? fallbackLang;
-    const lx=String(rawLang).toLowerCase();
-    const lang=(lx==='it'||lx.includes('ital'))?'it':'fr';
-    return {
-      words,
-      emoji:String(s.emoji ?? s.icon ?? '📘'),
-      lang,
-      category:String(s.category ?? s.topic ?? s.group ?? (lang==='it'?'Generale':'Général')),
-      ...(s.imported ? {imported:true} : {})
-    };
-  }).filter(Boolean);
-}
 function sentencePool(lang){
   const base = lang === 'it' ? SENTENCES_IT : SENTENCES_FR;
   return base.concat(customSentences.filter(s=>s.lang===lang));
-}
-function allManagedSentences(){
-  // One single source of truth for sentence management: built-ins + imported/custom.
-  return SENTENCES_FR.concat(SENTENCES_IT, customSentences);
 }
 function sentenceCategoriesForLang(lang){
   const cats = sentencePool(lang).map(s => s.category || (lang==='it' ? 'Generale' : 'Général'));
   return [...new Set(cats)].sort();
 }
-function escapeHtml(v){ return String(v??'').replace(/[&<>\"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch])); }
 function sentenceKey(s){
-  return (s.lang || currentLang) + ':' + s.words.join(' ').trim().toLowerCase();
-}
-function findSentenceByKey(key){
-  return allManagedSentences().find(s=>sentenceKey(s)===String(key));
+  return (s.lang || currentLang) + ':' + s.words.join(' ').toLowerCase();
 }
 let customSentenceGroups = []; // {name, lang, sentenceKeys:[...]}
-function normalizeCustomSentenceGroups(list){
-  if(!Array.isArray(list)) return [];
-  return list.map(g=>{
-    if(!g || typeof g!=='object') return null;
-    const rawLang=String(g.lang||g.language||currentLang).toLowerCase();
-    const lang=(rawLang==='all'||rawLang==='tutte'||rawLang==='all languages')?'all':(rawLang==='it'||rawLang.includes('ital'))?'it':'fr';
-    const name=String(g.name||g.title||'').trim();
-    if(!name) return null;
-    let keys=Array.isArray(g.sentenceKeys)?g.sentenceKeys:Array.isArray(g.keys)?g.keys:[];
-    // Accept older group formats that stored sentence objects/text instead of keys.
-    if(!keys.length && Array.isArray(g.sentences)){
-      keys=g.sentences.map(x=>{
-        if(typeof x==='string') return x.includes(':')?x:`${lang}:${x.trim().toLowerCase()}`;
-        if(x && Array.isArray(x.words)) return sentenceKey({...x,lang:x.lang||lang});
-        if(x && (x.text||x.phrase)) return `${x.lang||lang}:${String(x.text||x.phrase).trim().toLowerCase()}`;
-        return '';
-      });
-    }
-    return {name,lang,sentenceKeys:[...new Set(keys.map(String).filter(Boolean))]};
-  }).filter(Boolean);
-}
-function migrateSentenceGroupsFromData(data){
-  if(!data || typeof data!=='object') return;
-  if(!Array.isArray(customSentenceGroups) || customSentenceGroups.length===0){
-    const legacy=data.sentenceGroups || data.mySentenceGroups || data.customGroupsSentences;
-    if(Array.isArray(legacy)) customSentenceGroups=normalizeCustomSentenceGroups(legacy);
-  }
-}
 let editingSentenceGroupIndex = null;
 function renderSentenceGroupChecklist(){
-  const lang=document.getElementById('new-sgroup-lang')?.value||currentLang;
-  const container=document.getElementById('sgroup-checklist');
-  if(!container) return;
-  const search=(document.getElementById('sgroup-search')?.value||'').trim().toLowerCase();
-  const onlyMine=!!document.getElementById('sgroup-only-mine')?.checked;
-  const sentences=allManagedSentences().filter(s=>{
-    if(lang!=='all' && s.lang!==lang) return false;
-    const text=s.words.join(' ').toLowerCase();
-    return (!search||text.includes(search)) && (!onlyMine||customSentences.includes(s));
-  });
-  const checkedKeys=(editingSentenceGroupIndex!==null && customSentenceGroups[editingSentenceGroupIndex])
-    ? (customSentenceGroups[editingSentenceGroupIndex].sentenceKeys||[]) : [];
-  container.innerHTML=sentences.map(s=>{
-    const key=sentenceKey(s), checked=checkedKeys.includes(key)?'checked':'', mine=customSentences.includes(s);
-    const cat=s.category||(lang==='it'?'Generale':'Général');
-    return `<label style="display:flex;align-items:center;gap:8px;padding:7px 4px;font-weight:600;border-radius:8px;">
-      <input type="checkbox" value="${escapeHtml(key)}" ${checked} style="width:18px;height:18px;flex:0 0 auto;">
-      ${iconHtml(s,26)} <span style="flex:1;">${escapeHtml(s.words.join(' '))}</span>
-      <span class="tag">${mine?'✨ '+(currentLang==='it'?'Mia':'Perso'):'📚 Base'}</span>
-      <span class="tag">🏷️ ${escapeHtml(cat)}</span>
+  const lang = document.getElementById('new-sgroup-lang').value;
+  const container = document.getElementById('sgroup-checklist');
+  const sentences = sentencePool(lang);
+  const checkedKeys = (editingSentenceGroupIndex !== null) ? customSentenceGroups[editingSentenceGroupIndex].sentenceKeys : [];
+  container.innerHTML = sentences.map(s=>{
+    const key = sentenceKey(s);
+    const checked = checkedKeys.includes(key) ? 'checked' : '';
+    return `<label style="display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:600;">
+      <input type="checkbox" value="${key}" ${checked} style="width:18px;height:18px;">
+      ${iconHtml(s, 26)} ${s.words.join(' ')}
     </label>`;
-  }).join('') || `<p style="font-weight:600;color:#7a6b8a;">${escapeHtml(currentLang==='it'?'Nessuna frase trovata.':'Aucune phrase trouvée.')}</p>`;
+  }).join('') || `<p style="font-weight:600;color:#7a6b8a;">${t('no_words_lang')}</p>`;
 }
 function saveSentenceGroup(){
   const name = document.getElementById('new-sgroup-name').value.trim();
   const lang = document.getElementById('new-sgroup-lang').value;
   if(!name){ alert(currentLang==='it' ? 'Scrivi un nome per il gruppo.' : 'Écris un nom pour le groupe.'); return; }
-  const checked = [...new Set(Array.from(document.querySelectorAll('#sgroup-checklist input:checked')).map(cb=>cb.value).filter(Boolean))];
+  const checked = Array.from(document.querySelectorAll('#sgroup-checklist input:checked')).map(cb=>cb.value);
   if(checked.length === 0){ alert(currentLang==='it' ? 'Seleziona almeno una frase.' : 'Sélectionne au moins une phrase.'); return; }
   const groupData = {name, lang, sentenceKeys: checked};
   if(editingSentenceGroupIndex !== null){ customSentenceGroups[editingSentenceGroupIndex] = groupData; }
@@ -1627,7 +1469,7 @@ function editSentenceGroup(idx){
   document.getElementById('new-sgroup-lang').value = g.lang;
   renderSentenceGroupChecklist();
   document.getElementById('sgroup-form-title').textContent = currentLang==='it' ? '✏️ Modifica il gruppo' : '✏️ Modifier le groupe';
-  document.getElementById('sgroup-form-submit').textContent = t('save_changes');
+  document.getElementById('sgroup-form-submit').textContent = currentLang==='it' ? '💾 Salva le modifiche' : '💾 Enregistrer les modifications';
   document.getElementById('sgroup-form-cancel').style.display = 'inline-flex';
   document.getElementById('sgroup-form-title').scrollIntoView({behavior:'smooth', block:'center'});
 }
@@ -1646,10 +1488,8 @@ function deleteSentenceGroup(idx){
   saveState();
 }
 function sentenceGroupItems(idx){
-  const g=customSentenceGroups[idx];
-  if(!g) return [];
-  const keys=new Set(g.sentenceKeys||[]);
-  return allManagedSentences().filter(s=>(g.lang==='all'||s.lang===g.lang) && keys.has(sentenceKey(s)));
+  const g = customSentenceGroups[idx];
+  return sentencePool(g.lang).filter(s => g.sentenceKeys.includes(sentenceKey(s)));
 }
 function playSentenceGroup(idx){
   const list = sentenceGroupItems(idx);
@@ -1657,32 +1497,33 @@ function playSentenceGroup(idx){
   startSentenceGame(list);
 }
 function renderSentenceGroupsScreen(){
-  const langSel=document.getElementById('new-sgroup-lang');
-  if(langSel && editingSentenceGroupIndex===null) langSel.value='all';
-  if(!Array.isArray(customSentenceGroups)) customSentenceGroups=[];
+  const langSel = document.getElementById('new-sgroup-lang');
+  if(langSel) langSel.value = currentLang;
   renderSentenceGroupChecklist();
-  const el=document.getElementById('sgroups-list');
-  if(!el) return;
-  if(customSentenceGroups.length===0){
-    el.innerHTML=`<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it'?'Nessun gruppo creato ancora. Crea il primo gruppo qui sopra.':'Aucun groupe créé pour l’instant. Crée ton premier groupe ci-dessus.'}</p>`;
+  const el = document.getElementById('sgroups-list');
+  if(customSentenceGroups.length === 0){
+    el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it' ? 'Nessun gruppo creato ancora.' : "Aucun groupe créé pour l'instant."}</p>`;
     return;
   }
-  el.innerHTML='';
+  el.innerHTML = '';
   customSentenceGroups.forEach((g,idx)=>{
-    const item=document.createElement('div');
-    item.className='story-item'; item.style.cursor='default'; item.style.flexWrap='wrap';
-    const n=sentenceGroupItems(idx).length;
-    item.innerHTML=`
-      <div class="info" style="flex:1;min-width:180px;">
-        <h4>${escapeHtml(g.name)} <span class="tag">${langLabel(g.lang)}</span></h4>
-        <p>${n} ${currentLang==='it'?(n===1?'frase':'frasi'):(n===1?'phrase':'phrases')}</p>
+    const item = document.createElement('div');
+    item.className = 'story-item';
+    item.style.cursor = 'default';
+    item.style.flexWrap = 'wrap';
+    item.innerHTML = `
+      <div class="info" style="flex:1;min-width:160px;">
+        <h4>${g.name} <span class="tag">${g.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span></h4>
+        <p>${g.sentenceKeys.length} ${currentLang==='it' ? 'frasi' : 'phrases'}</p>
       </div>
-      <button class="icon-btn" style="background:var(--ocean);" onclick="playSentenceGroup(${idx})" title="${currentLang==='it'?'Gioca':'Jouer'}">📝</button>
-      <button class="icon-btn" style="background:var(--lilac);" onclick="editSentenceGroup(${idx})" title="${currentLang==='it'?'Modifica':'Modifier'}">✏️</button>
-      <button class="icon-btn" style="background:var(--coral);" onclick="deleteSentenceGroup(${idx})" title="${currentLang==='it'?'Elimina':'Supprimer'}">🗑️</button>`;
+      <button class="icon-btn" style="background:var(--ocean);" onclick="playSentenceGroup(${idx})" title="Jouer">📝</button>
+      <button class="icon-btn" style="background:var(--lilac);" onclick="editSentenceGroup(${idx})" title="Modifier">✏️</button>
+      <button class="icon-btn" style="background:var(--coral);" onclick="deleteSentenceGroup(${idx})" title="Supprimer">🗑️</button>
+    `;
     el.appendChild(item);
   });
 }
+
 let customGroups = []; // {name, lang, wordKeys:[...]}
 let editingGroupIndex = null;
 function renderGroupWordChecklist(){
@@ -1718,8 +1559,8 @@ function editGroup(idx){
   document.getElementById('new-group-name').value = g.name;
   document.getElementById('new-group-lang').value = g.lang;
   renderGroupWordChecklist();
-  document.getElementById('group-form-title').textContent = currentLang==='it' ? '✏️ Modifica il gruppo' : '✏️ Modifier le groupe';
-  document.getElementById('group-form-submit').textContent = t('save_changes');
+  document.getElementById('group-form-title').textContent = currentLang==='it' ? '✏️ Modifier le groupe' : '✏️ Modifier le groupe';
+  document.getElementById('group-form-submit').textContent = currentLang==='it' ? '💾 Salva le modifiche' : '💾 Enregistrer les modifications';
   document.getElementById('group-form-cancel').style.display = 'inline-flex';
   document.getElementById('group-form-title').scrollIntoView({behavior:'smooth', block:'center'});
 }
@@ -1765,7 +1606,7 @@ function renderGroupsScreen(){
     item.style.flexWrap = 'wrap';
     item.innerHTML = `
       <div class="info" style="flex:1;min-width:160px;">
-        <h4>${g.name} <span class="tag">${langLabel(g.lang)}</span></h4>
+        <h4>${g.name} <span class="tag">${g.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span></h4>
         <p>${g.wordKeys.length} ${currentLang==='it' ? 'parole' : 'mots'}</p>
       </div>
       <button class="icon-btn" style="background:var(--coral);" onclick="playGroup(${idx},'syllables')" title="Jouer aux syllabes">🪨</button>
@@ -2011,91 +1852,36 @@ function downloadSentencesTemplate(){
   downloadTextFile('modele-phrases.txt', content);
 }
 function importSentencesTxt(evt){
-  const file = evt.target.files && evt.target.files[0];
+  const file = evt.target.files[0];
   if(!file) return;
   const reader = new FileReader();
   reader.onload = ()=>{
-    const fallbackLang = document.getElementById('new-sentence-lang')?.value || currentLang;
-    const rawLines = String(reader.result||'').split(/\r?\n/);
-    let currentGroup='';
-    let currentFileLang=fallbackLang;
-    let count=0, updated=0, skipped=0;
-    const groupMap={};
-    const seenInFile=new Set();
-    const normalizeLang = v => {
-      const x=String(v||'').trim().toLowerCase();
-      if(['it','italiano','italien','italia'].includes(x)) return 'it';
-      if(['fr','français','francais','francese','french'].includes(x)) return 'fr';
-      return null;
-    };
-    const normalizeHeader = h => h.replace(/^\s*(?:gruppo|group|groupe|argomento|topic|thème|theme)\s*:\s*/i,'').trim();
-    rawLines.forEach(raw=>{
-      const line=raw.trim();
-      if(!line) return;
-      if(/^#/.test(line)){
-        const header=line.replace(/^#\s*/,'').trim();
-        const headerLang=normalizeLang(header);
-        if(headerLang){ currentFileLang=headerLang; currentGroup=''; }
-        else currentGroup=normalizeHeader(header);
-        return;
-      }
-      let parts=line.split('|').map(p=>p.trim());
-      let lang=currentFileLang;
-      // Supported formats:
-      // phrase|emoji|category
-      // phrase|emoji|category|IT/FR
-      // IT|phrase|emoji|category  (also FR|...)
-      // IT|phrase|category|emoji
-      const firstLang=normalizeLang(parts[0]);
-      if(firstLang){ lang=firstLang; parts.shift(); }
-      else {
-        const lastLang=normalizeLang(parts[parts.length-1]);
-        if(lastLang){ lang=lastLang; parts.pop(); }
-      }
-      const phrase=(parts[0]||'').trim();
-      if(!phrase || phrase.startsWith('//')) return;
-      const words=phrase.split(/\s+/).filter(Boolean);
-      if(words.length<2) return;
-      let emoji='📘', category=currentGroup || (lang==='it'?'Generale':'Général');
-      if(parts[1]) emoji=parts[1] || emoji;
-      if(parts[2]) category=parts[2] || category;
-      // If category is a language token, recover the default category.
-      if(normalizeLang(category)) category=currentGroup || (lang==='it'?'Generale':'Général');
-      const norm=lang+':'+words.join(' ').toLowerCase();
-      if(seenInFile.has(norm)){ skipped++; return; }
+    const lang = document.getElementById('new-sentence-lang').value;
+    const lines = reader.result.split(/\r?\n/).map(l=>l.trim()).filter(l=>l && !l.startsWith('#'));
+    let count = 0, skipped = 0;
+    const seenInFile = new Set();
+    lines.forEach(line=>{
+      const parts = line.split('|').map(p=>p.trim());
+      const phrase = parts[0];
+      if(!phrase) return;
+      const words = phrase.split(/\s+/).filter(Boolean);
+      if(words.length < 2) return; // a "sentence" needs at least 2 words to be orderable
+      const norm = lang+':'+words.join(' ').toLowerCase();
+      if(seenInFile.has(norm) || sentenceExists(words, lang)){ skipped++; return; }
       seenInFile.add(norm);
-      const existing=customSentences.find(s=>s.lang===lang && s.words.join(' ').trim().toLowerCase()===words.join(' ').trim().toLowerCase());
-      if(existing){
-        // Do not throw away an imported sentence just because it exists: update its metadata.
-        if(category) existing.category=category;
-        if(emoji) existing.emoji=emoji;
-        updated++;
-      } else {
-        customSentences.push({words,emoji,lang,category,imported:true});
-        count++;
-      }
-      const key=sentenceKey({words,lang});
-      if(category){
-        if(!groupMap[lang+'::'+category]) groupMap[lang+'::'+category]={name:category,lang,keys:new Set()};
-        groupMap[lang+'::'+category].keys.add(key);
-      }
+      const emoji = parts[1] || '📘';
+      const category = parts[2] || (lang==='it' ? 'Generale' : 'Général');
+      customSentences.push({words, emoji, lang, category});
+      count++;
     });
-    Object.values(groupMap).forEach(g=>{
-      const arr=[...g.keys];
-      const ex=customSentenceGroups.find(x=>x.lang===g.lang&&x.name===g.name);
-      if(ex) ex.sentenceKeys=[...new Set([...(ex.sentenceKeys||[]),...arr])];
-      else customSentenceGroups.push({name:g.name,lang:g.lang,sentenceKeys:arr});
-    });
-    document.getElementById('sentences-txt-import').value='';
-    const total=count+updated;
-    const status=document.getElementById('sentences-import-status');
-    if(status) status.textContent=currentLang==='it'
-      ? `✅ Importazione completata: ${count} nuove, ${updated} aggiornate${skipped?`, ${skipped} duplicate nel file ignorate`:''}. Totale frasi personali: ${customSentences.length}.`
-      : `✅ Importation terminée : ${count} nouvelles, ${updated} mises à jour${skipped?`, ${skipped} doublons dans le fichier ignorés`:''}. Total de tes phrases : ${customSentences.length}.`;
+    document.getElementById('sentences-txt-import').value = '';
+    document.getElementById('sentences-import-status').textContent = currentLang==='it'
+      ? `✅ ${count} frasi importate! ${skipped ? `(${skipped} già presenti, saltate)` : ''}`
+      : `✅ ${count} phrases importées ! ${skipped ? `(${skipped} déjà présentes, ignorées)` : ''}`;
     renderSentenceManager();
     saveState();
   };
-  reader.readAsText(file,'UTF-8');
+  reader.readAsText(file, 'UTF-8');
 }
 
 let gameWords = [];
@@ -2137,6 +1923,7 @@ let stories = [
    text:"Ci sono nuvole nel cielo. Il vento soffia forte. Poi inizia a piovere. Leo mette gli stivali e va comunque a giocare fuori."}
 ];
 let storyRecordings = {}; // id -> {url}  (url is a data: URL so it can be saved)
+let storyGroups = []; // {id, name}; stories keep their group ids in story.groupIds
 let currentStoryId = null;
 let mediaRecorder = null;
 let recordedChunks = [];
@@ -2354,6 +2141,7 @@ function buildBackupData(){
     deletedBaseWordKeys,
     baseWordOverrides,
     allStories: stories, // full snapshot — lets built-in stories be edited/deleted too
+    storyGroups,
     storyRecordings // {id: {url: dataURL}}
   };
 }
@@ -2413,13 +2201,10 @@ function importBackup(evt){
       if(typeof data.simplifiedQuiz === 'boolean') simplifiedQuiz = data.simplifiedQuiz;
       if(data.selectedVoiceURI) selectedVoiceURI = data.selectedVoiceURI;
       if(Array.isArray(data.customWords)) customWords = data.customWords;
-      if(Array.isArray(data.customSentences)) customSentences = normalizeCustomSentences(data.customSentences);
-      else if(Array.isArray(data.mySentences)) customSentences = normalizeCustomSentences(data.mySentences);
-      else if(Array.isArray(data.userSentences)) customSentences = normalizeCustomSentences(data.userSentences);
+      if(Array.isArray(data.customSentences)) customSentences = data.customSentences;
       if(data.wordStats) wordStats = data.wordStats;
       if(Array.isArray(data.customGroups)) customGroups = data.customGroups;
-      if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = normalizeCustomSentenceGroups(data.customSentenceGroups);
-      migrateSentenceGroupsFromData(data);
+      if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = data.customSentenceGroups;
       if(Array.isArray(data.deletedBaseWordKeys)) deletedBaseWordKeys = data.deletedBaseWordKeys;
       if(data.baseWordOverrides) baseWordOverrides = data.baseWordOverrides;
       if(Array.isArray(data.allStories)){
@@ -2428,6 +2213,7 @@ function importBackup(evt){
         stories = stories.filter(s=>s.builtin).concat(data.customStories);
       }
       if(data.storyRecordings) storyRecordings = data.storyRecordings;
+      if(Array.isArray(data.storyGroups)) storyGroups = data.storyGroups;
       applyLoadedStateToUI();
       renderStoryList();
       renderMyWords();
@@ -2475,13 +2261,10 @@ function loadState(){
     if(typeof data.simplifiedQuiz === 'boolean') simplifiedQuiz = data.simplifiedQuiz;
     if(data.selectedVoiceURI) selectedVoiceURI = data.selectedVoiceURI;
     if(Array.isArray(data.customWords)) customWords = data.customWords;
-      if(Array.isArray(data.customSentences)) customSentences = normalizeCustomSentences(data.customSentences);
-      else if(Array.isArray(data.mySentences)) customSentences = normalizeCustomSentences(data.mySentences);
-      else if(Array.isArray(data.userSentences)) customSentences = normalizeCustomSentences(data.userSentences);
+      if(Array.isArray(data.customSentences)) customSentences = data.customSentences;
       if(data.wordStats) wordStats = data.wordStats;
       if(Array.isArray(data.customGroups)) customGroups = data.customGroups;
-      if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = normalizeCustomSentenceGroups(data.customSentenceGroups);
-      migrateSentenceGroupsFromData(data);
+      if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = data.customSentenceGroups;
       if(Array.isArray(data.deletedBaseWordKeys)) deletedBaseWordKeys = data.deletedBaseWordKeys;
       if(data.baseWordOverrides) baseWordOverrides = data.baseWordOverrides;
     if(Array.isArray(data.allStories)){
@@ -2490,6 +2273,7 @@ function loadState(){
       stories = stories.filter(s=>s.builtin).concat(data.customStories);
     }
     if(data.storyRecordings) storyRecordings = data.storyRecordings;
+    if(Array.isArray(data.storyGroups)) storyGroups = data.storyGroups;
   }catch(err){
     console.warn('Données sauvegardées illisibles :', err);
   }
@@ -2595,7 +2379,7 @@ function startSyllableGame(customList){
   gameIndex = 0;
   showScreen('screen-game');
   const badge = document.getElementById('game-lang-badge');
-  if(badge) badge.textContent = langLabel(gameWords[0].lang);
+  if(badge) badge.textContent = gameWords[0].lang === 'it' ? '🇮🇹 Italiano' : '🇫🇷 Français';
   loadGameWord();
 }
 function loadGameWord(){
@@ -2705,7 +2489,7 @@ function startSentenceGame(customList){
   sentenceIndex = 0;
   showScreen('screen-sentence');
   const badge = document.getElementById('sentence-lang-badge');
-  if(badge) badge.textContent = langLabel(sentenceQueue[0].lang);
+  if(badge) badge.textContent = sentenceQueue[0].lang === 'it' ? '🇮🇹 Italiano' : '🇫🇷 Français';
   loadSentence();
 }
 function loadSentence(){
@@ -2803,22 +2587,14 @@ function addCustomSentence(){
   const category = document.getElementById('new-sentence-category').value.trim() || (lang==='it' ? 'Generale' : 'Général');
   if(!text){ alert(t('no_words_lang')); return; }
   const words = text.split(/\s+/).filter(Boolean);
-  if(words.length < 2){ alert(t('sentence_need_two')); return; }
+  if(words.length < 2){ alert(currentLang==='it' ? 'Scrivi almeno due parole.' : 'Écris au moins deux mots.'); return; }
   if(editingSentenceIndex === null && sentenceExists(words, lang)){
     alert(currentLang==='it' ? '⚠️ Questa frase esiste già in questa lingua.' : '⚠️ Cette phrase existe déjà dans cette langue.');
     return;
   }
   const sentenceData = {words, emoji, lang, category};
   if(editingSentenceIndex !== null){
-    const oldKey = window._editingSentenceOldKey || sentenceKey(customSentences[editingSentenceIndex]);
     customSentences[editingSentenceIndex] = sentenceData;
-    const newKey = sentenceKey(sentenceData);
-    if(oldKey !== newKey){
-      customSentenceGroups.forEach(g=>{
-        if(Array.isArray(g.sentenceKeys)) g.sentenceKeys = g.sentenceKeys.map(k=>k===oldKey?newKey:k);
-      });
-    }
-    window._editingSentenceOldKey = null;
   } else {
     customSentences.push(sentenceData);
   }
@@ -2829,19 +2605,17 @@ function addCustomSentence(){
 function editCustomSentence(idx){
   const s = customSentences[idx];
   editingSentenceIndex = idx;
-  window._editingSentenceOldKey = s ? sentenceKey(s) : null;
   document.getElementById('new-sentence-text').value = s.words.join(' ');
   document.getElementById('new-sentence-emoji').value = s.emoji || '';
   document.getElementById('new-sentence-lang').value = s.lang;
   document.getElementById('new-sentence-category').value = s.category || '';
-  document.getElementById('sentence-form-title').textContent = t('edit_sentence');
-  document.getElementById('sentence-form-submit').textContent = t('save_changes');
+  document.getElementById('sentence-form-title').textContent = currentLang==='it' ? '✏️ Modifica la frase' : '✏️ Modifier la phrase';
+  document.getElementById('sentence-form-submit').textContent = currentLang==='it' ? '💾 Salva le modifiche' : '💾 Enregistrer les modifications';
   document.getElementById('sentence-form-cancel').style.display = 'inline-flex';
   document.getElementById('sentence-form-title').scrollIntoView({behavior:'smooth', block:'center'});
 }
 function cancelEditSentence(){
   editingSentenceIndex = null;
-  window._editingSentenceOldKey = null;
   document.getElementById('new-sentence-text').value = '';
   document.getElementById('new-sentence-emoji').value = '';
   document.getElementById('new-sentence-category').value = '';
@@ -2850,157 +2624,36 @@ function cancelEditSentence(){
   document.getElementById('sentence-form-cancel').style.display = 'none';
 }
 function removeCustomSentence(idx){
-  const s=customSentences[idx];
-  const key=s ? sentenceKey(s) : null;
   customSentences.splice(idx,1);
-  if(key) customSentenceGroups.forEach(g=>{ if(Array.isArray(g.sentenceKeys)) g.sentenceKeys=g.sentenceKeys.filter(k=>k!==key); });
   if(editingSentenceIndex === idx) cancelEditSentence();
   renderSentenceManager();
-  renderSentenceGroupsScreen();
   saveState();
 }
-function getSentenceManagerFilters(){
-  const search=(document.getElementById('sentence-search')?.value||'').trim().toLowerCase();
-  const lang=document.getElementById('sentence-lang-filter')?.value||'all';
-  const category=document.getElementById('sentence-category-filter')?.value||'all';
-  return {search,lang,category};
-}
-function getFilteredSentences(){
-  const {search,lang,category}=getSentenceManagerFilters();
-  return sentencePoolAll().filter(s=>{
-    const cat=s.category || (s.lang==='it'?'Generale':'Général');
-    const text=s.words.join(' ').toLowerCase();
-    return (lang==='all'||s.lang===lang) && (category==='all'||cat===category) && (!search||text.includes(search)||cat.toLowerCase().includes(search));
-  });
-}
-function sentencePoolAll(){ return SENTENCES_FR.concat(SENTENCES_IT, customSentences); }
-function playFilteredSentences(){
-  const list=getFilteredSentences();
-  if(!list.length){ alert(t('no_sentence_match')); return; }
-  startSentenceGame(list);
-}
-function renderSentenceTopicPicker(){
-  const box=document.getElementById('sentence-topic-picker');
-  if(!box) return;
-  const lang=document.getElementById('sentence-lang-filter')?.value||'all';
-  const topics=[...new Set(sentencePoolAll().filter(s=>lang==='all'||s.lang===lang).map(s=>s.category||(s.lang==='it'?'Generale':'Général')))].sort((a,b)=>a.localeCompare(b));
-  box.innerHTML=topics.map((cat,i)=>{
-    const count=sentencePoolAll().filter(s=>(lang==='all'||s.lang===lang)&&(s.category||(s.lang==='it'?'Generale':'Général'))===cat).length;
-    return `<label style="display:flex;align-items:center;gap:8px;padding:9px;background:#faf7ff;border-radius:10px;font-weight:700;cursor:pointer;"><input type="checkbox" class="sentence-topic-check" value="${escapeHtml(cat)}" style="width:20px;height:20px;"> ${escapeHtml(cat)} <span style="margin-left:auto;color:#7a6b8a;">${count}</span></label>`;
-  }).join('') || `<p style="font-weight:600;color:#7a6b8a;">${escapeHtml(t('no_topics_available'))}</p>`;
-  updateSentenceTopicCount();
-  box.querySelectorAll('.sentence-topic-check').forEach(cb=>cb.addEventListener('change',updateSentenceTopicCount));
-}
-function updateSentenceTopicCount(){
-  const n=document.querySelectorAll('.sentence-topic-check:checked').length;
-  const el=document.getElementById('sentence-topic-count');
-  if(el) el.textContent=currentLang==='it' ? `${n}/6 argomenti selezionati` : `${n}/6 thèmes sélectionnés`;
-  document.querySelectorAll('.sentence-topic-check').forEach(cb=>{ if(!cb.checked) cb.disabled=n>=6; });
-}
-function playSelectedSentenceTopics(){
-  const selected=[...document.querySelectorAll('.sentence-topic-check:checked')].map(cb=>cb.value);
-  if(!selected.length){ alert(t('select_topic')); return; }
-  const lang=document.getElementById('sentence-lang-filter')?.value||'all';
-  const list=sentencePoolAll().filter(s=>{ const cat=s.category||(s.lang==='it'?'Generale':'Général'); return selected.includes(cat)&&(lang==='all'||s.lang===lang); });
-  if(!list.length){ alert(t('no_sentence_selected')); return; }
-  startSentenceGame(list);
-}
-
-let sentenceGroupPickerKeys = [];
-function openSentenceGroupManagerFromList(){
-  const selected=getFilteredSentences();
-  if(!selected.length){ alert(t('no_sentence_match')); return; }
-  sentenceGroupPickerKeys=selected.map(sentenceKey);
-  const first=selected[0];
-  const langSel=document.getElementById('sentence-group-new-lang');
-  if(langSel) langSel.value=first.lang;
-  renderSentenceGroupPicker();
-  showScreen('screen-sentence-group-picker');
-}
-function openSentenceGroupPickerForSentence(idx){
-  const s=customSentences[idx];
-  if(!s) return;
-  sentenceGroupPickerKeys=[sentenceKey(s)];
-  const langSel=document.getElementById('sentence-group-new-lang');
-  if(langSel) langSel.value=s.lang;
-  renderSentenceGroupPicker();
-  showScreen('screen-sentence-group-picker');
-}
-function renderSentenceGroupPicker(){
-  const box=document.getElementById('sentence-group-picker-list');
-  if(!box) return;
-  const groups=customSentenceGroups||[];
-  if(!groups.length){
-    box.innerHTML=`<p style="font-weight:700;color:#7a6b8a;">${escapeHtml(currentLang==='it'?'Nessun gruppo creato. Creane uno qui sotto.':'Aucun groupe créé. Crée-en un ci-dessous.')}</p>`;
+function renderSentenceManager(){
+  const langSel = document.getElementById('new-sentence-lang');
+  if(langSel && editingSentenceIndex === null) langSel.value = currentLang;
+  const dl = document.getElementById('sentence-category-suggestions');
+  if(dl) dl.innerHTML = sentenceCategoriesForLang(currentLang).map(c=>`<option value="${c}">`).join('');
+  const el = document.getElementById('sentences-list');
+  if(customSentences.length === 0){
+    el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it' ? 'Non hai ancora aggiunto nessuna frase.' : "Tu n'as pas encore ajouté de phrase."}</p>`;
     return;
   }
-  box.innerHTML=groups.map((g,i)=>{
-    const has=(g.sentenceKeys||[]).some(k=>sentenceGroupPickerKeys.includes(k));
-    return `<label style="display:flex;align-items:center;gap:10px;padding:11px;background:#faf7ff;border-radius:12px;font-weight:700;cursor:pointer;">
-      <input type="checkbox" class="sentence-group-pick" data-index="${i}" ${has?'checked':''} style="width:20px;height:20px;">
-      <span>${escapeHtml(g.name)}</span><span class="tag" style="margin-left:auto;">${langLabel(g.lang)}</span>
-      <span style="color:#7a6b8a;">${(g.sentenceKeys||[]).length}</span>
-    </label>`;
-  }).join('');
-}
-function createSentenceGroupFromPicker(){
-  const input=document.getElementById('sentence-group-new-name');
-  const name=(input?.value||'').trim();
-  const lang=document.getElementById('sentence-group-new-lang')?.value||currentLang;
-  if(!name){ alert(currentLang==='it'?'Scrivi il nome del gruppo.':'Écris le nom du groupe.'); return; }
-  const exists=customSentenceGroups.find(g=>g.name.trim().toLowerCase()===name.toLowerCase() && g.lang===lang);
-  if(exists){ alert(currentLang==='it'?'Questo gruppo esiste già.':'Ce groupe existe déjà.'); return; }
-  customSentenceGroups.push({name,lang,sentenceKeys:[...new Set(sentenceGroupPickerKeys)]});
-  input.value='';
-  saveState();
-  renderSentenceGroupPicker();
-  renderSentenceGroupsScreen();
-}
-function saveSentenceGroupAssignments(){
-  const chosen=[...document.querySelectorAll('.sentence-group-pick:checked')].map(cb=>Number(cb.dataset.index));
-  // Remove the selected sentences from groups where the user unchecked them, then add them to checked groups.
-  const keys=new Set(sentenceGroupPickerKeys);
-  customSentenceGroups.forEach((g,i)=>{
-    const old=Array.isArray(g.sentenceKeys)?g.sentenceKeys:[];
-    const without=old.filter(k=>!keys.has(k));
-    g.sentenceKeys = chosen.includes(i) ? [...new Set([...without,...sentenceGroupPickerKeys])] : without;
-  });
-  saveState();
-  closeSentenceGroupPicker();
-  renderSentenceManager();
-}
-function closeSentenceGroupPicker(){
-  sentenceGroupPickerKeys=[];
-  showScreen('screen-sentence-manager');
-  renderSentenceManager();
-}
-
-function renderSentenceManager(){
-  const langSel=document.getElementById('new-sentence-lang');
-  if(langSel&&editingSentenceIndex===null) langSel.value=currentLang;
-  const dl=document.getElementById('sentence-category-suggestions');
-  if(dl) dl.innerHTML=[...new Set(sentencePoolAll().map(s=>s.category||(s.lang==='it'?'Generale':'Général')))].sort().map(c=>`<option value="${c}">`).join('');
-  const catSel=document.getElementById('sentence-category-filter');
-  const oldCat=catSel?.value||'all';
-  if(catSel){
-    const cats=[...new Set(sentencePoolAll().map(s=>s.category||(s.lang==='it'?'Generale':'Général')))].sort((a,b)=>a.localeCompare(b));
-    catSel.innerHTML='<option value="all">'+escapeHtml(t('filter_all_topics'))+'</option>'+cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-    if(cats.includes(oldCat)) catSel.value=oldCat;
-  }
-  const el=document.getElementById('sentences-list');
-  const all=getFilteredSentences();
-  const count=document.getElementById('sentence-manager-count');
-  if(count) count.textContent=currentLang==='it' ? `${all.length} frasi visualizzate su ${sentencePoolAll().length}` : `${all.length} phrases affichées sur ${sentencePoolAll().length}`;
-  renderSentenceTopicPicker();
-  el.innerHTML='';
-  if(all.length===0){el.innerHTML=`<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it'?'Nessuna frase corrisponde ai filtri.':'Aucune phrase ne correspond aux filtres.'}</p>`;return;}
-  all.forEach((s)=>{
-    const idx=customSentences.indexOf(s);
-    const custom=idx!==-1;
-    const cat=s.category||(s.lang==='it'?'Generale':'Général');
-    const item=document.createElement('div');
-    item.className='story-item';
-    item.innerHTML=`<div class="emoji">${iconHtml(s,40)}</div><div class="info" style="flex:1;"><h4>${escapeHtml(s.words.join(' '))}</h4><div><span class="tag">${langLabel(s.lang)}</span> <span class="tag">🏷️ ${escapeHtml(cat)}</span> ${custom?'<span class="tag">✨ Mia</span>':'<span class="tag">📚 Base</span>'}</div></div>${custom?`<button class="icon-btn" style="background:var(--leaf);" onclick="openSentenceGroupPickerForSentence(${idx})" title="${currentLang==='it'?'Aggiungi al gruppo':'Ajouter au groupe'}">📁</button><button class="icon-btn" style="background:var(--sunshine);" onclick="editCustomSentence(${idx})">✏️</button><button class="icon-btn" style="background:var(--coral);" onclick="removeCustomSentence(${idx})">🗑️</button>`:''}`;
+  el.innerHTML = '';
+  customSentences.forEach((s,idx)=>{
+    const item = document.createElement('div');
+    item.className = 'story-item';
+    item.style.cursor = 'default';
+    const cat = s.category || (s.lang==='it' ? 'Generale' : 'Général');
+    item.innerHTML = `
+      <div class="emoji">${iconHtml(s, 40)}</div>
+      <div class="info" style="flex:1;">
+        <h4>${s.words.join(' ')} <span class="tag">${s.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span> <span class="tag">🏷️ ${cat}</span></h4>
+      </div>
+      <button class="icon-btn" style="background:var(--ocean);" onclick="event.stopPropagation(); startSentenceGame([customSentences[${idx}]])" title="Jouer">📝</button>
+      <button class="icon-btn" style="background:var(--sunshine);" onclick="event.stopPropagation(); editCustomSentence(${idx})" title="Modifier">✏️</button>
+      <button class="icon-btn" style="background:var(--coral);" onclick="event.stopPropagation(); removeCustomSentence(${idx})" title="Supprimer">🗑️</button>
+    `;
     el.appendChild(item);
   });
 }
@@ -3015,7 +2668,7 @@ function startSoundGame(customList){
   soundIndex = 0;
   showScreen('screen-sound');
   const badge = document.getElementById('sound-lang-badge');
-  if(badge) badge.textContent = langLabel(soundQueue[0].lang);
+  if(badge) badge.textContent = soundQueue[0].lang === 'it' ? '🇮🇹 Italiano' : '🇫🇷 Français';
   loadSoundRound();
 }
 function loadSoundRound(){
@@ -3103,7 +2756,7 @@ function renderProgress(){
   const toPracticeLabel = currentLang==='it' ? 'Da esercitare' : 'À exercer';
   let html = '';
   ['fr','it'].forEach(lang=>{
-    const langLabel = langLabel(lang);
+    const langLabel = lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français';
     const words = wordPool(lang);
     const cats = categoriesForLang(lang);
     html += `<h3 style="font-family:'Baloo 2';margin-top:18px;">${langLabel}</h3>`;
@@ -3155,7 +2808,7 @@ function startQuiz(customList){
   quizScore = 0;
   showScreen('screen-quiz');
   const badge = document.getElementById('quiz-lang-badge');
-  if(badge) badge.textContent = langLabel(currentLang);
+  if(badge) badge.textContent = currentLang === 'it' ? '🇮🇹 Italiano' : '🇫🇷 Français';
   renderQuizQuestion();
 }
 function renderQuizQuestion(){
@@ -3236,23 +2889,24 @@ function renderStoryList(){
   el.innerHTML = '';
   const langSel = document.getElementById('new-story-lang');
   if(langSel) langSel.value = currentLang;
-  // show every story regardless of language (like Mes mots) — filtering by the active
-  // language toggle used to hide stories saved in the other language, looking like data loss
-  if(stories.length===0){
+  renderStoryFilters();
+  if(editingStoryId === null) renderStoryGroupChecklist();
+  const visible = filteredStories();
+  if(visible.length===0){
     el.innerHTML = '<p style="font-weight:600;color:#7a6b8a;">' + t('no_stories_lang') + '</p>';
     return;
   }
-  const sorted = [...stories].sort((a,b)=> (a.lang===currentLang ? -1 : 1) - (b.lang===currentLang ? -1 : 1));
+  const sorted = [...visible].sort((a,b)=> (a.lang===currentLang ? -1 : 1) - (b.lang===currentLang ? -1 : 1));
   sorted.forEach(s=>{
     const item = document.createElement('div');
     item.className = 'story-item';
     item.onclick = ()=>openStory(s.id);
-    const langTag = s.langLabel(lang);
+    const langTag = s.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français';
     item.innerHTML = `
       <div class="emoji">${iconHtml(s, 44)}</div>
       <div class="info" style="flex:1;">
         <h4>${s.title} <span class="tag">${langTag}</span> ${(Array.isArray(storyRecordings[s.id]) ? storyRecordings[s.id].some(x=>x) : !!storyRecordings[s.id]) ? '<span class="tag">🎙️ Ma voix</span>' : ''}</h4>
-        <p>${s.text.slice(0,50)}...</p>
+        <p>${s.text.slice(0,50)}... ${s.topic ? '<span class="tag">🏷️ '+s.topic+'</span>' : ''}</p>
       </div>
       <button class="icon-btn" style="background:var(--sunshine);" onclick="event.stopPropagation(); editStory(${s.id})" title="Modifier">✏️</button>
       <button class="icon-btn" style="background:var(--coral);" onclick="event.stopPropagation(); deleteStory(${s.id})" title="Supprimer">🗑️</button>
@@ -3260,11 +2914,40 @@ function renderStoryList(){
     el.appendChild(item);
   });
 }
+function filteredStories(){
+  const search = (document.getElementById('story-search')?.value || '').trim().toLocaleLowerCase();
+  const lang = document.getElementById('story-filter-lang')?.value || 'all';
+  const topic = document.getElementById('story-filter-topic')?.value || 'all';
+  const group = document.getElementById('story-filter-group')?.value || 'all';
+  return stories.filter(s => {
+    const haystack = `${s.title||''} ${s.text||''} ${s.topic||''}`.toLocaleLowerCase();
+    return (!search || haystack.includes(search)) && (lang==='all' || s.lang===lang) &&
+      (topic==='all' || (s.topic||'')===topic) && (group==='all' || (s.groupIds||[]).map(String).includes(String(group)));
+  });
+}
+function setSelectOptions(id, items, label){
+  const el = document.getElementById(id); if(!el) return;
+  const selected = el.value || 'all';
+  el.innerHTML = `<option value="all">${label}</option>` + items.map(x=>`<option value="${String(x.id||x)}">${x.name||x}</option>`).join('');
+  if([...el.options].some(o=>o.value===selected)) el.value=selected;
+}
+function renderStoryFilters(){
+  const topics = [...new Set(stories.map(s=>(s.topic||'').trim()).filter(Boolean))].sort();
+  setSelectOptions('story-filter-topic', topics, '🏷️ Tutti gli argomenti');
+  setSelectOptions('story-filter-group', storyGroups, '📁 Tutti i gruppi');
+}
+function renderStoryGroupChecklist(selected=[]){
+  const el=document.getElementById('story-groups-checklist'); if(!el) return;
+  if(!storyGroups.length){ el.innerHTML='<small style="color:#7a6b8a;font-weight:600;">📁 Nessun gruppo ancora: crealo da “Gestisci i gruppi”.</small>'; return; }
+  el.innerHTML='<strong style="font-size:13px;">📁 Gruppi della storia:</strong>' + storyGroups.map(g=>`<label style="display:block;font-size:14px;margin-top:5px;"><input type="checkbox" name="story-group" value="${g.id}" ${selected.map(String).includes(String(g.id))?'checked':''}> ${g.name}</label>`).join('');
+}
 function addStory(){
   const title = document.getElementById('new-story-title').value.trim();
   const text = document.getElementById('new-story-text').value.trim();
   const emoji = document.getElementById('new-story-emoji').value.trim() || '📘';
   const lang = document.getElementById('new-story-lang').value;
+  const topic = document.getElementById('new-story-topic').value.trim();
+  const groupIds = [...document.querySelectorAll('input[name="story-group"]:checked')].map(x=>x.value);
   if(!title || !text){ alert("Ajoute un titre et un texte pour l'histoire !"); return; }
   if(editingStoryId === null && storyExists(title, lang)){
     alert(currentLang==='it' ? `⚠️ Una storia intitolata "${title}" esiste già in questa lingua.` : `⚠️ Une histoire intitulée "${title}" existe déjà dans cette langue.`);
@@ -3273,11 +2956,11 @@ function addStory(){
   if(editingStoryId !== null){
     const idx = stories.findIndex(s=>s.id===editingStoryId);
     if(idx !== -1){
-      stories[idx] = Object.assign({}, stories[idx], {title, emoji, image:newStoryImageData || stories[idx].image, text, lang});
+      stories[idx] = Object.assign({}, stories[idx], {title, emoji, image:newStoryImageData || stories[idx].image, text, lang, topic, groupIds});
     }
   } else {
     const id = Date.now();
-    stories.push({id, title, emoji, image:newStoryImageData, text, lang});
+    stories.push({id, title, emoji, image:newStoryImageData, text, lang, topic, groupIds});
   }
   cancelEditStory();
   renderStoryList();
@@ -3291,6 +2974,8 @@ function editStory(id){
   document.getElementById('new-story-text').value = s.text;
   document.getElementById('new-story-emoji').value = s.image ? '' : (s.emoji || '');
   document.getElementById('new-story-lang').value = s.lang;
+  document.getElementById('new-story-topic').value = s.topic || '';
+  renderStoryGroupChecklist(s.groupIds || []);
   newStoryImageData = s.image || null;
   document.getElementById('new-story-image-preview').innerHTML = s.image
     ? `<img src="${s.image}" style="width:70px;height:70px;object-fit:cover;border-radius:12px;box-shadow:0 3px 0 rgba(0,0,0,.15);">`
@@ -3298,8 +2983,8 @@ function editStory(id){
   const titleEl = document.getElementById('story-form-title');
   const submitEl = document.getElementById('story-form-submit');
   const cancelEl = document.getElementById('story-form-cancel');
-  if(titleEl) titleEl.textContent = t('edit_story');
-  if(submitEl) submitEl.textContent = t('save_changes');
+  if(titleEl) titleEl.textContent = currentLang==='it' ? '✏️ Modifica la storia' : "✏️ Modifier l'histoire";
+  if(submitEl) submitEl.textContent = currentLang==='it' ? '💾 Salva le modifiche' : '💾 Enregistrer les modifications';
   if(cancelEl) cancelEl.style.display = 'inline-flex';
   if(titleEl) titleEl.scrollIntoView({behavior:'smooth', block:'center'});
 }
@@ -3308,6 +2993,8 @@ function cancelEditStory(){
   document.getElementById('new-story-title').value = '';
   document.getElementById('new-story-text').value = '';
   document.getElementById('new-story-emoji').value = '';
+  document.getElementById('new-story-topic').value = '';
+  renderStoryGroupChecklist();
   document.getElementById('new-story-image').value = '';
   document.getElementById('new-story-image-preview').innerHTML = '';
   newStoryImageData = null;
@@ -3324,6 +3011,46 @@ function deleteStory(id){
   Object.keys(storyRecordings).forEach(key=>{ if(String(key)===String(id)) delete storyRecordings[key]; });
   renderStoryList();
   saveState();
+}
+function saveStoryGroup(){
+  const name=document.getElementById('story-group-name').value.trim();
+  const id=document.getElementById('editing-story-group-id').value;
+  if(!name){ alert('Scrivi un nome per il gruppo.'); return; }
+  if(storyGroups.some(g=>g.name.toLocaleLowerCase()===name.toLocaleLowerCase() && String(g.id)!==String(id))){ alert('Esiste già un gruppo con questo nome.'); return; }
+  if(id){ const g=storyGroups.find(g=>String(g.id)===String(id)); if(g) g.name=name; }
+  else storyGroups.push({id:String(Date.now()),name});
+  cancelStoryGroupEdit(); renderStoryGroupsScreen(); saveState();
+}
+function cancelStoryGroupEdit(){
+  const n=document.getElementById('story-group-name'), i=document.getElementById('editing-story-group-id');
+  if(n) n.value=''; if(i) i.value='';
+}
+function editStoryGroup(id){
+  const g=storyGroups.find(g=>String(g.id)===String(id)); if(!g) return;
+  document.getElementById('story-group-name').value=g.name; document.getElementById('editing-story-group-id').value=g.id;
+  document.getElementById('story-group-name').focus();
+}
+function deleteStoryGroup(id){
+  const g=storyGroups.find(g=>String(g.id)===String(id)); if(!g || !confirm(`Eliminare il gruppo “${g.name}”? Le storie non verranno eliminate.`)) return;
+  storyGroups=storyGroups.filter(g=>String(g.id)!==String(id));
+  stories.forEach(s=>{s.groupIds=(s.groupIds||[]).filter(x=>String(x)!==String(id));});
+  renderStoryGroupsScreen(); saveState();
+}
+function renderStoryGroupsScreen(){
+  const el=document.getElementById('story-groups-list'); if(!el) return;
+  if(!storyGroups.length){el.innerHTML='<p style="font-weight:600;color:#7a6b8a;">Nessun gruppo creato.</p>';return;}
+  el.innerHTML=storyGroups.map(g=>{const n=stories.filter(s=>(s.groupIds||[]).map(String).includes(String(g.id))).length;return `<div class="story-item"><div class="emoji">📁</div><div class="info"><h4>${g.name}</h4><p>${n} storie</p></div><button class="icon-btn" style="background:var(--sunshine);" onclick="editStoryGroup('${g.id}')">✏️</button><button class="icon-btn" style="background:var(--coral);" onclick="deleteStoryGroup('${g.id}')">🗑️</button></div>`;}).join('');
+}
+let storyGameQueue=[]; let storyGameIndex=0;
+function startStoryGameFromFilters(){
+  storyGameQueue=filteredStories().sort(()=>Math.random()-.5); storyGameIndex=0;
+  if(!storyGameQueue.length){alert('Nessuna storia corrisponde ai filtri scelti.');return;}
+  renderStoryGame(); showScreen('screen-story-game');
+}
+function renderStoryGame(){
+  const panel=document.getElementById('story-game-panel'); const s=storyGameQueue[storyGameIndex];
+  if(!s){panel.innerHTML='<h3>🎉 Hai letto tutte le storie selezionate!</h3><button class="big-btn btn-ocean" onclick="showScreen(\'screen-stories\');renderStoryList();">Torna alle storie</button>';return;}
+  panel.innerHTML=`<div class="score-screen"><div class="big-emoji">${iconHtml(s,80)}</div><h2 style="font-family:'Baloo 2';">${s.title}</h2><p style="font-weight:700;color:#7a6b8a;">Storia ${storyGameIndex+1} di ${storyGameQueue.length}${s.topic?' · '+s.topic:''}</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;"><button class="big-btn btn-coral" onclick="openStory(${s.id})">📖 Leggi</button><button class="big-btn btn-ocean" onclick="storyGameIndex++;renderStoryGame();">➡️ Prossima storia</button></div></div>`;
 }
 function openStory(id){
   const isSameStory = (currentStoryId === id);
@@ -3467,14 +3194,14 @@ async function toggleRecordSlot(i){
     currentRecordingSlot = i;
     renderVoiceSlots();
   }catch(err){
-    alert(t('mic_unavailable'));
+    alert("⚠️ Le micro n'est pas accessible ici. Ouvre le fichier téléchargé directement dans ton navigateur pour pouvoir enregistrer.");
   }
 }
 function uploadToSlot(i, evt){
   const file = evt.target.files[0];
   if(!file) return;
   if(!file.type.startsWith('audio/')){
-    alert(t('choose_audio'));
+    alert('Choisis un fichier audio (MP3, WAV, M4A...).');
     return;
   }
   const reader = new FileReader();
@@ -3507,7 +3234,7 @@ async function toggleRecordWordAudio(){
   if(isRecordingWord){
     wordMediaRecorder.stop();
     isRecordingWord = false;
-    btn.innerHTML = t('record_word');
+    btn.innerHTML = '🎙️ Enregistrer';
     return;
   }
   try{
@@ -3521,7 +3248,7 @@ async function toggleRecordWordAudio(){
       reader.onload = ()=>{
         newWordAudioData = {url: reader.result};
         document.getElementById('word-play-audio-btn').style.display = 'inline-flex';
-        statusEl.textContent = t('recording_added');
+        statusEl.textContent = '✅ Enregistrement ajouté à ce mot.';
       };
       reader.readAsDataURL(blob);
       stream.getTracks().forEach(t=>t.stop());
@@ -3529,7 +3256,7 @@ async function toggleRecordWordAudio(){
     wordMediaRecorder.start();
     isRecordingWord = true;
     btn.innerHTML = '<span class="rec-dot"></span> Stop';
-    statusEl.textContent = t('recording_in_progress');
+    statusEl.textContent = "Enregistrement en cours... prononce le mot !";
   }catch(err){
     statusEl.textContent = "⚠️ Le micro n'est pas accessible ici. Essaie d'ouvrir le fichier téléchargé directement dans ton navigateur.";
   }
@@ -3538,7 +3265,7 @@ function uploadWordAudio(evt){
   const file = evt.target.files[0];
   if(!file) return;
   if(!file.type.startsWith('audio/')){
-    alert(t('choose_audio'));
+    alert('Choisis un fichier audio (MP3, WAV, M4A...).');
     return;
   }
   const reader = new FileReader();
@@ -3582,7 +3309,7 @@ function startWordReading(customList){
   wordsIndex = 0;
   showScreen('screen-words');
   const badge = document.getElementById('words-lang-badge');
-  if(badge) badge.textContent = langLabel(wordsQueue[0].lang);
+  if(badge) badge.textContent = wordsQueue[0].lang === 'it' ? '🇮🇹 Italiano' : '🇫🇷 Français';
   loadFlashword();
 }
 function loadFlashword(){
@@ -3695,7 +3422,7 @@ function renderMyWords(){
     item.innerHTML = `
       <div class="emoji">${iconHtml(w, 44)}</div>
       <div class="info" style="flex:1;">
-        <h4>${w.word} <span class="tag">${langLabel(w.lang)}</span> <span class="tag">🏷️ ${cat}</span>${w.audio ? ' <span class="tag">🎙️ Ma voix</span>' : ''}${w.isBase ? '' : ' <span class="tag">✏️ Perso</span>'}</h4>
+        <h4>${w.word} <span class="tag">${w.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span> <span class="tag">🏷️ ${cat}</span>${w.audio ? ' <span class="tag">🎙️ Ma voix</span>' : ''}${w.isBase ? '' : ' <span class="tag">✏️ Perso</span>'}</h4>
         <p>${w.syllables.join(' - ')}</p>
       </div>
       <button class="icon-btn" style="background:var(--ocean);" onclick="event.stopPropagation(); playWordFromList(${w.isBase}, ${refAttr})" title="Jouer aux syllabes">🪨</button>
@@ -3711,7 +3438,7 @@ function addCustomWord(){
   const emoji = document.getElementById('new-word-emoji').value.trim() || '📘';
   const lang = document.getElementById('new-word-lang').value;
   const category = document.getElementById('new-word-category').value.trim() || (lang==='it' ? 'Generale' : 'Général');
-  if(!word){ alert(t('add_word_prompt')); return; }
+  if(!word){ alert('Écris un mot à ajouter !'); return; }
   const isEditing = editingBaseWordKey !== null || editingWordIndex !== null;
   if(!isEditing && wordExists(word, lang)){
     alert(currentLang==='it' ? `⚠️ La parola "${word}" esiste già in questa lingua.` : `⚠️ Le mot "${word}" existe déjà dans cette langue.`);
@@ -3767,7 +3494,7 @@ function editCustomWord(idx, baseKey){
   newWordAudioData = w.audio || null;
   document.getElementById('word-play-audio-btn').style.display = w.audio ? 'inline-flex' : 'none';
   document.getElementById('word-audio-status').textContent = w.audio ? '🎙️ Ce mot a déjà un enregistrement.' : '';
-  document.getElementById('word-form-title').textContent = t('edit_word');
+  document.getElementById('word-form-title').textContent = '✏️ Modifier le mot';
   document.getElementById('word-form-submit').textContent = '💾 Enregistrer les modifications';
   document.getElementById('word-form-cancel').style.display = 'inline-flex';
   document.getElementById('word-form-title').scrollIntoView({behavior:'smooth', block:'center'});
