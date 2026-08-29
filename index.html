@@ -816,6 +816,11 @@ select, input[type=range]{
           <button class="big-btn btn-ocean" onclick="testVoice('it')">🔊 🇮🇹</button>
         </div>
       </div>
+      <div class="settings-row" style="flex-direction:column;align-items:flex-start;">
+        <strong>🎙️ Pronunce personali delle sillabe</strong>
+        <p style="font-size:13px;color:#7a6b8a;font-weight:600;margin:6px 0 10px;">Registra la pronuncia corretta di una sillaba: nel gioco sostituirà la voce automatica.</p>
+        <button class="big-btn btn-lilac" onclick="openSyllablePronunciations()">🎙️ Gestisci le pronunce</button>
+      </div>
       <div class="settings-row">
         <div><strong data-i18n="settings_contrast">Lecture contrastée</strong><br><span style="font-size:13px;color:#7a6b8a;" data-i18n="settings_contrast_desc">Grand contraste, texte plus grand et plus espacé</span></div>
         <button class="toggle" id="contrast-toggle" onclick="toggleContrast()"><span class="knob"></span></button>
@@ -856,6 +861,21 @@ select, input[type=range]{
           L'enregistrement de "ma voix" (dans une histoire) rejoue exactement ta propre voix, ce n'est pas une voix synthétique.
         </p>
       </div>
+    </div>
+  </div>
+
+  <!-- SYLLABLE PRONUNCIATIONS -->
+  <div class="screen" id="screen-syllable-pronunciations">
+    <div class="back-row"><button class="back-btn" onclick="showScreen('screen-settings')">← Indietro</button><h2 class="screen-title">🎙️ Pronunce delle sillabe</h2></div>
+    <div class="panel">
+      <p style="font-weight:600;color:#7a6b8a;margin-top:0;">Registra una sola volta ogni sillaba difficile: il gioco userà il tuo audio invece della voce automatica.</p>
+      <div class="add-story-box">
+        <label style="font-weight:700;display:block;margin-bottom:6px;">Lingua</label>
+        <select id="syllable-pronunciation-lang" onchange="renderSyllablePronunciations()"><option value="it">🇮🇹 Italiano</option><option value="fr">🇫🇷 Français</option></select>
+        <input id="new-pronunciation-syllable" placeholder="Scrivi una sillaba da aggiungere (es: CA)" style="margin-top:10px;">
+        <button class="big-btn btn-ocean" style="margin-top:10px;" onclick="addCustomSyllablePronunciation()">➕ Aggiungi sillaba</button>
+      </div>
+      <div class="story-list" id="syllable-pronunciations-list"></div>
     </div>
   </div>
 
@@ -1398,6 +1418,10 @@ let newWordAudioData = null; // {url: dataURL}
 let wordMediaRecorder = null;
 let wordRecordedChunks = [];
 let isRecordingWord = false;
+let syllableRecordings = {}; // "it:ca" -> {url, syllable, lang}
+let syllableMediaRecorder = null;
+let syllableRecordedChunks = [];
+let recordingSyllableKey = null;
 let pendingGameType = null; // which game to launch after picking a category
 
 const SENTENCES_FR = [
@@ -2149,7 +2173,8 @@ function buildBackupData(){
     baseWordOverrides,
     allStories: stories, // full snapshot — lets built-in stories be edited/deleted too
     storyGroups,
-    storyRecordings // {id: {url: dataURL}}
+    storyRecordings, // {id: {url: dataURL}}
+    syllableRecordings
   };
 }
 function saveState(){
@@ -2220,6 +2245,7 @@ function importBackup(evt){
         stories = builtInStories.map(s=>Object.assign({},s)).concat(data.customStories);
       }
       if(data.storyRecordings) storyRecordings = data.storyRecordings;
+      if(data.syllableRecordings) syllableRecordings = data.syllableRecordings;
       if(Array.isArray(data.storyGroups)) storyGroups = data.storyGroups;
       applyLoadedStateToUI();
       renderStoryList();
@@ -2280,6 +2306,7 @@ function loadState(){
       stories = builtInStories.map(s=>Object.assign({},s)).concat(data.customStories);
     }
     if(data.storyRecordings) storyRecordings = data.storyRecordings;
+    if(data.syllableRecordings) syllableRecordings = data.syllableRecordings;
     if(Array.isArray(data.storyGroups)) storyGroups = data.storyGroups;
   }catch(err){
     console.warn('Données sauvegardées illisibles :', err);
@@ -2441,7 +2468,7 @@ function pickSyllable(correctIndex, syl, btn){
     slot.textContent = syl;
     slot.classList.add('filled');
     btn.disabled = true;
-    speak(syl, 0.9, null, gameWords[gameIndex].lang);
+    speakSyllable(syl, gameWords[gameIndex].lang);
     gameNextExpected++;
     if(gameNextExpected === gameWords[gameIndex].syllables.length){
       addStars(1);
@@ -3261,6 +3288,54 @@ function clearSlot(i){
 }
 
 /* ---------------- WORD AUDIO (record / import for a single word) ---------------- */
+function syllableRecordingKey(syllable, lang){ return `${lang}:${String(syllable).trim().toLocaleLowerCase()}`; }
+function openSyllablePronunciations(){
+  showScreen('screen-syllable-pronunciations');
+  const lang=document.getElementById('syllable-pronunciation-lang'); if(lang) lang.value=currentLang;
+  renderSyllablePronunciations();
+}
+function speakSyllable(syllable, lang, onend){
+  const entry=syllableRecordings[syllableRecordingKey(syllable,lang)];
+  if(entry && entry.url){ const a=new Audio(entry.url); if(onend) a.onended=onend; a.play(); }
+  else speak(syllable, 0.9, onend || null, lang);
+}
+function renderSyllablePronunciations(){
+  const langEl=document.getElementById('syllable-pronunciation-lang');
+  if(!langEl) return;
+  if(!langEl.value) langEl.value=currentLang;
+  const lang=langEl.value;
+  const fromWords=wordPool(lang).flatMap(w=>w.syllables||[]);
+  const fromRecordings=Object.values(syllableRecordings).filter(x=>x && x.lang===lang).map(x=>x.syllable);
+  const syllables=[...new Set(fromWords.concat(fromRecordings).map(x=>String(x).trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,lang));
+  const el=document.getElementById('syllable-pronunciations-list');
+  if(!syllables.length){el.innerHTML='<p style="font-weight:600;color:#7a6b8a;">Scrivi una sillaba qui sopra per iniziare.</p>';return;}
+  el.innerHTML=syllables.map(s=>{
+    const key=syllableRecordingKey(s,lang), entry=syllableRecordings[key], recording=recordingSyllableKey===key;
+    return `<div class="story-item"><div class="emoji">🔤</div><div class="info"><h4>${s}</h4><p>${entry&&entry.url?'✅ Pronuncia registrata':'Voce automatica'}</p></div><button class="icon-btn" style="background:var(--lilac);" onclick="toggleRecordSyllable('${key}')" title="Registra">${recording?'⏹️':'🎙️'}</button>${entry&&entry.url?`<button class="icon-btn" style="background:var(--sunshine);" onclick="playSyllableRecording('${key}')" title="Ascolta">🔊</button><button class="icon-btn" style="background:var(--coral);" onclick="deleteSyllableRecording('${key}')" title="Elimina">🗑️</button>`:''}</div>`;
+  }).join('');
+}
+function addCustomSyllablePronunciation(){
+  const input=document.getElementById('new-pronunciation-syllable'), lang=document.getElementById('syllable-pronunciation-lang').value;
+  const syllable=input.value.trim();
+  if(!/^[\p{L}'’-]{1,12}$/u.test(syllable)){alert('Scrivi una sillaba breve, usando solo lettere.');return;}
+  const key=syllableRecordingKey(syllable,lang);
+  if(!syllableRecordings[key]) syllableRecordings[key]={syllable:syllable.toUpperCase(),lang,url:null};
+  input.value=''; saveState(); renderSyllablePronunciations();
+}
+async function toggleRecordSyllable(key){
+  if(recordingSyllableKey===key){syllableMediaRecorder.stop();return;}
+  if(recordingSyllableKey){alert('Termina prima la registrazione in corso.');return;}
+  const old=syllableRecordings[key]; if(!old) return;
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    syllableMediaRecorder=new MediaRecorder(stream); syllableRecordedChunks=[]; recordingSyllableKey=key;
+    syllableMediaRecorder.ondataavailable=e=>{if(e.data.size) syllableRecordedChunks.push(e.data);};
+    syllableMediaRecorder.onstop=()=>{const blob=new Blob(syllableRecordedChunks,{type:'audio/webm'});const reader=new FileReader();reader.onload=()=>{syllableRecordings[key]={...old,url:reader.result};recordingSyllableKey=null;saveState();renderSyllablePronunciations();};reader.readAsDataURL(blob);stream.getTracks().forEach(t=>t.stop());};
+    syllableMediaRecorder.start(); renderSyllablePronunciations();
+  }catch(err){recordingSyllableKey=null;alert('Il microfono non è disponibile. Apri l’app nel browser e autorizza il microfono.');}
+}
+function playSyllableRecording(key){const entry=syllableRecordings[key];if(entry&&entry.url)new Audio(entry.url).play();}
+function deleteSyllableRecording(key){const entry=syllableRecordings[key];if(!entry)return;if(entry.url) entry.url=null;else delete syllableRecordings[key];saveState();renderSyllablePronunciations();}
 async function toggleRecordWordAudio(){
   const statusEl = document.getElementById('word-audio-status');
   const btn = document.getElementById('word-record-btn');
