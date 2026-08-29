@@ -777,6 +777,10 @@ select, input[type=range]{
       <div class="add-story-box">
         <h3 style="margin-top:0;font-family:'Baloo 2';">➕ Crea o rinomina un gruppo</h3>
         <input id="story-group-name" placeholder="Nome del gruppo"><input id="editing-story-group-id" type="hidden">
+        <div style="margin-top:14px;padding-top:12px;border-top:2px dashed #e0d5f5;">
+          <strong style="font-size:14px;">📚 Scegli le storie da inserire nel gruppo</strong>
+          <div id="story-group-stories-checklist" style="margin-top:8px;max-height:300px;overflow:auto;"></div>
+        </div>
         <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;"><button class="big-btn btn-leaf" onclick="saveStoryGroup()">💾 Salva il gruppo</button><button class="big-btn btn-lilac" onclick="cancelStoryGroupEdit()">✖️ Annulla</button></div>
       </div>
       <h3 style="font-family:'Baloo 2';">I gruppi creati</h3><div class="story-list" id="story-groups-list"></div>
@@ -3018,19 +3022,29 @@ function deleteStory(id){
 function saveStoryGroup(){
   const name=document.getElementById('story-group-name').value.trim();
   const id=document.getElementById('editing-story-group-id').value;
+  const selectedStoryIds=[...document.querySelectorAll('input[name="story-in-group"]:checked')].map(x=>String(x.value));
   if(!name){ alert('Scrivi un nome per il gruppo.'); return; }
   if(storyGroups.some(g=>g.name.toLocaleLowerCase()===name.toLocaleLowerCase() && String(g.id)!==String(id))){ alert('Esiste già un gruppo con questo nome.'); return; }
+  const groupId=id || String(Date.now());
   if(id){ const g=storyGroups.find(g=>String(g.id)===String(id)); if(g) g.name=name; }
-  else storyGroups.push({id:String(Date.now()),name});
+  else storyGroups.push({id:groupId,name});
+  // Only change membership in this group: every other group of a story stays intact.
+  stories.forEach(s=>{
+    const existing=(s.groupIds||[]).map(String).filter(x=>x!==String(groupId));
+    if(selectedStoryIds.includes(String(s.id))) existing.push(String(groupId));
+    s.groupIds=existing;
+  });
   cancelStoryGroupEdit(); renderStoryGroupsScreen(); saveState();
 }
 function cancelStoryGroupEdit(){
   const n=document.getElementById('story-group-name'), i=document.getElementById('editing-story-group-id');
   if(n) n.value=''; if(i) i.value='';
+  renderStoryGroupStoriesChecklist();
 }
 function editStoryGroup(id){
   const g=storyGroups.find(g=>String(g.id)===String(id)); if(!g) return;
   document.getElementById('story-group-name').value=g.name; document.getElementById('editing-story-group-id').value=g.id;
+  renderStoryGroupStoriesChecklist(g.id);
   document.getElementById('story-group-name').focus();
 }
 function deleteStoryGroup(id){
@@ -3041,8 +3055,15 @@ function deleteStoryGroup(id){
 }
 function renderStoryGroupsScreen(){
   const el=document.getElementById('story-groups-list'); if(!el) return;
+  renderStoryGroupStoriesChecklist(document.getElementById('editing-story-group-id')?.value || '');
   if(!storyGroups.length){el.innerHTML='<p style="font-weight:600;color:#7a6b8a;">Nessun gruppo creato.</p>';return;}
   el.innerHTML=storyGroups.map(g=>{const n=stories.filter(s=>(s.groupIds||[]).map(String).includes(String(g.id))).length;return `<div class="story-item"><div class="emoji">📁</div><div class="info"><h4>${g.name}</h4><p>${n} storie</p></div><button class="icon-btn" style="background:var(--sunshine);" onclick="editStoryGroup('${g.id}')">✏️</button><button class="icon-btn" style="background:var(--coral);" onclick="deleteStoryGroup('${g.id}')">🗑️</button></div>`;}).join('');
+}
+function renderStoryGroupStoriesChecklist(groupId=''){
+  const el=document.getElementById('story-group-stories-checklist'); if(!el) return;
+  if(!stories.length){el.innerHTML='<p style="font-weight:600;color:#7a6b8a;">Non ci sono ancora storie da scegliere.</p>';return;}
+  const selected=stories.filter(s=>(s.groupIds||[]).map(String).includes(String(groupId))).map(s=>String(s.id));
+  el.innerHTML=stories.map(s=>`<label style="display:flex;align-items:center;gap:8px;padding:7px 2px;border-bottom:1px solid #eee6f7;font-weight:600;cursor:pointer;"><input type="checkbox" name="story-in-group" value="${s.id}" ${selected.includes(String(s.id))?'checked':''}> <span style="font-size:22px;">${s.image ? '📷' : (s.emoji||'📘')}</span> <span>${s.title} <small style="color:#7a6b8a;">${s.lang==='it'?'🇮🇹':'🇫🇷'}${s.topic?' · '+s.topic:''}</small></span></label>`).join('');
 }
 let storyGameQueue=[]; let storyGameIndex=0;
 function startStoryGameFromFilters(){
