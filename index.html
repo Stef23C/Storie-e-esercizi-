@@ -1924,6 +1924,9 @@ let stories = [
 ];
 let storyRecordings = {}; // id -> {url}  (url is a data: URL so it can be saved)
 let storyGroups = []; // {id, name}; stories keep their group ids in story.groupIds
+// Keep a clean copy of the stories included with the app. Older saves may contain
+// an empty allStories list; that must never make the included stories disappear.
+const builtInStories = stories.map(s=>Object.assign({}, s));
 let currentStoryId = null;
 let mediaRecorder = null;
 let recordedChunks = [];
@@ -2207,10 +2210,10 @@ function importBackup(evt){
       if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = data.customSentenceGroups;
       if(Array.isArray(data.deletedBaseWordKeys)) deletedBaseWordKeys = data.deletedBaseWordKeys;
       if(data.baseWordOverrides) baseWordOverrides = data.baseWordOverrides;
-      if(Array.isArray(data.allStories)){
+      if(Array.isArray(data.allStories) && data.allStories.length){
         stories = data.allStories;
       } else if(Array.isArray(data.customStories)){
-        stories = stories.filter(s=>s.builtin).concat(data.customStories);
+        stories = builtInStories.map(s=>Object.assign({},s)).concat(data.customStories);
       }
       if(data.storyRecordings) storyRecordings = data.storyRecordings;
       if(Array.isArray(data.storyGroups)) storyGroups = data.storyGroups;
@@ -2267,10 +2270,10 @@ function loadState(){
       if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = data.customSentenceGroups;
       if(Array.isArray(data.deletedBaseWordKeys)) deletedBaseWordKeys = data.deletedBaseWordKeys;
       if(data.baseWordOverrides) baseWordOverrides = data.baseWordOverrides;
-    if(Array.isArray(data.allStories)){
+    if(Array.isArray(data.allStories) && data.allStories.length){
       stories = data.allStories;
     } else if(Array.isArray(data.customStories)){
-      stories = stories.filter(s=>s.builtin).concat(data.customStories);
+      stories = builtInStories.map(s=>Object.assign({},s)).concat(data.customStories);
     }
     if(data.storyRecordings) storyRecordings = data.storyRecordings;
     if(Array.isArray(data.storyGroups)) storyGroups = data.storyGroups;
