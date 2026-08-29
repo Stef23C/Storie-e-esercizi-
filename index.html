@@ -3057,7 +3057,16 @@ function renderStoryGroupsScreen(){
   const el=document.getElementById('story-groups-list'); if(!el) return;
   renderStoryGroupStoriesChecklist(document.getElementById('editing-story-group-id')?.value || '');
   if(!storyGroups.length){el.innerHTML='<p style="font-weight:600;color:#7a6b8a;">Nessun gruppo creato.</p>';return;}
-  el.innerHTML=storyGroups.map(g=>{const n=stories.filter(s=>(s.groupIds||[]).map(String).includes(String(g.id))).length;return `<div class="story-item"><div class="emoji">📁</div><div class="info"><h4>${g.name}</h4><p>${n} storie</p></div><button class="icon-btn" style="background:var(--sunshine);" onclick="editStoryGroup('${g.id}')">✏️</button><button class="icon-btn" style="background:var(--coral);" onclick="deleteStoryGroup('${g.id}')">🗑️</button></div>`;}).join('');
+  el.innerHTML=storyGroups.map(g=>{const n=stories.filter(s=>(s.groupIds||[]).map(String).includes(String(g.id))).length;return `<div class="story-item"><div class="emoji">📁</div><div class="info"><h4>${g.name}</h4><p>${n} storie</p></div><button class="icon-btn" style="background:var(--ocean);" onclick="openStoryGroup('${g.id}')" title="Apri le storie">📚</button><button class="icon-btn" style="background:var(--sunshine);" onclick="editStoryGroup('${g.id}')">✏️</button><button class="icon-btn" style="background:var(--coral);" onclick="deleteStoryGroup('${g.id}')">🗑️</button></div>`;}).join('');
+}
+function openStoryGroup(id){
+  showScreen('screen-stories');
+  renderStoryList();
+  const groupFilter=document.getElementById('story-filter-group');
+  const search=document.getElementById('story-search');
+  if(search) search.value='';
+  if(groupFilter) groupFilter.value=String(id);
+  renderStoryList();
 }
 function renderStoryGroupStoriesChecklist(groupId=''){
   const el=document.getElementById('story-group-stories-checklist'); if(!el) return;
