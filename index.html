@@ -985,3 +985,106 @@ window.onload = initApp;
 </script>
 </body>
 </html>
+<script>
+/* ==========================================
+   SOLUZIONE FINALE: AUDIO, STELLE E STORIE
+   ========================================== */
+let audioCtx = null;
+let lastSound = "";
+
+function playJingle(type) {
+  try {
+    // SEMPRE stelle volanti
+    launchStars(30);
+
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Genera APPLAUSI veri (rumore bianco)
+    if (Math.random() < 0.5) {
+      let bs = audioCtx.sampleRate * 1;
+      let bf = audioCtx.createBuffer(1, bs, audioCtx.sampleRate);
+      let dt = bf.getChannelData(0);
+      for (let i = 0; i < bs; i++) {
+        dt[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bs, 2);
+      }
+      let src = audioCtx.createBufferSource();
+      src.buffer = bf;
+      let g = audioCtx.createGain();
+      g.gain.value = 0.4;
+      src.connect(g); g.connect(audioCtx.destination);
+      src.start();
+    } else {
+      // Melodia allegra
+      [523, 659, 783].forEach((f, i) => {
+        let o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination);
+        o.frequency.value = f; o.type = 'sine';
+        g.gain.setValueAtTime(.2, audioCtx.currentTime + i * .1);
+        g.gain.exponentialRampToValueAtTime(.01, audioCtx.currentTime + i * .1 + .15);
+        o.start(audioCtx.currentTime + i * .1); o.stop(audioCtx.currentTime + i * .1 + .15);
+      });
+    }
+  } catch (e) {}
+}
+
+// STELLE CHE VOLANO (CON ANIMAZIONE)
+function launchStars(n) {
+  let c = document.querySelector('.screen.active .panel');
+  if (!c) return;
+
+  document.querySelectorAll('.dynamic-star').forEach(s => s.remove());
+
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      let s = document.createElement('div');
+      s.className = 'dynamic-star';
+      s.textContent = ['⭐', '✨', '🌟', '💖'][Math.floor(Math.random() * 4)];
+      s.style.cssText = `position:absolute; left:50%; top:50%; font-size:${25 + Math.random() * 30}px; pointer-events:none; z-index:9999; opacity:1`;
+      c.appendChild(s);
+      s.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+      s.style.setProperty('--ty', (-(150 + Math.random() * 100)) + 'px');
+      s.style.setProperty('--rot', (Math.random() * 360) + 'deg');
+      s.style.animation = 'dynamic-star 1.2s ease-out forwards';
+      setTimeout(() => s.remove(), 1300);
+    }, i * 30);
+  }
+}
+
+// STORIE: APRI E LEGGI
+let currentStoryId = null;
+
+function renderStoryList() {
+  let el = document.getElementById('story-list');
+  el.innerHTML = '';
+  stories.forEach(s => {
+    let d = document.createElement('div');
+    d.className = 'story-item';
+    d.onclick = () => openStory(s.id);
+    d.innerHTML = `<div class="emoji">${s.emoji}</div><div class="info"><h4>${s.title}</h4></div>`;
+    el.appendChild(d);
+  });
+}
+
+function openStory(id) {
+  currentStoryId = id;
+  let s = stories.find(x => x.id === id);
+  document.getElementById('reader-title').textContent = s.title;
+  document.getElementById('reader-text').innerHTML = s.text.split(/(?<=[.!?])\s+/).map(x => `<span class="sentence">${x}</span>`).join(' ');
+  showScreen('screen-reader');
+}
+
+function toggleReadStory() {
+  let s = stories.find(x => x.id === currentStoryId);
+  let i = 0;
+  let sentences = s.text.split(/(?<=[.!?])\s+/);
+  document.querySelectorAll('.sentence').forEach(el => el.classList.remove('highlight'));
+  document.getElementById('reader-text').children[0].classList.add('highlight');
+  function next() {
+    if (i >= sentences.length) return;
+    document.querySelectorAll('.sentence').forEach(el => el.classList.remove('highlight'));
+    document.getElementById('reader-text').children[i].classList.add('highlight');
+    speak(sentences[i], 0.9, () => { i++; next(); }, s.lang);
+  }
+  next();
+}
+</script>
