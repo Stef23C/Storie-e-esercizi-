@@ -864,35 +864,200 @@ select, input[type=range]{
     </div>
   </div>
 
-  <!-- SYLLABLE PRONUNCIATIONS -->
+   <!-- SYLLABLE PRONUNCIATIONS -->
   <div class="screen" id="screen-syllable-pronunciations">
     <div class="back-row"><button class="back-btn" onclick="showScreen('screen-settings')">← Indietro</button><h2 class="screen-title">🎙️ Repertorio pronunce</h2></div>
     <div class="panel">
-      <p style="font-weight:600;color:#7a6b8a;margin-top:0;">Le sillabe e le parole registrate qui vengono riconosciute automaticamente in tutto il gioco.</p>
-      <div class="add-story-box">
-        <h3 style="margin-top:0;font-family:'Baloo 2';">🔤 Registra una sillaba</h3>
-        <label style="font-weight:700;display:block;margin-bottom:6px;">Lingua</label>
-        <select id="syllable-pronunciation-lang" onchange="renderSyllablePronunciations()"><option value="it">🇮🇹 Italiano</option><option value="fr">🇫🇷 Français</option></select>
-        <input id="new-pronunciation-syllable" placeholder="Scrivi una sillaba da aggiungere (es: CA)" style="margin-top:10px;">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
-          <button class="big-btn btn-lilac" onclick="addAndRecordSyllable()">🎙️ Registra questa sillaba</button>
-          <button class="big-btn btn-ocean" onclick="addCustomSyllablePronunciation()">➕ Aggiungi all’elenco</button>
+      <p style="font-weight:600;color:#7a6b8a;margin-top:0;">Scrivi o incolla qui sotto per aggiungere o registrare una pronuncia senza doverla cercare nella lista.</p>
+      
+      <!-- Sillabe -->
+      <div class="add-story-box" style="margin-bottom:20px;">
+        <h3 style="margin-top:0;font-family:'Baloo 2';">🔤 Sillabe personalizzate</h3>
+        
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <label style="font-weight:700;margin-right:5px;">Lingua:</label>
+          <select id="syllable-pronunciation-lang" style="width:auto;margin-bottom:0;" onchange="checkPronunciationInput('syllable')">
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="fr">🇫🇷 Français</option>
+          </select>
+          
+          <input id="new-pronunciation-syllable" placeholder="Scrivi una sillaba (es: CA)" style="width:150px;margin-bottom:0;" oninput="checkPronunciationInput('syllable')">
+          
+          <span id="syllable-status-msg" style="font-weight:700;font-size:14px;color:#7a6b8a;min-width:150px;"></span>
         </div>
-        <p style="font-size:13px;color:#7a6b8a;font-weight:600;margin:10px 0 0;">Le sillabe sotto mostrano anche un pulsante 🎙️ per registrarle.</p>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;">
+          <button class="big-btn btn-lilac" id="btn-record-syllable" onclick="addAndRecordSyllable()">🎙️ Registra questa sillaba</button>
+          <button class="big-btn btn-ocean" onclick="document.getElementById('syllable-mp3-upload').click()">📁 Importa MP3</button>
+          <input type="file" id="syllable-mp3-upload" accept="audio/*" style="display:none;" onchange="uploadSyllableMp3(event)">
+        </div>
       </div>
-      <div class="story-list" id="syllable-pronunciations-list"></div>
-      <div class="add-story-box" style="margin-top:20px;">
-        <h3 style="margin-top:0;font-family:'Baloo 2';">🔤 Pronunce delle parole intere</h3>
-        <input id="new-pronunciation-word" placeholder="Scrivi una parola da aggiungere (es: CASA)">
-        <button class="big-btn btn-ocean" style="margin-top:10px;" onclick="addCustomWordPronunciation()">➕ Aggiungi parola</button>
+
+      <!-- Parole intere -->
+      <div class="add-story-box" style="margin-bottom:20px;">
+        <h3 style="margin-top:0;font-family:'Baloo 2';">🔤 Parole intere personalizzate</h3>
+        
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <input id="new-pronunciation-word" placeholder="Scrivi una parola (es: CASA)" style="width:200px;margin-bottom:0;" oninput="checkPronunciationInput('word')">
+          
+          <span id="word-status-msg" style="font-weight:700;font-size:14px;color:#7a6b8a;min-width:150px;"></span>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;">
+          <button class="big-btn btn-lilac" id="btn-record-word" onclick="addAndRecordWordPronunciation()">🎙️ Registra questa parola</button>
+          <button class="big-btn btn-ocean" onclick="document.getElementById('word-mp3-upload').click()">📁 Importa MP3</button>
+          <input type="file" id="word-mp3-upload" accept="audio/*" style="display:none;" onchange="uploadWordPronunciationMp3(event)">
+        </div>
       </div>
-      <div class="story-list" id="word-pronunciations-list"></div>
+
+      <!-- Lista (solo per consultare/modificare le registrazioni esistenti) -->
+      <div style="border-top:2px dashed #e0d5f5;padding-top:15px;">
+        <h3 style="font-family:'Baloo 2';">📚 Pronunce già registrate</h3>
+        <div class="story-list" id="syllable-pronunciations-list"></div>
+        <div class="story-list" id="word-pronunciations-list"></div>
+      </div>
+      
     </div>
   </div>
-
-</div>
+  
 
 <script>
+  /* ---------------- NUOVE FUNZIONI PER PRONUNCE VELOCI ---------------- */
+function checkPronunciationInput(type) {
+    const lang = document.getElementById('syllable-pronunciation-lang').value;
+    const sylInput = document.getElementById('new-pronunciation-syllable');
+    const wordInput = document.getElementById('new-pronunciation-word');
+    
+    if (type === 'syllable') {
+        const text = sylInput.value.trim().toUpperCase();
+        const status = document.getElementById('syllable-status-msg');
+        if (!text) { status.textContent = ""; return; }
+        
+        const key = syllableRecordingKey(text, lang);
+        if (syllableRecordings[key]) {
+            status.textContent = "✅ Esiste già";
+            status.style.color = "var(--leaf)";
+        } else {
+            status.textContent = "🆕 Nuova da registrare";
+            status.style.color = "var(--lilac)";
+        }
+    } else {
+        const text = wordInput.value.trim().toUpperCase();
+        const status = document.getElementById('word-status-msg');
+        if (!text) { status.textContent = ""; return; }
+        
+        const key = wordRecordingKey(text, lang);
+        if (wordRecordings[key]) {
+            status.textContent = "✅ Esiste già";
+            status.style.color = "var(--leaf)";
+        } else {
+            status.textContent = "🆕 Nuova da registrare";
+            status.style.color = "var(--lilac)";
+        }
+    }
+}
+
+async function addAndRecordSyllable() {
+    const input = document.getElementById('new-pronunciation-syllable');
+    const lang = document.getElementById('syllable-pronunciation-lang').value;
+    const syllable = input.value.trim();
+    
+    if (!/^[\p{L}'’-]{1,12}$/u.test(syllable)) {
+        alert('Scrivi una sillaba breve, usando solo lettere.');
+        return;
+    }
+    
+    const key = syllableRecordingKey(syllable, lang);
+    // Crea la voce se non esiste
+    if (!syllableRecordings[key]) {
+        syllableRecordings[key] = { syllable: syllable.toUpperCase(), lang, url: null };
+    }
+    
+    input.value = ''; // Svuota input per feedback visivo
+    checkPronunciationInput('syllable'); // Aggiorna stato messaggio
+    
+    // Avvia la registrazione
+    await toggleRecordSyllable(key);
+}
+
+function uploadSyllableMp3(evt) {
+    const file = evt.target.files[0];
+    if (!file) return;
+    
+    const input = document.getElementById('new-pronunciation-syllable');
+    const lang = document.getElementById('syllable-pronunciation-lang').value;
+    const syllable = input.value.trim();
+    
+    if (!/^[\p{L}'’-]{1,12}$/u.test(syllable)) {
+        alert('Scrivi prima una sillaba valida (es: CA) prima di importare un file.');
+        return;
+    }
+    
+    const key = syllableRecordingKey(syllable, lang);
+    if (!syllableRecordings[key]) {
+        syllableRecordings[key] = { syllable: syllable.toUpperCase(), lang, url: null };
+    }
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+        syllableRecordings[key] = { ...syllableRecordings[key], url: reader.result };
+        input.value = '';
+        checkPronunciationInput('syllable');
+        renderSyllablePronunciations();
+        saveState();
+    };
+    reader.readAsDataURL(file);
+}
+
+async function addAndRecordWordPronunciation() {
+    const input = document.getElementById('new-pronunciation-word');
+    const lang = document.getElementById('syllable-pronunciation-lang').value;
+    const word = input.value.trim();
+    
+    if (!/^[\p{L}'’ -]{1,35}$/u.test(word)) {
+        alert('Scrivi una parola breve, usando solo lettere.');
+        return;
+    }
+    
+    const key = wordRecordingKey(word, lang);
+    if (!wordRecordings[key]) {
+        wordRecordings[key] = { word: word.toUpperCase(), lang, url: null };
+    }
+    
+    input.value = '';
+    checkPronunciationInput('word');
+    
+    await toggleRecordWordPronunciation(key);
+}
+
+function uploadWordPronunciationMp3(evt) {
+    const file = evt.target.files[0];
+    if (!file) return;
+    
+    const input = document.getElementById('new-pronunciation-word');
+    const lang = document.getElementById('syllable-pronunciation-lang').value;
+    const word = input.value.trim();
+    
+    if (!/^[\p{L}'’ -]{1,35}$/u.test(word)) {
+        alert('Scrivi prima una parola valida prima di importare un file.');
+        return;
+    }
+    
+    const key = wordRecordingKey(word, lang);
+    if (!wordRecordings[key]) {
+        wordRecordings[key] = { word: word.toUpperCase(), lang, url: null };
+    }
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+        wordRecordings[key] = { ...wordRecordings[key], url: reader.result };
+        input.value = '';
+        checkPronunciationInput('word');
+        renderWordPronunciations();
+        saveState();
+    };
+    reader.readAsDataURL(file);
+}
 /* ---------------- STATE ---------------- */
 let stars = 0;
 let contrastMode = false;
