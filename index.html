@@ -725,6 +725,35 @@ select, input[type=range]{
   </div>
 
   <!-- SETTINGS -->
+  <div id="app">
+
+  <!-- Tutte le schermate esistenti (Home, Giochi, Storie, ecc.) -->
+  <div class="screen" id="screen-home">...</div>
+  <div class="screen" id="screen-game">...</div>
+  <!-- ... tutte le altre schermate ... -->
+  
+  <!-- NUOVA SCHERMATA PER REGISTRARE LE SILLABE (aggiungi qui) -->
+  <div class="screen" id="screen-syllable-pronunciations">
+    <div class="back-row"><button class="back-btn" onclick="showScreen('screen-settings')">← Indietro</button><h2 class="screen-title">🎙️ Repertorio pronunce</h2></div>
+    <div class="panel">
+      <div class="add-story-box">
+        <h3>🔤 Sillabe personalizzate</h3>
+        <select id="syllable-pronunciation-lang" onchange="renderSyllablePronunciations(); renderWordPronunciations();">
+          <option value="it">🇮🇹 Italiano</option>
+          <option value="fr">🇫🇷 Français</option>
+        </select>
+        <input id="new-pronunciation-syllable" placeholder="Scrivi sillaba (es: CA)">
+        <div style="display:flex;gap:10px;">
+          <button class="big-btn btn-lilac" onclick="addAndRecordSyllable()">🎙️ Registra</button>
+          <button class="big-btn btn-ocean" onclick="document.getElementById('syllable-mp3-upload').click()">📁 Importa MP3</button>
+          <input type="file" id="syllable-mp3-upload" accept="audio/*" style="display:none;" onchange="uploadSyllableMp3(event)">
+        </div>
+      </div>
+      <div class="story-list" id="syllable-pronunciations-list"></div>
+    </div>
+  </div>
+
+</div> <!-- Fine #app -->
   <div class="screen" id="screen-settings">
     <div class="back-row">
       <button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button>
