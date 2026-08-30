@@ -864,16 +864,15 @@ select, input[type=range]{
     </div>
   </div>
 
-   <!-- SYLLABLE PRONUNCIATIONS -->
+  <!-- SYLLABLE PRONUNCIATIONS (MODIFICATO) -->
   <div class="screen" id="screen-syllable-pronunciations">
     <div class="back-row"><button class="back-btn" onclick="showScreen('screen-settings')">← Indietro</button><h2 class="screen-title">🎙️ Repertorio pronunce</h2></div>
     <div class="panel">
-      <p style="font-weight:600;color:#7a6b8a;margin-top:0;">Scrivi o incolla qui sotto per aggiungere o registrare una pronuncia senza doverla cercare nella lista.</p>
+      <p style="font-weight:600;color:#7a6b8a;margin-top:0;">Scrivi la sillaba o la parola: i pulsanti per registrare, ascoltare e importare MP3 appariranno subito qui sotto, senza dover scorrere la lista.</p>
       
       <!-- Sillabe -->
       <div class="add-story-box" style="margin-bottom:20px;">
         <h3 style="margin-top:0;font-family:'Baloo 2';">🔤 Sillabe personalizzate</h3>
-        
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
           <label style="font-weight:700;margin-right:5px;">Lingua:</label>
           <select id="syllable-pronunciation-lang" style="width:auto;margin-bottom:0;" onchange="checkPronunciationInput('syllable')">
@@ -883,181 +882,46 @@ select, input[type=range]{
           
           <input id="new-pronunciation-syllable" placeholder="Scrivi una sillaba (es: CA)" style="width:150px;margin-bottom:0;" oninput="checkPronunciationInput('syllable')">
           
-          <span id="syllable-status-msg" style="font-weight:700;font-size:14px;color:#7a6b8a;min-width:150px;"></span>
+          <span id="syllable-status-msg" style="font-weight:700;font-size:14px;color:#7a6b8a;min-width:120px;"></span>
         </div>
 
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;">
-          <button class="big-btn btn-lilac" id="btn-record-syllable" onclick="addAndRecordSyllable()">🎙️ Registra questa sillaba</button>
+        <div id="syllable-inline-controls" style="display:none; gap:10px; flex-wrap:wrap; margin-top:15px;">
+          <button class="big-btn btn-lilac" id="btn-record-syllable" onclick="toggleInlineRecordSyllable()">🎙️ Registra</button>
           <button class="big-btn btn-ocean" onclick="document.getElementById('syllable-mp3-upload').click()">📁 Importa MP3</button>
           <input type="file" id="syllable-mp3-upload" accept="audio/*" style="display:none;" onchange="uploadSyllableMp3(event)">
+          <button class="big-btn btn-sun" id="btn-play-syllable" onclick="playInlineSyllable()" style="display:none;">🔊 Ascolta</button>
+          <button class="big-btn btn-coral" id="btn-delete-syllable" onclick="deleteInlineSyllable()" style="display:none;">🗑️ Elimina</button>
         </div>
       </div>
 
       <!-- Parole intere -->
       <div class="add-story-box" style="margin-bottom:20px;">
         <h3 style="margin-top:0;font-family:'Baloo 2';">🔤 Parole intere personalizzate</h3>
-        
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
           <input id="new-pronunciation-word" placeholder="Scrivi una parola (es: CASA)" style="width:200px;margin-bottom:0;" oninput="checkPronunciationInput('word')">
-          
-          <span id="word-status-msg" style="font-weight:700;font-size:14px;color:#7a6b8a;min-width:150px;"></span>
+          <span id="word-status-msg" style="font-weight:700;font-size:14px;color:#7a6b8a;min-width:120px;"></span>
         </div>
 
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;">
-          <button class="big-btn btn-lilac" id="btn-record-word" onclick="addAndRecordWordPronunciation()">🎙️ Registra questa parola</button>
+        <div id="word-inline-controls" style="display:none; gap:10px; flex-wrap:wrap; margin-top:15px;">
+          <button class="big-btn btn-lilac" id="btn-record-word" onclick="toggleInlineRecordWord()">🎙️ Registra</button>
           <button class="big-btn btn-ocean" onclick="document.getElementById('word-mp3-upload').click()">📁 Importa MP3</button>
           <input type="file" id="word-mp3-upload" accept="audio/*" style="display:none;" onchange="uploadWordPronunciationMp3(event)">
+          <button class="big-btn btn-sun" id="btn-play-word" onclick="playInlineWord()" style="display:none;">🔊 Ascolta</button>
+          <button class="big-btn btn-coral" id="btn-delete-word" onclick="deleteInlineWord()" style="display:none;">🗑️ Elimina</button>
         </div>
       </div>
 
-      <!-- Lista (solo per consultare/modificare le registrazioni esistenti) -->
       <div style="border-top:2px dashed #e0d5f5;padding-top:15px;">
-        <h3 style="font-family:'Baloo 2';">📚 Pronunce già registrate</h3>
+        <h3 style="font-family:'Baloo 2';">📚 Pronunce già registrate (per modificarle)</h3>
         <div class="story-list" id="syllable-pronunciations-list"></div>
         <div class="story-list" id="word-pronunciations-list"></div>
       </div>
-      
     </div>
   </div>
-  
+
+</div>
 
 <script>
-  /* ---------------- NUOVE FUNZIONI PER PRONUNCE VELOCI ---------------- */
-function checkPronunciationInput(type) {
-    const lang = document.getElementById('syllable-pronunciation-lang').value;
-    const sylInput = document.getElementById('new-pronunciation-syllable');
-    const wordInput = document.getElementById('new-pronunciation-word');
-    
-    if (type === 'syllable') {
-        const text = sylInput.value.trim().toUpperCase();
-        const status = document.getElementById('syllable-status-msg');
-        if (!text) { status.textContent = ""; return; }
-        
-        const key = syllableRecordingKey(text, lang);
-        if (syllableRecordings[key]) {
-            status.textContent = "✅ Esiste già";
-            status.style.color = "var(--leaf)";
-        } else {
-            status.textContent = "🆕 Nuova da registrare";
-            status.style.color = "var(--lilac)";
-        }
-    } else {
-        const text = wordInput.value.trim().toUpperCase();
-        const status = document.getElementById('word-status-msg');
-        if (!text) { status.textContent = ""; return; }
-        
-        const key = wordRecordingKey(text, lang);
-        if (wordRecordings[key]) {
-            status.textContent = "✅ Esiste già";
-            status.style.color = "var(--leaf)";
-        } else {
-            status.textContent = "🆕 Nuova da registrare";
-            status.style.color = "var(--lilac)";
-        }
-    }
-}
-
-async function addAndRecordSyllable() {
-    const input = document.getElementById('new-pronunciation-syllable');
-    const lang = document.getElementById('syllable-pronunciation-lang').value;
-    const syllable = input.value.trim();
-    
-    if (!/^[\p{L}'’-]{1,12}$/u.test(syllable)) {
-        alert('Scrivi una sillaba breve, usando solo lettere.');
-        return;
-    }
-    
-    const key = syllableRecordingKey(syllable, lang);
-    // Crea la voce se non esiste
-    if (!syllableRecordings[key]) {
-        syllableRecordings[key] = { syllable: syllable.toUpperCase(), lang, url: null };
-    }
-    
-    input.value = ''; // Svuota input per feedback visivo
-    checkPronunciationInput('syllable'); // Aggiorna stato messaggio
-    
-    // Avvia la registrazione
-    await toggleRecordSyllable(key);
-}
-
-function uploadSyllableMp3(evt) {
-    const file = evt.target.files[0];
-    if (!file) return;
-    
-    const input = document.getElementById('new-pronunciation-syllable');
-    const lang = document.getElementById('syllable-pronunciation-lang').value;
-    const syllable = input.value.trim();
-    
-    if (!/^[\p{L}'’-]{1,12}$/u.test(syllable)) {
-        alert('Scrivi prima una sillaba valida (es: CA) prima di importare un file.');
-        return;
-    }
-    
-    const key = syllableRecordingKey(syllable, lang);
-    if (!syllableRecordings[key]) {
-        syllableRecordings[key] = { syllable: syllable.toUpperCase(), lang, url: null };
-    }
-    
-    const reader = new FileReader();
-    reader.onload = () => {
-        syllableRecordings[key] = { ...syllableRecordings[key], url: reader.result };
-        input.value = '';
-        checkPronunciationInput('syllable');
-        renderSyllablePronunciations();
-        saveState();
-    };
-    reader.readAsDataURL(file);
-}
-
-async function addAndRecordWordPronunciation() {
-    const input = document.getElementById('new-pronunciation-word');
-    const lang = document.getElementById('syllable-pronunciation-lang').value;
-    const word = input.value.trim();
-    
-    if (!/^[\p{L}'’ -]{1,35}$/u.test(word)) {
-        alert('Scrivi una parola breve, usando solo lettere.');
-        return;
-    }
-    
-    const key = wordRecordingKey(word, lang);
-    if (!wordRecordings[key]) {
-        wordRecordings[key] = { word: word.toUpperCase(), lang, url: null };
-    }
-    
-    input.value = '';
-    checkPronunciationInput('word');
-    
-    await toggleRecordWordPronunciation(key);
-}
-
-function uploadWordPronunciationMp3(evt) {
-    const file = evt.target.files[0];
-    if (!file) return;
-    
-    const input = document.getElementById('new-pronunciation-word');
-    const lang = document.getElementById('syllable-pronunciation-lang').value;
-    const word = input.value.trim();
-    
-    if (!/^[\p{L}'’ -]{1,35}$/u.test(word)) {
-        alert('Scrivi prima una parola valida prima di importare un file.');
-        return;
-    }
-    
-    const key = wordRecordingKey(word, lang);
-    if (!wordRecordings[key]) {
-        wordRecordings[key] = { word: word.toUpperCase(), lang, url: null };
-    }
-    
-    const reader = new FileReader();
-    reader.onload = () => {
-        wordRecordings[key] = { ...wordRecordings[key], url: reader.result };
-        input.value = '';
-        checkPronunciationInput('word');
-        renderWordPronunciations();
-        saveState();
-    };
-    reader.readAsDataURL(file);
-}
 /* ---------------- STATE ---------------- */
 let stars = 0;
 let contrastMode = false;
@@ -1065,297 +929,14 @@ let autoRepeat = true;
 let simplifiedQuiz = true;
 let selectedVoiceURI = {fr:null, it:null};
 let voicesList = [];
-
-let currentLang = 'fr'; // 'fr' or 'it'
+let currentLang = 'fr';
 const STORAGE_KEY = 'ile_aux_syllabes_v1';
 let storageAvailable = true;
 
 /* ---------------- UI TRANSLATIONS ---------------- */
 const I18N = {
-  fr:{
-    home_title:"Coucou ! Prêt à jouer avec les mots ?",
-    home_subtitle:"Choisis une activité pour commencer l'aventure 🌟",
-    card_syllables_title:"Jeu des syllabes",
-    card_syllables_desc:"Assemble les mots pas à pas",
-    card_words_title:"Lecture de mots entiers",
-    card_words_desc:"Lis le mot complet à voix haute",
-    card_quiz_title:"Quiz",
-    card_quiz_desc:"Devine le bon mot",
-    card_stories_title:"Histoires",
-    card_stories_desc:"Écoute et lis de belles histoires",
-    card_mywords_title:"Mes mots",
-    card_mywords_desc:"Ajoute tes propres mots",
-    card_settings_title:"Ma voix & réglages",
-    card_settings_desc:"Choisis une voix ou enregistre la tienne",
-    card_sentences_title:"Phrases",
-    card_sentences_desc:"Remets les mots dans l'ordre",
-    card_sound_title:"Le son du début",
-    card_sound_desc:"Trouve l'image qui commence pareil",
-    title_category:"Choisis une catégorie",
-    title_sentences:"Phrases",
-    title_sound:"Le son du début",
-    title_progress:"Progrès",
-    settings_progress:"Progrès de l'enfant",
-    settings_progress_desc:"Vois quels mots sont déjà bien maîtrisés et lesquels ont besoin de plus de pratique.",
-    btn_see_progress:"📊 Voir les progrès",
-    word_ph_category:"Catégorie (ex : Animaux, Facile...) — laisse vide pour Général",
-    btn_translate:"🌐 Traduire",
-    btn_translate_title:"🌐 Traduire le titre",
-    btn_translate_text:"🌐 Traduire le texte",
-    sentence_form_add_title:"➕ Ajouter une phrase",
-    sentence_ph_text:"Écris une phrase courte (ex : Le chien court vite)",
-    sentence_form_add_btn:"✅ Ajouter la phrase",
-    import_sentences_hint:"Ou importe plusieurs phrases d'un coup depuis un fichier .txt (une phrase par ligne : \"Le chat dort|🐱|Animaux\") :",
-    btn_import_sentences_txt:"📄 Importer une liste de phrases (.txt)",
-    btn_play_sentences_mine:"📝 Jouer avec mes phrases",
-    btn_manage_sentence_groups:"👥 Gérer mes groupes de phrases",
-    title_sentence_groups:"Mes groupes de phrases",
-    sgroups_intro:"Crée un petit groupe de phrases choisies à la main — au lieu de jouer avec toutes tes phrases en même temps.",
-    sgroup_form_add_title:"➕ Créer un groupe de phrases",
-    sgroup_ph_name:"Nom du groupe (ex : Phrases faciles)",
-    sgroups_pick_hint:"Coche les phrases à inclure :",
-    sgroup_form_add_btn:"✅ Enregistrer le groupe",
-    sgroups_list_title:"Groupes créés",
-    btn_manage_sentences:"📝 Gérer mes phrases",
-    title_sentence_manager:"Mes phrases",
-    sentences_intro:"Ajoute, modifie ou supprime tes propres phrases pour le jeu \"Phrases\".",
-    sentences_list_title:"Mes phrases ajoutées",
-    btn_add_word_quick:"✏️ Ajouter d'autres mots",
-    back:"← Retour",
-    title_syllables:"Jeu des syllabes",
-    title_words:"Lecture de mots entiers",
-    title_quiz:"Quiz",
-    title_stories:"Histoires",
-    title_mywords:"Mes mots",
-    title_settings:"Réglages",
-    btn_listen_word:"🔊 Écouter le mot",
-    btn_next_word:"➡️ Mot suivant",
-    btn_next_sentence:"➡️ Phrase suivante",
-    btn_prev_word:"⬅️ Précédent",
-    btn_next_word_arrow:"Suivant ➡️",
-    btn_listen:"🔊 Écouter",
-    btn_show_image:"👀 Montrer l'image",
-    btn_hide_image:"🙈 Cacher l'image",
-    btn_retry:"🤔 À revoir",
-    btn_success:"👍 J'ai réussi !",
-    mywords_intro:"Ajoute des mots en français ou en italien pour le jeu des syllabes, la lecture de mots et le quiz.",
-    category_filter_hint:"Choisis une catégorie pour filtrer la liste et ajouter directement un mot dedans :",
-    word_form_add_title:"➕ Ajouter un mot",
-    word_ph_text:"Le mot (ex : dinosaure)",
-    word_ph_syllables:"Syllabes séparées par des tirets (ex : di-no-saure) — laisse vide pour un découpage automatique",
-    word_ph_emoji:"Un emoji pour le mot (ex : 🦖)",
-    photo_label:"📷 Ou ajoute une photo à toi (remplace l'emoji) :",
-    word_form_add_btn:"✅ Ajouter le mot",
-    btn_cancel:"✖️ Annuler",
-    import_words_hint:"Ou importe plusieurs mots d'un coup depuis un fichier .txt (un mot par ligne, ou \"mot|syllabes|emoji|catégorie\") :",
-    btn_import_words_txt:"📄 Importer une liste de mots (.txt)",
-    btn_download_template:"⬇️ Modèle .txt",
-    import_stories_hint:"Ou importe plusieurs histoires d'un coup depuis un fichier .txt (une histoire par ligne : \"titre|texte|emoji\") :",
-    btn_import_stories_txt:"📄 Importer une liste d'histoires (.txt)",
-    mywords_list_title:"Mes mots ajoutés",
-    btn_play_syllables_mine:"🪨 Jouer aux syllabes avec mes mots",
-    btn_read_mine:"🔤 Lire mes mots en entier",
-    btn_quiz_mine:"🎯 Quiz avec mes mots",
-    btn_manage_groups:"👥 Gérer mes groupes de mots",
-    title_groups:"Mes groupes",
-    groups_intro:"Crée un groupe et choisis à la main quels mots il contient — utile pour préparer une leçon précise.",
-    group_form_add_title:"➕ Créer un groupe",
-    group_ph_name:"Nom du groupe (ex : Leçon de lundi)",
-    groups_pick_hint:"Coche les mots à inclure :",
-    group_form_add_btn:"✅ Enregistrer le groupe",
-    groups_list_title:"Groupes créés",
-    story_form_add_title:"➕ Ajouter une histoire",
-    story_ph_title:"Titre de l'histoire (ex : Le petit chat curieux)",
-    story_ph_text:"Écris ou colle le texte de l'histoire ici...",
-    story_ph_emoji:"Un emoji pour l'histoire (ex : 🐱)",
-    story_form_add_btn:"✅ Ajouter l'histoire",
-    btn_read_story:"▶️ Lire l'histoire",
-    label_voice:"Voix",
-    label_speed:"Vitesse",
-    btn_record:"🎙️ Enregistrer avec ma voix",
-    btn_import_mp3:"📁 Importer un MP3",
-    btn_listen_myvoice:"🔊 Écouter ma voix",
-    voice_slots_title:"🎙️ Voix personnalisées pour cette histoire",
-    voice_slots_hint:"Ajoute jusqu'à 3 voix (enregistrées ou importées) et choisis celle que tu veux écouter.",
-    slot_default_label:"Voix",
-    slot_record:"🎙️ Enregistrer",
-    slot_stop:"⏹️ Stop",
-    slot_import:"📁 MP3",
-    slot_listen:"🔊 Écouter",
-    slot_delete:"🗑️",
-    slot_recording:"Enregistrement en cours...",
-    slot_empty:"Aucune voix ici pour l'instant.",
-    settings_voice_fr:"Voix pour le français 🇫🇷",
-    settings_voice_it:"Voix pour l'italien 🇮🇹",
-    settings_test:"Tester les voix",
-    settings_contrast:"Lecture contrastée",
-    settings_contrast_desc:"Grand contraste, texte plus grand et plus espacé",
-    settings_autorepeat:"Répétition automatique",
-    settings_autorepeat_desc:"Chaque mot est répété deux fois pour mieux le mémoriser",
-    settings_simplequiz:"Quiz simplifié",
-    settings_simplequiz_desc:"2 choix au lieu de 3, sans précipitation",
-    settings_storage:"Sauvegarde",
-    settings_storage_desc:"Tes mots, histoires, enregistrements et étoiles sont sauvegardés automatiquement dans ce navigateur.",
-    settings_backup_hint:"⚠️ Le stockage du navigateur a une limite. Pour ne jamais perdre ton travail (surtout avec beaucoup d'enregistrements), exporte régulièrement une sauvegarde.",
-    btn_export:"💾 Exporter une sauvegarde",
-    btn_import_backup:"📂 Importer une sauvegarde",
-    btn_reset:"🗑️ Réinitialiser toutes les données",
-    settings_about_voices:"À propos des voix",
-    settings_about_voices_desc:"Les voix proposées viennent de ton appareil (iPad, Android ou Windows) — elles peuvent changer d'un appareil à l'autre. L'enregistrement de \"ma voix\" (dans une histoire) rejoue exactement ta propre voix, ce n'est pas une voix synthétique.",
-    quiz_question:"Quel est ce mot ?",
-    quiz_replay:"🔊 Réécouter",
-    quiz_score_label:"Score",
-    quiz_score_sub:"Continue comme ça, tu progresses !",
-    quiz_again:"🔁 Rejouer",
-    quiz_home:"🏠 Accueil",
-    quiz_see_score:"🏁 Voir mon score",
-    no_words_lang:"Aucun mot disponible dans cette langue pour l'instant.",
-    no_stories_lang:"Aucune histoire dans cette langue pour l'instant — ajoutes-en une ci-dessous !",
-    no_mywords:"Tu n'as pas encore ajouté de mot.",
-    all_words_read:"Bravo, tu as lu tous les mots !"
-  },
-  it:{
-    home_title:"Ciao! Pronto a giocare con le parole?",
-    home_subtitle:"Scegli un'attività per iniziare l'avventura 🌟",
-    card_syllables_title:"Gioco delle sillabe",
-    card_syllables_desc:"Componi le parole passo dopo passo",
-    card_words_title:"Lettura di parole intere",
-    card_words_desc:"Leggi la parola intera ad alta voce",
-    card_quiz_title:"Quiz",
-    card_quiz_desc:"Indovina la parola giusta",
-    card_stories_title:"Storie",
-    card_stories_desc:"Ascolta e leggi belle storie",
-    card_mywords_title:"Le mie parole",
-    card_mywords_desc:"Aggiungi le tue parole",
-    card_settings_title:"La mia voce e impostazioni",
-    card_settings_desc:"Scegli una voce o registra la tua",
-    card_sentences_title:"Frasi",
-    card_sentences_desc:"Rimetti le parole in ordine",
-    card_sound_title:"Il suono iniziale",
-    card_sound_desc:"Trova l'immagine che inizia allo stesso modo",
-    title_category:"Scegli una categoria",
-    title_sentences:"Frasi",
-    title_sound:"Il suono iniziale",
-    title_progress:"Progressi",
-    settings_progress:"Progressi del bambino",
-    settings_progress_desc:"Guarda quali parole sono già ben padroneggiate e quali hanno bisogno di più pratica.",
-    btn_see_progress:"📊 Vedi i progressi",
-    word_ph_category:"Categoria (es: Animali, Facile...) — lascia vuoto per Generale",
-    btn_translate:"🌐 Traduci",
-    btn_translate_title:"🌐 Traduci il titolo",
-    btn_translate_text:"🌐 Traduci il testo",
-    sentence_form_add_title:"➕ Aggiungi una frase",
-    sentence_ph_text:"Scrivi una frase corta (es: Il cane corre veloce)",
-    sentence_form_add_btn:"✅ Aggiungi la frase",
-    import_sentences_hint:"Oppure importa più frasi insieme da un file .txt (una frase per riga: \"Il gatto dorme|🐱|Animali\"):",
-    btn_import_sentences_txt:"📄 Importa un elenco di frasi (.txt)",
-    btn_play_sentences_mine:"📝 Gioca con le mie frasi",
-    btn_manage_sentence_groups:"👥 Gestisci i miei gruppi di frasi",
-    title_sentence_groups:"I miei gruppi di frasi",
-    sgroups_intro:"Crea un piccolo gruppo di frasi scelte a mano — invece di giocare con tutte le tue frasi insieme.",
-    sgroup_form_add_title:"➕ Crea un gruppo di frasi",
-    sgroup_ph_name:"Nome del gruppo (es: Frasi facili)",
-    sgroups_pick_hint:"Seleziona le frasi da includere:",
-    sgroup_form_add_btn:"✅ Salva il gruppo",
-    sgroups_list_title:"Gruppi creati",
-    btn_manage_sentences:"📝 Gestisci le mie frasi",
-    title_sentence_manager:"Le mie frasi",
-    sentences_intro:"Aggiungi, modifica o elimina le tue frasi per il gioco \"Frasi\".",
-    sentences_list_title:"Le mie frasi aggiunte",
-    btn_add_word_quick:"✏️ Aggiungi altre parole",
-    back:"← Indietro",
-    title_syllables:"Gioco delle sillabe",
-    title_words:"Lettura di parole intere",
-    title_quiz:"Quiz",
-    title_stories:"Storie",
-    title_mywords:"Le mie parole",
-    title_settings:"Impostazioni",
-    btn_listen_word:"🔊 Ascolta la parola",
-    btn_next_word:"➡️ Parola successiva",
-    btn_next_sentence:"➡️ Frase successiva",
-    btn_prev_word:"⬅️ Precedente",
-    btn_next_word_arrow:"Successiva ➡️",
-    btn_listen:"🔊 Ascolta",
-    btn_show_image:"👀 Mostra l'immagine",
-    btn_hide_image:"🙈 Nascondi immagine",
-    btn_retry:"🤔 Da rivedere",
-    btn_success:"👍 Ce l'ho fatta!",
-    mywords_intro:"Aggiungi parole in francese o in italiano per il gioco delle sillabe, la lettura di parole e il quiz.",
-    category_filter_hint:"Scegli una categoria per filtrare la lista e aggiungere direttamente una parola in essa:",
-    word_form_add_title:"➕ Aggiungi una parola",
-    word_ph_text:"La parola (es: dinosauro)",
-    word_ph_syllables:"Sillabe separate da trattini (es: di-no-sau-ro) — lascia vuoto per una divisione automatica",
-    word_ph_emoji:"Un emoji per la parola (es: 🦖)",
-    photo_label:"📷 Oppure aggiungi una tua foto (sostituisce l'emoji):",
-    word_form_add_btn:"✅ Aggiungi la parola",
-    btn_cancel:"✖️ Annulla",
-    import_words_hint:"Oppure importa più parole insieme da un file .txt (una parola per riga, oppure \"parola|sillabe|emoji|categoria\"):",
-    btn_import_words_txt:"📄 Importa un elenco di parole (.txt)",
-    btn_download_template:"⬇️ Modello .txt",
-    import_stories_hint:"Oppure importa più storie insieme da un file .txt (una storia per riga: \"titolo|testo|emoji\"):",
-    btn_import_stories_txt:"📄 Importa un elenco di storie (.txt)",
-    mywords_list_title:"Le mie parole aggiunte",
-    btn_play_syllables_mine:"🪨 Gioca alle sillabe con le mie parole",
-    btn_read_mine:"🔤 Leggi le mie parole intere",
-    btn_quiz_mine:"🎯 Quiz con le mie parole",
-    btn_manage_groups:"👥 Gestisci i miei gruppi di parole",
-    title_groups:"I miei gruppi",
-    groups_intro:"Crea un gruppo e scegli a mano quali parole contiene — utile per preparare una lezione precisa.",
-    group_form_add_title:"➕ Crea un gruppo",
-    group_ph_name:"Nome del gruppo (es: Lezione di lunedì)",
-    groups_pick_hint:"Seleziona le parole da includere:",
-    group_form_add_btn:"✅ Salva il gruppo",
-    groups_list_title:"Gruppi creati",
-    story_form_add_title:"➕ Aggiungi una storia",
-    story_ph_title:"Titolo della storia (es: Il gattino curioso)",
-    story_ph_text:"Scrivi o incolla qui il testo della storia...",
-    story_ph_emoji:"Un emoji per la storia (es: 🐱)",
-    story_form_add_btn:"✅ Aggiungi la storia",
-    btn_read_story:"▶️ Leggi la storia",
-    label_voice:"Voce",
-    label_speed:"Velocità",
-    btn_record:"🎙️ Registra con la mia voce",
-    btn_import_mp3:"📁 Importa un MP3",
-    btn_listen_myvoice:"🔊 Ascolta la mia voce",
-    voice_slots_title:"🎙️ Voci personalizzate per questa storia",
-    voice_slots_hint:"Aggiungi fino a 3 voci (registrate o importate) e scegli quale ascoltare.",
-    slot_default_label:"Voce",
-    slot_record:"🎙️ Registra",
-    slot_stop:"⏹️ Stop",
-    slot_import:"📁 MP3",
-    slot_listen:"🔊 Ascolta",
-    slot_delete:"🗑️",
-    slot_recording:"Registrazione in corso...",
-    slot_empty:"Nessuna voce qui per il momento.",
-    settings_voice_fr:"Voce per il francese 🇫🇷",
-    settings_voice_it:"Voce per l'italiano 🇮🇹",
-    settings_test:"Prova le voci",
-    settings_contrast:"Lettura ad alto contrasto",
-    settings_contrast_desc:"Contrasto elevato, testo più grande e spaziato",
-    settings_autorepeat:"Ripetizione automatica",
-    settings_autorepeat_desc:"Ogni parola viene ripetuta due volte per memorizzarla meglio",
-    settings_simplequiz:"Quiz semplificato",
-    settings_simplequiz_desc:"2 scelte invece di 3, senza fretta",
-    settings_storage:"Salvataggio",
-    settings_storage_desc:"Le tue parole, storie, registrazioni e stelle vengono salvate automaticamente in questo browser.",
-    settings_backup_hint:"⚠️ Lo spazio di archiviazione del browser ha un limite. Per non perdere mai il tuo lavoro (soprattutto con molte registrazioni), esporta regolarmente un backup.",
-    btn_export:"💾 Esporta un backup",
-    btn_import_backup:"📂 Importa un backup",
-    btn_reset:"🗑️ Reimposta tutti i dati",
-    settings_about_voices:"A proposito delle voci",
-    settings_about_voices_desc:"Le voci proposte provengono dal tuo dispositivo (iPad, Android o Windows) — possono cambiare da un dispositivo all'altro. La registrazione \"la mia voce\" (in una storia) riproduce esattamente la tua voce, non è una voce sintetica.",
-    quiz_question:"Qual è questa parola?",
-    quiz_replay:"🔊 Riascolta",
-    quiz_score_label:"Punteggio",
-    quiz_score_sub:"Continua così, stai migliorando!",
-    quiz_again:"🔁 Rigioca",
-    quiz_home:"🏠 Home",
-    quiz_see_score:"🏁 Vedi il punteggio",
-    no_words_lang:"Nessuna parola disponibile in questa lingua per il momento.",
-    no_stories_lang:"Nessuna storia in questa lingua per il momento — aggiungine una qui sotto!",
-    no_mywords:"Non hai ancora aggiunto nessuna parola.",
-    all_words_read:"Bravo, hai letto tutte le parole!"
-  }
+  fr:{home_title:"Coucou ! Prêt à jouer avec les mots ?",home_subtitle:"Choisis une activité pour commencer l'aventure 🌟",card_syllables_title:"Jeu des syllabes",card_syllables_desc:"Assemble les mots pas à pas",card_words_title:"Lecture de mots entiers",card_words_desc:"Lis le mot complet à voix haute",card_quiz_title:"Quiz",card_quiz_desc:"Devine le bon mot",card_stories_title:"Histoires",card_stories_desc:"Écoute et lis de belles histoires",card_mywords_title:"Mes mots",card_mywords_desc:"Ajoute tes propres mots",card_settings_title:"Ma voix & réglages",card_settings_desc:"Choisis une voix ou enregistre la tienne",card_sentences_title:"Phrases",card_sentences_desc:"Remets les mots dans l'ordre",card_sound_title:"Le son du début",card_sound_desc:"Trouve l'image qui commence pareil",title_category:"Choisis une catégorie",title_sentences:"Phrases",title_sound:"Le son du début",title_progress:"Progrès",settings_progress:"Progrès de l'enfant",settings_progress_desc:"Vois quels mots sont déjà bien maîtrisés et lesquels ont besoin de plus de pratique.",btn_see_progress:"📊 Voir les progrès",word_ph_category:"Catégorie (ex : Animaux, Facile...) — laisse vide pour Général",btn_translate:"🌐 Traduire",btn_translate_title:"🌐 Traduire le titre",btn_translate_text:"🌐 Traduire le texte",sentence_form_add_title:"➕ Ajouter une phrase",sentence_ph_text:"Écris une phrase courte (ex : Le chien court vite)",sentence_form_add_btn:"✅ Ajouter la phrase",import_sentences_hint:"Ou importe plusieurs phrases d'un coup depuis un fichier .txt (une phrase par ligne : \"Le chat dort|🐱|Animaux\") :",btn_import_sentences_txt:"📄 Importer une liste de phrases (.txt)",btn_play_sentences_mine:"📝 Jouer avec mes phrases",btn_manage_sentence_groups:"👥 Gérer mes groupes de phrases",title_sentence_groups:"Mes groupes de phrases",sgroups_intro:"Crée un petit groupe de phrases choisies à la main — au lieu de jouer avec toutes tes phrases en même temps.",sgroup_form_add_title:"➕ Créer un groupe de phrases",sgroup_ph_name:"Nom du groupe (ex : Phrases faciles)",sgroups_pick_hint:"Coche les phrases à inclure :",sgroup_form_add_btn:"✅ Enregistrer le groupe",sgroups_list_title:"Groupes créés",btn_manage_sentences:"📝 Gérer mes phrases",title_sentence_manager:"Mes phrases",sentences_intro:"Ajoute, modifie ou supprime tes propres phrases pour le jeu \"Phrases\".",sentences_list_title:"Mes phrases ajoutées",btn_add_word_quick:"✏️ Ajouter d'autres mots",back:"← Retour",title_syllables:"Jeu des syllabes",title_words:"Lecture de mots entiers",title_quiz:"Quiz",title_stories:"Histoires",title_mywords:"Mes mots",title_settings:"Réglages",btn_listen_word:"🔊 Écouter le mot",btn_next_word:"➡️ Mot suivant",btn_next_sentence:"➡️ Phrase suivante",btn_prev_word:"⬅️ Précédent",btn_next_word_arrow:"Suivant ➡️",btn_listen:"🔊 Écouter",btn_show_image:"👀 Montrer l'image",btn_hide_image:"🙈 Cacher l'image",btn_retry:"🤔 À revoir",btn_success:"👍 J'ai réussi !",mywords_intro:"Ajoute des mots en français ou en italien pour le jeu des syllabes, la lecture de mots et le quiz.",category_filter_hint:"Choisis une catégorie pour filtrer la liste et ajouter directement un mot dedans :",word_form_add_title:"➕ Ajouter un mot",word_ph_text:"Le mot (ex : dinosaure)",word_ph_syllables:"Syllabes séparées par des tirets (ex : di-no-saure) — laisse vide pour un découpage automatique",word_ph_emoji:"Un emoji pour le mot (ex : 🦖)",photo_label:"📷 Ou ajoute une photo à toi (remplace l'emoji) :",word_form_add_btn:"✅ Ajouter le mot",btn_cancel:"✖️ Annuler",import_words_hint:"Ou importe plusieurs mots d'un coup depuis un fichier .txt (un mot par ligne, ou \"mot|syllabes|emoji|catégorie\") :",btn_import_words_txt:"📄 Importer une liste de mots (.txt)",btn_download_template:"⬇️ Modèle .txt",import_stories_hint:"Ou importe plusieurs histoires d'un coup depuis un fichier .txt (une histoire par ligne : \"titre|texte|emoji\") :",btn_import_stories_txt:"📄 Importer une liste d'histoires (.txt)",mywords_list_title:"Mes mots ajoutés",btn_play_syllables_mine:"🪨 Jouer aux syllabes avec mes mots",btn_read_mine:"🔤 Lire mes mots en entier",btn_quiz_mine:"🎯 Quiz avec mes mots",btn_manage_groups:"👥 Gérer mes groupes de mots",title_groups:"Mes groupes",groups_intro:"Crée un groupe et choisis à la main quels mots il contient — utile pour préparer une leçon précise.",group_form_add_title:"➕ Créer un groupe",group_ph_name:"Nom du groupe (ex : Leçon de lundi)",groups_pick_hint:"Coche les mots à inclure :",group_form_add_btn:"✅ Enregistrer le groupe",groups_list_title:"Groupes créés",story_form_add_title:"➕ Ajouter une histoire",story_ph_title:"Titre de l'histoire (ex : Le petit chat curieux)",story_ph_text:"Écris ou colle le texte de l'histoire ici...",story_ph_emoji:"Un emoji pour l'histoire (ex : 🐱)",story_form_add_btn:"✅ Ajouter l'histoire",btn_read_story:"▶️ Lire l'histoire",label_voice:"Voix",label_speed:"Vitesse",btn_record:"🎙️ Enregistrer avec ma voix",btn_import_mp3:"📁 Importer un MP3",btn_listen_myvoice:"🔊 Écouter ma voix",voice_slots_title:"🎙️ Voix personnalisées pour cette histoire",voice_slots_hint:"Ajoute jusqu'à 3 voix (enregistrées ou importées) et choisis celle que tu veux écouter.",slot_default_label:"Voix",slot_record:"🎙️ Enregistrer",slot_stop:"⏹️ Stop",slot_import:"📁 MP3",slot_listen:"🔊 Écouter",slot_delete:"🗑️",slot_recording:"Enregistrement en cours...",slot_empty:"Aucune voix ici pour l'instant.",settings_voice_fr:"Voix pour le français 🇫🇷",settings_voice_it:"Voix pour l'italien 🇮🇹",settings_test:"Tester les voix",settings_contrast:"Lecture contrastée",settings_contrast_desc:"Grand contraste, texte plus grand et plus espacé",settings_autorepeat:"Répétition automatique",settings_autorepeat_desc:"Chaque mot est répété deux fois pour mieux le mémoriser",settings_simplequiz:"Quiz simplifié",settings_simplequiz_desc:"2 choix au lieu de 3, sans précipitation",settings_storage:"Sauvegarde",settings_storage_desc:"Tes mots, histoires, enregistrements et étoiles sont sauvegardés automatiquement dans ce navigateur.",settings_backup_hint:"⚠️ Le stockage du navigateur a une limite. Pour ne jamais perdre ton travail (surtout avec beaucoup d'enregistrements), exporte régulièrement une sauvegarde.",btn_export:"💾 Exporter une sauvegarde",btn_import_backup:"📂 Importer une sauvegarde",btn_reset:"🗑️ Réinitialiser toutes les données",settings_about_voices:"À propos des voix",settings_about_voices_desc:"Les voix proposées viennent de ton appareil (iPad, Android ou Windows) — elles peuvent changer d'un appareil à l'autre. L'enregistrement de \"ma voix\" (dans une histoire) rejoue exactement ta propre voix, ce n'est pas une voix synthétique.",quiz_question:"Quel est ce mot ?",quiz_replay:"🔊 Réécouter",quiz_score_label:"Score",quiz_score_sub:"Continue comme ça, tu progresses !",quiz_again:"🔁 Rejouer",quiz_home:"🏠 Accueil",quiz_see_score:"🏁 Voir mon score",no_words_lang:"Aucun mot disponible dans cette langue pour l'instant.",no_stories_lang:"Aucune histoire dans cette langue pour l'instant — ajoutes-en une ci-dessous !",no_mywords:"Tu n'as pas encore ajouté de mot.",all_words_read:"Bravo, tu as lu tous les mots !"},
+  it:{home_title:"Ciao! Pronto a giocare con le parole?",home_subtitle:"Scegli un'attività per iniziare l'avventura 🌟",card_syllables_title:"Gioco delle sillabe",card_syllables_desc:"Componi le parole passo dopo passo",card_words_title:"Lettura di parole intere",card_words_desc:"Leggi la parola intera ad alta voce",card_quiz_title:"Quiz",card_quiz_desc:"Indovina la parola giusta",card_stories_title:"Storie",card_stories_desc:"Ascolta e leggi belle storie",card_mywords_title:"Le mie parole",card_mywords_desc:"Aggiungi le tue parole",card_settings_title:"La mia voce e impostazioni",card_settings_desc:"Scegli una voce o registra la tua",card_sentences_title:"Frasi",card_sentences_desc:"Rimetti le parole in ordine",card_sound_title:"Il suono iniziale",card_sound_desc:"Trova l'immagine che inizia allo stesso modo",title_category:"Scegli una categoria",title_sentences:"Frasi",title_sound:"Il suono iniziale",title_progress:"Progressi",settings_progress:"Progressi del bambino",settings_progress_desc:"Guarda quali parole sono già ben padroneggiate e quali hanno bisogno di più pratica.",btn_see_progress:"📊 Vedi i progressi",word_ph_category:"Categoria (es: Animali, Facile...) — lascia vuoto per Generale",btn_translate:"🌐 Traduci",btn_translate_title:"🌐 Traduci il titolo",btn_translate_text:"🌐 Traduci il testo",sentence_form_add_title:"➕ Aggiungi una frase",sentence_ph_text:"Scrivi una frase corta (es: Il cane corre veloce)",sentence_form_add_btn:"✅ Aggiungi la frase",import_sentences_hint:"Oppure importa più frasi insieme da un file .txt (una frase per riga: \"Il gatto dorme|🐱|Animali\"):",btn_import_sentences_txt:"📄 Importa un elenco di frasi (.txt)",btn_play_sentences_mine:"📝 Gioca con le mie frasi",btn_manage_sentence_groups:"👥 Gestisci i miei gruppi di frasi",title_sentence_groups:"I miei gruppi di frasi",sgroups_intro:"Crea un piccolo gruppo di frasi scelte a mano — invece di giocare con tutte le tue frasi insieme.",sgroup_form_add_title:"➕ Crea un gruppo di frasi",sgroup_ph_name:"Nome del gruppo (es: Frasi facili)",sgroups_pick_hint:"Seleziona le frasi da includere:",sgroup_form_add_btn:"✅ Salva il gruppo",sgroups_list_title:"Gruppi creati",btn_manage_sentences:"📝 Gestisci le mie frasi",title_sentence_manager:"Le mie frasi",sentences_intro:"Aggiungi, modifica o elimina le tue frasi per il gioco \"Frasi\".",sentences_list_title:"Le mie frasi aggiunte",btn_add_word_quick:"✏️ Aggiungi altre parole",back:"← Indietro",title_syllables:"Gioco delle sillabe",title_words:"Lettura di parole intere",title_quiz:"Quiz",title_stories:"Storie",title_mywords:"Le mie parole",title_settings:"Impostazioni",btn_listen_word:"🔊 Ascolta la parola",btn_next_word:"➡️ Parola successiva",btn_next_sentence:"➡️ Frase successiva",btn_prev_word:"⬅️ Precedente",btn_next_word_arrow:"Successiva ➡️",btn_listen:"🔊 Ascolta",btn_show_image:"👀 Mostra l'immagine",btn_hide_image:"🙈 Nascondi immagine",btn_retry:"🤔 Da rivedere",btn_success:"👍 Ce l'ho fatta!",mywords_intro:"Aggiungi parole in francese o in italiano per il gioco delle sillabe, la lettura di parole e il quiz.",category_filter_hint:"Scegli una categoria per filtrare la lista e aggiungere direttamente una parola in essa:",word_form_add_title:"➕ Aggiungi una parola",word_ph_text:"La parola (es: dinosauro)",word_ph_syllables:"Sillabe separate da trattini (es: di-no-sau-ro) — lascia vuoto per una divisione automatica",word_ph_emoji:"Un emoji per la parola (es: 🦖)",photo_label:"📷 Oppure aggiungi una tua foto (sostituisce l'emoji):",word_form_add_btn:"✅ Aggiungi la parola",btn_cancel:"✖️ Annulla",import_words_hint:"Oppure importa più parole insieme da un file .txt (una parola per riga, oppure \"parola|sillabe|emoji|categoria\"):",btn_import_words_txt:"📄 Importa un elenco di parole (.txt)",btn_download_template:"⬇️ Modello .txt",import_stories_hint:"Oppure importa più storie insieme da un file .txt (una storia per riga: \"titolo|testo|emoji\"):",btn_import_stories_txt:"📄 Importa un elenco di storie (.txt)",mywords_list_title:"Le mie parole aggiunte",btn_play_syllables_mine:"🪨 Gioca alle sillabe con le mie parole",btn_read_mine:"🔤 Leggi le mie parole intere",btn_quiz_mine:"🎯 Quiz con le mie parole",btn_manage_groups:"👥 Gestisci i miei gruppi di parole",title_groups:"I miei gruppi",groups_intro:"Crea un gruppo e scegli a mano quali parole contiene — utile per preparare una lezione precisa.",group_form_add_title:"➕ Crea un gruppo",group_ph_name:"Nome del gruppo (es: Lezione di lunedì)",groups_pick_hint:"Seleziona le parole da includere:",group_form_add_btn:"✅ Salva il gruppo",groups_list_title:"Gruppi creati",story_form_add_title:"➕ Aggiungi una storia",story_ph_title:"Titolo della storia (es: Il gattino curioso)",story_ph_text:"Scrivi o incolla qui il testo della storia...",story_ph_emoji:"Un emoji per la storia (es: 🐱)",story_form_add_btn:"✅ Aggiungi la storia",btn_read_story:"▶️ Leggi la storia",label_voice:"Voce",label_speed:"Velocità",btn_record:"🎙️ Registra con la mia voce",btn_import_mp3:"📁 Importa un MP3",btn_listen_myvoice:"🔊 Ascolta la mia voce",voice_slots_title:"🎙️ Voci personalizzate per questa storia",voice_slots_hint:"Aggiungi fino a 3 voci (registrate o importate) e scegli quale ascoltare.",slot_default_label:"Voce",slot_record:"🎙️ Registra",slot_stop:"⏹️ Stop",slot_import:"📁 MP3",slot_listen:"🔊 Ascolta",slot_delete:"🗑️",slot_recording:"Registrazione in corso...",slot_empty:"Nessuna voce qui per il momento.",settings_voice_fr:"Voce per il francese 🇫🇷",settings_voice_it:"Voce per l'italiano 🇮🇹",settings_test:"Prova le voci",settings_contrast:"Lettura ad alto contrasto",settings_contrast_desc:"Contrasto elevato, testo più grande e spaziato",settings_autorepeat:"Ripetizione automatica",settings_autorepeat_desc:"Ogni parola viene ripetuta due volte per memorizzarla meglio",settings_simplequiz:"Quiz semplificato",settings_simplequiz_desc:"2 scelte invece di 3, senza fretta",settings_storage:"Salvataggio",settings_storage_desc:"Le tue parole, storie, registrazioni e stelle vengono salvate automaticamente in questo browser.",settings_backup_hint:"⚠️ Lo spazio di archiviazione del browser ha un limite. Per non perdere mai il tuo lavoro (soprattutto con molte registrazioni), esporta regolarmente un backup.",btn_export:"💾 Esporta un backup",btn_import_backup:"📂 Importa un backup",btn_reset:"🗑️ Reimposta tutti i dati",settings_about_voices:"A proposito delle voci",settings_about_voices_desc:"Le voci proposte provengono dal tuo dispositivo (iPad, Android o Windows) — possono cambiare da un dispositivo all'altro. La registrazione \"la mia voce\" (in una storia) riproduce esattamente la tua voce, non è una voce sintetica.",quiz_question:"Qual è questa parola?",quiz_replay:"🔊 Riascolta",quiz_score_label:"Punteggio",quiz_score_sub:"Continua così, stai migliorando!",quiz_again:"🔁 Rigioca",quiz_home:"🏠 Home",quiz_see_score:"🏁 Vedi il punteggio",no_words_lang:"Nessuna parola disponibile in questa lingua per il momento.",no_stories_lang:"Nessuna storia in questa lingua per il momento — aggiungine una qui sotto!",no_mywords:"Non hai ancora aggiunto nessuna parola.",all_words_read:"Bravo, hai letto tutte le parole!"}
 };
 function applyUILang(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{
@@ -1501,24 +1082,21 @@ const WORDS_IT = [
   {word:"temporale", syllables:["tem","po","ra","le"], emoji:"⛈️", lang:"it", category:"Meteo"},
   {word:"nebbia", syllables:["neb","bia"], emoji:"🌫️", lang:"it", category:"Meteo"}
 ];
-let customWords = []; // {word, syllables, emoji, image, audio, lang, category}
+let customWords = [];
 let newWordImageData = null;
 let newStoryImageData = null;
 let editingWordIndex = null;
-let editingBaseWordKey = null; // set when editing a built-in word (its original "lang:word" key)
+let editingBaseWordKey = null;
 let editingStoryId = null;
-let selectedCategoryFilter = null; // null = show all categories
-let selectedDifficultyFilter = null; // null | 'easy' (<=2 syllables/mots) | 'hard' (3+)
-let wordStats = {}; // key "lang:word" -> {streak, attempts, successes}
+let selectedCategoryFilter = null;
+let selectedDifficultyFilter = null;
+let wordStats = {};
 let gameWrongCount = 0;
-let autoSpeakTimeout = null; // tracks pending delayed speech, so switching words cancels stale audio
-let reinforcedRepeatTimeout = null; // tracks the pending "say it again" from speakReinforced
+let autoSpeakTimeout = null;
+let reinforcedRepeatTimeout = null;
 function scheduleAutoSpeak(fn, delay){
   if(autoSpeakTimeout){ clearTimeout(autoSpeakTimeout); autoSpeakTimeout = null; }
-  if(reinforcedRepeatTimeout){ clearTimeout(reinforcedRepeatTimeout); reinforcedRepeatTimeout = null; } // cancel any pending "repeat the word again" from the previous word too
-  // stop any speech still queued/playing from a moment ago right away — the actual
-  // new speech only starts after "delay", so this never repeats the tight
-  // cancel()-then-speak() sequence that broke voice selection on Windows/Chrome
+  if(reinforcedRepeatTimeout){ clearTimeout(reinforcedRepeatTimeout); reinforcedRepeatTimeout = null; }
   window.speechSynthesis.cancel();
   autoSpeakTimeout = setTimeout(()=>{ autoSpeakTimeout = null; fn(); }, delay);
 }
@@ -1532,7 +1110,7 @@ function wordExists(word, lang, excludeBaseKey, excludeCustomIdx){
   const norm = word.trim().toLowerCase();
   return wordPool(lang).some(w=>{
     if(w.word.trim().toLowerCase() !== norm) return false;
-    if(w.isBase && w.baseKey === excludeBaseKey) return false; // it's the one being edited
+    if(w.isBase && w.baseKey === excludeBaseKey) return false;
     if(!w.isBase && excludeCustomIdx !== undefined && customWords[excludeCustomIdx] === w) return false;
     return true;
   });
@@ -1572,7 +1150,6 @@ function isMastered(w){
   if(s && typeof s.manual === 'boolean') return s.manual;
   return wordStreak(w) >= 3;
 }
-// picks up to n items from pool, favoring words that aren't mastered yet (spaced repetition)
 function weightedPick(pool, n){
   const weighted = [];
   pool.forEach(w=>{
@@ -1590,19 +1167,19 @@ function weightedPick(pool, n){
   }
   return result;
 }
-let newWordAudioData = null; // {url: dataURL}
+let newWordAudioData = null;
 let wordMediaRecorder = null;
 let wordRecordedChunks = [];
 let isRecordingWord = false;
-let syllableRecordings = {}; // "it:ca" -> {url, syllable, lang}
-let wordRecordings = {}; // "it:casa" -> {url, word, lang}
+let syllableRecordings = {};
+let wordRecordings = {};
 let syllableMediaRecorder = null;
 let syllableRecordedChunks = [];
 let recordingSyllableKey = null;
 let wordPronunciationMediaRecorder = null;
 let wordPronunciationChunks = [];
 let recordingWordPronunciationKey = null;
-let pendingGameType = null; // which game to launch after picking a category
+let pendingGameType = null;
 
 const SENTENCES_FR = [
   {words:["Le","chat","dort"], emoji:"🐱", lang:"fr", category:"Animaux"},
@@ -1628,7 +1205,7 @@ const SENTENCES_IT = [
   {words:["La","macchina","è","veloce"], emoji:"🚗", lang:"it", category:"Trasporti"},
   {words:["Mi","fa","male","il","piede"], emoji:"🦶", lang:"it", category:"Corpo"}
 ];
-let customSentences = []; // {words:[], emoji, lang, category}
+let customSentences = [];
 let editingSentenceIndex = null;
 function sentencePool(lang){
   const base = lang === 'it' ? SENTENCES_IT : SENTENCES_FR;
@@ -1641,7 +1218,7 @@ function sentenceCategoriesForLang(lang){
 function sentenceKey(s){
   return (s.lang || currentLang) + ':' + s.words.join(' ').toLowerCase();
 }
-let customSentenceGroups = []; // {name, lang, sentenceKeys:[...]}
+let customSentenceGroups = [];
 let editingSentenceGroupIndex = null;
 function renderSentenceGroupChecklist(){
   const lang = document.getElementById('new-sgroup-lang').value;
@@ -1732,7 +1309,7 @@ function renderSentenceGroupsScreen(){
   });
 }
 
-let customGroups = []; // {name, lang, wordKeys:[...]}
+let customGroups = [];
 let editingGroupIndex = null;
 function renderGroupWordChecklist(){
   const lang = document.getElementById('new-group-lang').value;
@@ -1862,8 +1439,8 @@ function iconHtml(item, size){
   return `<span style="font-size:${Math.round(size*0.85)}px;">${item.emoji||''}</span>`;
 }
 
-let deletedBaseWordKeys = []; // array of "lang:word" keys for base words the user deleted
-let baseWordOverrides = {}; // "lang:word" (original) -> edited fields
+let deletedBaseWordKeys = [];
+let baseWordOverrides = {};
 function wordPool(lang){
   const base = (lang === 'it' ? WORDS_IT : WORDS_FR)
     .filter(w => !deletedBaseWordKeys.includes(wordKey(w)))
@@ -1878,10 +1455,6 @@ function categoriesForLang(lang){
   return [...new Set(cats)].sort();
 }
 function autoSyllabifyCore(w){
-  // heuristic syllabifier for French/Italian: groups vowel runs as single nuclei
-  // (handles diphthongs like "oi", "eau"), and distributes consonant clusters
-  // following common rules — single consonant → next syllable, unsplittable
-  // clusters (bl, br, tr, gn, ch...) stay together, other clusters split evenly.
   const vowels = 'aeiouyàèéìòùâêîôûäëïöü';
   const isVowel = c => vowels.includes(c);
   const unsplittable = new Set(['bl','br','cl','cr','dr','fl','fr','gl','gr','pl','pr','tr','vr','ch','gh','gn','sc','qu']);
@@ -1938,9 +1511,6 @@ function autoSyllabifyCore(w){
 }
 function autoSyllabify(word){
   const w = word.toLowerCase();
-  // compound words (hyphens, apostrophes, spaces) — syllabify each alphabetic
-  // chunk separately, then re-attach the separators so they don't get treated
-  // as consonants and produce broken results (e.g. "arc-en-ciel")
   const tokens = w.match(/[a-zàèéìòùâêîôûäëïöü]+|[^a-zàèéìòùâêîôûäëïöü]+/g);
   if(!tokens || tokens.length <= 1) return autoSyllabifyCore(w);
   let result = [];
@@ -1948,16 +1518,13 @@ function autoSyllabify(word){
     if(/^[a-zàèéìòùâêîôûäëïöü]+$/.test(tok)){
       result = result.concat(autoSyllabifyCore(tok));
     } else if(result.length){
-      result[result.length-1] += tok; // attach separator to the previous syllable
+      result[result.length-1] += tok;
     } else {
       result.push(tok);
     }
   });
   return result.length ? result : [word];
 }
-// opens Google Translate in a new tab with the current field's text, pre-set to translate
-// into whichever language is selected in the paired language dropdown — requires internet,
-// and the person still copies the result back manually (no in-app auto-translation).
 function openTranslateHelper(textFieldId, langFieldId){
   const textEl = document.getElementById(textFieldId);
   const text = (textEl.value || '').trim();
@@ -2073,7 +1640,7 @@ function importSentencesTxt(evt){
       const phrase = parts[0];
       if(!phrase) return;
       const words = phrase.split(/\s+/).filter(Boolean);
-      if(words.length < 2) return; // a "sentence" needs at least 2 words to be orderable
+      if(words.length < 2) return;
       const norm = lang+':'+words.join(' ').toLowerCase();
       if(seenInFile.has(norm) || sentenceExists(words, lang)){ skipped++; return; }
       seenInFile.add(norm);
@@ -2130,18 +1697,16 @@ let stories = [
   {id:12, lang:"it", title:"Una giornata di pioggia", emoji:"🌧️", builtin:true,
    text:"Ci sono nuvole nel cielo. Il vento soffia forte. Poi inizia a piovere. Leo mette gli stivali e va comunque a giocare fuori."}
 ];
-let storyRecordings = {}; // id -> {url}  (url is a data: URL so it can be saved)
-let storyGroups = []; // {id, name}; stories keep their group ids in story.groupIds
-// Keep a clean copy of the stories included with the app. Older saves may contain
-// an empty allStories list; that must never make the included stories disappear.
+let storyRecordings = {};
+let storyGroups = [];
 const builtInStories = stories.map(s=>Object.assign({}, s));
 let currentStoryId = null;
 let mediaRecorder = null;
 let recordedChunks = [];
-let currentRecordingSlot = null; // index 0-2 of the slot currently being recorded, or null
+let currentRecordingSlot = null;
 let currentUtterance = null;
 let isSpeaking = false;
-let readerSentenceIndex = 0; // where the story reader will resume from on next Play
+let readerSentenceIndex = 0;
 
 function setLang(lang){
   currentLang = lang;
@@ -2165,8 +1730,6 @@ function goHome(){ showScreen('screen-home'); }
 
 /* ---------------- VOICES ---------------- */
 function voiceKey(v){
-  // voiceURI is unreliable on some browsers/devices (empty or duplicated) —
-  // name + lang is a much more stable identifier across getVoices() calls.
   return v.name + '|' + v.lang;
 }
 function votesForLang(lang){
@@ -2197,7 +1760,6 @@ function loadVoices(){
   });
   populateVoiceSelect('settings-voice-select-fr', 'fr');
   populateVoiceSelect('settings-voice-select-it', 'it');
-  // if a story is currently open in the reader, refresh its voice list too
   const s = stories.find(x=>x.id===currentStoryId);
   if(s) populateVoiceSelect('reader-voice-select', s.lang);
 }
@@ -2232,8 +1794,6 @@ document.getElementById('reader-voice-select').addEventListener('change', e=>{
 });
 
 function speak(text, rate, onend, lang){
-  // refresh the voice list right before speaking — on some browsers/devices
-  // getVoices() returns an empty/stale array until this is called again
   const freshVoices = window.speechSynthesis.getVoices();
   if(freshVoices && freshVoices.length) voicesList = freshVoices;
   const targetLang = lang || currentLang;
@@ -2252,11 +1812,6 @@ function speak(text, rate, onend, lang){
     if(dbg && v) dbg.textContent = `✅ Lecture en cours avec : ${v.name} (${v.lang})`;
   };
   currentUtterance = u;
-  // NEVER cancel() an in-progress utterance just to start a new one — on Chrome/Windows,
-  // cancel()+speak() in quick succession makes the browser silently revert to the default
-  // voice for the rest of the session. Letting new utterances queue naturally (as the
-  // story reader already did) avoids that bug entirely; only showScreen() cancels speech,
-  // when actually leaving a screen.
   window.speechSynthesis.speak(u);
 }
 function testVoice(lang){
@@ -2275,7 +1830,6 @@ function showVoiceDebugInfo(lang){
     ? `▶ ${lang.toUpperCase()} : ${v.name} (${v.lang})`
     : `▶ ${lang.toUpperCase()} : aucune voix sélectionnée — ${voicesList.length} voix détectées au total sur cet appareil`;
 }
-// speaks a word, and if "auto repeat" is enabled, says it a second time after a short pause
 function speakReinforced(text, rate, lang, onend){
   if(reinforcedRepeatTimeout){ clearTimeout(reinforcedRepeatTimeout); reinforcedRepeatTimeout = null; }
   const times = autoRepeat ? 2 : 1;
@@ -2351,9 +1905,9 @@ function buildBackupData(){
     customSentenceGroups,
     deletedBaseWordKeys,
     baseWordOverrides,
-    allStories: stories, // full snapshot — lets built-in stories be edited/deleted too
+    allStories: stories,
     storyGroups,
-    storyRecordings, // {id: {url: dataURL}}
+    storyRecordings,
     syllableRecordings,
     wordRecordings
   };
@@ -2363,10 +1917,8 @@ function saveState(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(buildBackupData()));
     const bEl = document.getElementById('backup-status');
-    // clear any previous quota warning once a save succeeds again
     if(bEl && bEl.dataset.quotaWarning) { bEl.textContent = ''; delete bEl.dataset.quotaWarning; }
   }catch(err){
-    // quota exceeded or storage blocked — keep working in memory only, but warn visibly
     console.warn('Sauvegarde impossible :', err);
     const bEl = document.getElementById('backup-status');
     if(bEl){
@@ -2451,7 +2003,6 @@ function importBackup(evt){
   reader.readAsText(file);
 }
 function loadState(){
-  // test whether storage actually works in this environment (may be blocked in a sandboxed preview)
   try{
     localStorage.setItem('__test__','1');
     localStorage.removeItem('__test__');
@@ -2476,12 +2027,12 @@ function loadState(){
     if(typeof data.simplifiedQuiz === 'boolean') simplifiedQuiz = data.simplifiedQuiz;
     if(data.selectedVoiceURI) selectedVoiceURI = data.selectedVoiceURI;
     if(Array.isArray(data.customWords)) customWords = data.customWords;
-      if(Array.isArray(data.customSentences)) customSentences = data.customSentences;
-      if(data.wordStats) wordStats = data.wordStats;
-      if(Array.isArray(data.customGroups)) customGroups = data.customGroups;
-      if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = data.customSentenceGroups;
-      if(Array.isArray(data.deletedBaseWordKeys)) deletedBaseWordKeys = data.deletedBaseWordKeys;
-      if(data.baseWordOverrides) baseWordOverrides = data.baseWordOverrides;
+    if(Array.isArray(data.customSentences)) customSentences = data.customSentences;
+    if(data.wordStats) wordStats = data.wordStats;
+    if(Array.isArray(data.customGroups)) customGroups = data.customGroups;
+    if(Array.isArray(data.customSentenceGroups)) customSentenceGroups = data.customSentenceGroups;
+    if(Array.isArray(data.deletedBaseWordKeys)) deletedBaseWordKeys = data.deletedBaseWordKeys;
+    if(data.baseWordOverrides) baseWordOverrides = data.baseWordOverrides;
     if(Array.isArray(data.allStories) && data.allStories.length){
       stories = data.allStories;
     } else if(Array.isArray(data.customStories)){
@@ -2610,7 +2161,6 @@ function loadGameWord(){
   if(revealBtn) revealBtn.textContent = t('btn_hide_image');
   document.getElementById('game-celebrate').textContent = '';
 
-  // dots
   const dotsEl = document.getElementById('game-dots');
   dotsEl.innerHTML = '';
   gameWords.forEach((_,i)=>{
@@ -2619,7 +2169,6 @@ function loadGameWord(){
     dotsEl.appendChild(d);
   });
 
-  // slots
   const slotsEl = document.getElementById('game-slots');
   slotsEl.innerHTML = '';
   w.syllables.forEach(()=>{
@@ -2628,7 +2177,6 @@ function loadGameWord(){
     slotsEl.appendChild(s);
   });
 
-  // stones (shuffled)
   const shuffled = w.syllables.map((s,i)=>({s,i})).sort(()=>Math.random()-0.5);
   const stonesEl = document.getElementById('game-stones');
   stonesEl.innerHTML = '';
@@ -2969,7 +2517,6 @@ function clearManualMastery(key){
 function renderProgress(){
   const panel = document.getElementById('progress-panel');
   const masteredLabel = currentLang==='it' ? 'Padroneggiata' : 'Maîtrisé';
-  const practiceLabel = currentLang==='it' ? 'À exercer' : 'À exercer';
   const toPracticeLabel = currentLang==='it' ? 'Da esercitare' : 'À exercer';
   let html = '';
   ['fr','it'].forEach(lang=>{
@@ -3238,7 +2785,6 @@ function saveStoryGroup(){
   const groupId=id || String(Date.now());
   if(id){ const g=storyGroups.find(g=>String(g.id)===String(id)); if(g) g.name=name; }
   else storyGroups.push({id:groupId,name});
-  // Only change membership in this group: every other group of a story stays intact.
   stories.forEach(s=>{
     const existing=(s.groupIds||[]).map(String).filter(x=>x!==String(groupId));
     if(selectedStoryIds.includes(String(s.id))) existing.push(String(groupId));
@@ -3305,10 +2851,8 @@ function openStory(id){
   document.getElementById('reader-text').innerHTML = sentences.map((sent,i)=>`<span class="sentence" id="sent-${i}" onclick="jumpToSentence(${i})">${sent}</span>`).join(' ');
   document.getElementById('reader-play-btn').textContent = "▶️ Lire l'histoire";
   isSpeaking = false;
-  if(!isSameStory) readerSentenceIndex = 0; // switching to a DIFFERENT story starts from the beginning;
-  // reopening the same one (e.g. after going back to the list) keeps your paused spot
+  if(!isSameStory) readerSentenceIndex = 0;
   else if(readerSentenceIndex > 0 && readerSentenceIndex < sentences.length){
-    // re-highlight the sentence we'll resume from, so it's visible right away
     setTimeout(()=>{
       const el = document.getElementById('sent-'+readerSentenceIndex);
       if(el) el.classList.add('highlight');
@@ -3319,8 +2863,6 @@ function openStory(id){
   showScreen('screen-reader');
 }
 function jumpToSentence(i){
-  // tapping a sentence sets it as the resume point; if already reading, restart
-  // the flow from there right away instead of waiting for the next Play press
   const wasSpeaking = isSpeaking;
   if(isSpeaking){
     window.speechSynthesis.cancel();
@@ -3335,8 +2877,6 @@ function jumpToSentence(i){
 function toggleReadStory(){
   const btn = document.getElementById('reader-play-btn');
   if(isSpeaking){
-    // pause: stop right here, keep readerSentenceIndex where we are so the next
-    // press of Play resumes from this same sentence instead of restarting
     window.speechSynthesis.cancel();
     isSpeaking = false;
     btn.textContent = "▶️ Lire l'histoire";
@@ -3345,7 +2885,7 @@ function toggleReadStory(){
   const s = stories.find(x=>x.id===currentStoryId);
   const sentences = s.text.split(/(?<=[.!?])\s+/).filter(Boolean);
   const rate = parseFloat(document.getElementById('reader-speed').value);
-  if(readerSentenceIndex >= sentences.length) readerSentenceIndex = 0; // finished before — start over
+  if(readerSentenceIndex >= sentences.length) readerSentenceIndex = 0;
   isSpeaking = true;
   btn.textContent = '⏸️ Pause';
   function readNext(){
@@ -3353,7 +2893,7 @@ function toggleReadStory(){
       isSpeaking = false;
       btn.textContent = "▶️ Lire l'histoire";
       document.querySelectorAll('.sentence').forEach(el=>el.classList.remove('highlight'));
-      readerSentenceIndex = 0; // story finished — next Play starts from the beginning again
+      readerSentenceIndex = 0;
       return;
     }
     document.querySelectorAll('.sentence').forEach(el=>el.classList.remove('highlight'));
@@ -3368,7 +2908,6 @@ function toggleReadStory(){
 function getStorySlots(id){
   let slots = storyRecordings[id];
   if(!Array.isArray(slots)){
-    // migrate from the old single-recording format {url: ...}
     slots = (slots && slots.url) ? [slots, null, null] : [null, null, null];
     storyRecordings[id] = slots;
   }
@@ -3412,7 +2951,7 @@ async function toggleRecordSlot(i){
     return;
   }
   if(currentRecordingSlot !== null){
-    return; // already recording another slot
+    return;
   }
   try{
     const stream = await navigator.mediaDevices.getUserMedia({audio:true});
@@ -3603,7 +3142,6 @@ function playNewWordAudio(){
   if(!newWordAudioData) return;
   new Audio(newWordAudioData.url).play();
 }
-// plays a recorded/imported audio for a word if available, otherwise falls back to text-to-speech
 function playWordAudioOrSpeak(w, rate, lang, onend, repeat){
   const repertoireEntry = w && wordRecordings[wordRecordingKey(w.word, lang || w.lang)];
   const audioUrl = (w && w.audio && w.audio.url) || (repertoireEntry && repertoireEntry.url);
@@ -3720,7 +3258,6 @@ function renderMyWords(){
   const cats = categoriesForLang(currentLang);
   if(dl) dl.innerHTML = cats.map(c=>`<option value="${c}">`).join('');
 
-  // category filter pills
   const filterRow = document.getElementById('category-filter-row');
   if(filterRow){
     const allLabel = currentLang==='it' ? '🌈 Tutte' : '🌈 Toutes';
@@ -3730,7 +3267,6 @@ function renderMyWords(){
   const catInput = document.getElementById('new-word-category');
   if(catInput && selectedCategoryFilter && editingWordIndex === null) catInput.value = selectedCategoryFilter;
 
-  // show every word (base + custom) for the current language, so base words can be edited/deleted too
   const displayed = wordPool(currentLang)
     .filter(w => !selectedCategoryFilter || (w.category || (currentLang==='it'?'Generale':'Général')) === selectedCategoryFilter);
 
@@ -3772,7 +3308,6 @@ function addCustomWord(){
   const syllables = syllRaw ? syllRaw.split('-').map(s=>s.trim()).filter(Boolean) : autoSyllabify(word);
   const wordData = {word, syllables, emoji, image:newWordImageData, audio:newWordAudioData, lang, category};
   if(editingBaseWordKey !== null){
-    // editing one of the built-in words — store as an override keyed by its ORIGINAL identity
     baseWordOverrides[editingBaseWordKey] = wordData;
   } else if(editingWordIndex !== null){
     customWords[editingWordIndex] = wordData;
@@ -3847,11 +3382,285 @@ function resetWordForm(){
   document.getElementById('word-form-cancel').style.display = 'none';
 }
 
+/* ---------------- NUOVE FUNZIONI PER PRONUNCE VELOCI (REGISTRA E TESTA IN LINEA) ---------------- */
+let currentInlineSyllable = null;
+let currentInlineWord = null;
+
+function checkPronunciationInput(type) {
+    const lang = document.getElementById('syllable-pronunciation-lang').value;
+    
+    if (type === 'syllable') {
+        const text = document.getElementById('new-pronunciation-syllable').value.trim().toUpperCase();
+        const status = document.getElementById('syllable-status-msg');
+        const controls = document.getElementById('syllable-inline-controls');
+        
+        if (!text) { 
+            status.textContent = ""; 
+            controls.style.display = 'none';
+            return; 
+        }
+        
+        const key = syllableRecordingKey(text, lang);
+        if (syllableRecordings[key] && syllableRecordings[key].url) {
+            status.textContent = "✅ Esiste già";
+            status.style.color = "var(--leaf)";
+            document.getElementById('btn-play-syllable').style.display = 'inline-flex';
+            document.getElementById('btn-delete-syllable').style.display = 'inline-flex';
+        } else {
+            status.textContent = "🆕 Nuova";
+            status.style.color = "var(--lilac)";
+            document.getElementById('btn-play-syllable').style.display = 'none';
+            document.getElementById('btn-delete-syllable').style.display = 'none';
+        }
+        currentInlineSyllable = text;
+        controls.style.display = 'flex';
+    } else {
+        const text = document.getElementById('new-pronunciation-word').value.trim().toUpperCase();
+        const status = document.getElementById('word-status-msg');
+        const controls = document.getElementById('word-inline-controls');
+        
+        if (!text) { 
+            status.textContent = ""; 
+            controls.style.display = 'none';
+            return; 
+        }
+        
+        const key = wordRecordingKey(text, lang);
+        if (wordRecordings[key] && wordRecordings[key].url) {
+            status.textContent = "✅ Esiste già";
+            status.style.color = "var(--leaf)";
+            document.getElementById('btn-play-word').style.display = 'inline-flex';
+            document.getElementById('btn-delete-word').style.display = 'inline-flex';
+        } else {
+            status.textContent = "🆕 Nuova";
+            status.style.color = "var(--lilac)";
+            document.getElementById('btn-play-word').style.display = 'none';
+            document.getElementById('btn-delete-word').style.display = 'none';
+        }
+        currentInlineWord = text;
+        controls.style.display = 'flex';
+    }
+}
+
+async function toggleInlineRecordSyllable() {
+    if (!currentInlineSyllable) return;
+    const lang = document.getElementById('syllable-pronunciation-lang').value;
+    const key = syllableRecordingKey(currentInlineSyllable, lang);
+    
+    if (recordingSyllableKey === key) {
+        if (syllableMediaRecorder) syllableMediaRecorder.stop();
+        document.getElementById('btn-record-syllable').innerHTML = '🎙️ Registra';
+        return;
+    }
+    
+    if (!syllableRecordings[key]) {
+        syllableRecordings[key] = { syllable: currentInlineSyllable, lang, url: null };
+    }
+    
+    document.getElementById('btn-record-syllable').innerHTML = '<span class="rec-dot"></span> Stop';
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+        syllableMediaRecorder = new MediaRecorder(stream);
+        syllableRecordedChunks = [];
+        recordingSyllableKey = key;
+        
+        syllableMediaRecorder.ondataavailable = e => { if(e.data.size) syllableRecordedChunks.push(e.data); };
+        syllableMediaRecorder.onstop = () => {
+            const blob = new Blob(syllableRecordedChunks, {type:'audio/webm'});
+            const reader = new FileReader();
+            reader.onload = () => {
+                syllableRecordings[key] = { ...syllableRecordings[key], url: reader.result };
+                recordingSyllableKey = null;
+                saveState();
+                renderSyllablePronunciations();
+                
+                // Mostra subito ascolta e cancella
+                document.getElementById('btn-play-syllable').style.display = 'inline-flex';
+                document.getElementById('btn-delete-syllable').style.display = 'inline-flex';
+                document.getElementById('btn-record-syllable').innerHTML = '🎙️ Registra';
+                
+                // Aggiorna messaggio
+                document.getElementById('syllable-status-msg').textContent = "✅ Registrata!";
+                document.getElementById('syllable-status-msg').style.color = "var(--leaf)";
+            };
+            reader.readAsDataURL(blob);
+            stream.getTracks().forEach(t => t.stop());
+        };
+        syllableMediaRecorder.start();
+    } catch(err) {
+        recordingSyllableKey = null;
+        document.getElementById('btn-record-syllable').innerHTML = '🎙️ Registra';
+        alert('Il microfono non è disponibile. Apri l’app nel browser e autorizza il microfono.');
+    }
+}
+
+function playInlineSyllable() {
+    if (currentInlineSyllable) {
+        const lang = document.getElementById('syllable-pronunciation-lang').value;
+        const key = syllableRecordingKey(currentInlineSyllable, lang);
+        if (syllableRecordings[key] && syllableRecordings[key].url) {
+            new Audio(syllableRecordings[key].url).play();
+        }
+    }
+}
+
+function deleteInlineSyllable() {
+    if (currentInlineSyllable) {
+        const lang = document.getElementById('syllable-pronunciation-lang').value;
+        const key = syllableRecordingKey(currentInlineSyllable, lang);
+        if (syllableRecordings[key]) {
+            delete syllableRecordings[key];
+            saveState();
+            renderSyllablePronunciations();
+            
+            document.getElementById('btn-play-syllable').style.display = 'none';
+            document.getElementById('btn-delete-syllable').style.display = 'none';
+            document.getElementById('syllable-status-msg').textContent = "🗑️ Eliminata";
+            document.getElementById('syllable-status-msg').style.color = "var(--coral)";
+        }
+    }
+}
+
+function uploadSyllableMp3(evt) {
+    const file = evt.target.files[0];
+    if (!file) return;
+    
+    if (!currentInlineSyllable) {
+        alert('Scrivi prima una sillaba (es: CA) per associare l\'MP3.');
+        return;
+    }
+    
+    const lang = document.getElementById('syllable-pronunciation-lang').value;
+    const key = syllableRecordingKey(currentInlineSyllable, lang);
+    
+    if (!syllableRecordings[key]) {
+        syllableRecordings[key] = { syllable: currentInlineSyllable, lang, url: null };
+    }
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+        syllableRecordings[key] = { ...syllableRecordings[key], url: reader.result };
+        saveState();
+        renderSyllablePronunciations();
+        
+        document.getElementById('btn-play-syllable').style.display = 'inline-flex';
+        document.getElementById('btn-delete-syllable').style.display = 'inline-flex';
+        document.getElementById('syllable-status-msg').textContent = "✅ MP3 caricato!";
+        document.getElementById('syllable-status-msg').style.color = "var(--leaf)";
+    };
+    reader.readAsDataURL(file);
+}
+
+async function toggleInlineRecordWord() {
+    if (!currentInlineWord) return;
+    const lang = document.getElementById('syllable-pronunciation-lang').value;
+    const key = wordRecordingKey(currentInlineWord, lang);
+    
+    if (recordingWordPronunciationKey === key) {
+        if (wordPronunciationMediaRecorder) wordPronunciationMediaRecorder.stop();
+        document.getElementById('btn-record-word').innerHTML = '🎙️ Registra';
+        return;
+    }
+    
+    if (!wordRecordings[key]) {
+        wordRecordings[key] = { word: currentInlineWord, lang, url: null };
+    }
+    
+    document.getElementById('btn-record-word').innerHTML = '<span class="rec-dot"></span> Stop';
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+        wordPronunciationMediaRecorder = new MediaRecorder(stream);
+        wordPronunciationChunks = [];
+        recordingWordPronunciationKey = key;
+        
+        wordPronunciationMediaRecorder.ondataavailable = e => { if(e.data.size) wordPronunciationChunks.push(e.data); };
+        wordPronunciationMediaRecorder.onstop = () => {
+            const blob = new Blob(wordPronunciationChunks, {type:'audio/webm'});
+            const reader = new FileReader();
+            reader.onload = () => {
+                wordRecordings[key] = { ...wordRecordings[key], url: reader.result };
+                recordingWordPronunciationKey = null;
+                saveState();
+                renderWordPronunciations();
+                
+                document.getElementById('btn-play-word').style.display = 'inline-flex';
+                document.getElementById('btn-delete-word').style.display = 'inline-flex';
+                document.getElementById('btn-record-word').innerHTML = '🎙️ Registra';
+                document.getElementById('word-status-msg').textContent = "✅ Registrata!";
+                document.getElementById('word-status-msg').style.color = "var(--leaf)";
+            };
+            reader.readAsDataURL(blob);
+            stream.getTracks().forEach(t => t.stop());
+        };
+        wordPronunciationMediaRecorder.start();
+    } catch(err) {
+        recordingWordPronunciationKey = null;
+        document.getElementById('btn-record-word').innerHTML = '🎙️ Registra';
+        alert('Il microfono non è disponibile. Apri l’app nel browser e autorizza il microfono.');
+    }
+}
+
+function playInlineWord() {
+    if (currentInlineWord) {
+        const lang = document.getElementById('syllable-pronunciation-lang').value;
+        const key = wordRecordingKey(currentInlineWord, lang);
+        if (wordRecordings[key] && wordRecordings[key].url) {
+            new Audio(wordRecordings[key].url).play();
+        }
+    }
+}
+
+function deleteInlineWord() {
+    if (currentInlineWord) {
+        const lang = document.getElementById('syllable-pronunciation-lang').value;
+        const key = wordRecordingKey(currentInlineWord, lang);
+        if (wordRecordings[key]) {
+            delete wordRecordings[key];
+            saveState();
+            renderWordPronunciations();
+            
+            document.getElementById('btn-play-word').style.display = 'none';
+            document.getElementById('btn-delete-word').style.display = 'none';
+            document.getElementById('word-status-msg').textContent = "🗑️ Eliminata";
+            document.getElementById('word-status-msg').style.color = "var(--coral)";
+        }
+    }
+}
+
+function uploadWordPronunciationMp3(evt) {
+    const file = evt.target.files[0];
+    if (!file) return;
+    
+    if (!currentInlineWord) {
+        alert('Scrivi prima una parola (es: CASA) per associare l\'MP3.');
+        return;
+    }
+    
+    const lang = document.getElementById('syllable-pronunciation-lang').value;
+    const key = wordRecordingKey(currentInlineWord, lang);
+    
+    if (!wordRecordings[key]) {
+        wordRecordings[key] = { word: currentInlineWord, lang, url: null };
+    }
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+        wordRecordings[key] = { ...wordRecordings[key], url: reader.result };
+        saveState();
+        renderWordPronunciations();
+        
+        document.getElementById('btn-play-word').style.display = 'inline-flex';
+        document.getElementById('btn-delete-word').style.display = 'inline-flex';
+        document.getElementById('word-status-msg').textContent = "✅ MP3 caricato!";
+        document.getElementById('word-status-msg').style.color = "var(--leaf)";
+    };
+    reader.readAsDataURL(file);
+}
 
 /* init */
 document.getElementById('reader-speed').addEventListener('input', ()=>{});
-// register the service worker (only works when served over http/https — silently
-// does nothing when opened as a local file, which is fine)
 if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
