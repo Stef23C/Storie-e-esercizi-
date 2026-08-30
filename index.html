@@ -232,14 +232,70 @@ h1, h2, h3 { font-family: 'Baloo 2', cursive; }
 </div>
 
 <!-- SETTINGS -->
+<!-- IMPOSTAZIONI COMPLETE -->
 <div class="screen" id="screen-settings">
   <div class="back-row"><button class="back-btn" onclick="goHome()">← Indietro</button><h2 class="screen-title">Impostazioni</h2></div>
   <div class="panel">
+    
+    <!-- SCELTA VOCI -->
+    <div class="settings-row">
+      <strong>🇮🇹 Voce Italiana</strong>
+      <select id="settings-voice-select-it" style="min-width:180px;"></select>
+    </div>
+    <div class="settings-row">
+      <strong>🇫🇷 Voce Francese</strong>
+      <select id="settings-voice-select-fr" style="min-width:180px;"></select>
+    </div>
+    <div style="text-align:center; margin:10px 0;">
+      <button class="big-btn btn-ocean" onclick="testVoice('it')">🔊 Test Italiano</button>
+      <button class="big-btn btn-ocean" onclick="testVoice('fr')">🔊 Test Francese</button>
+    </div>
+
+    <!-- ALTRE IMPOSTAZIONI -->
+    <div class="settings-row">
+      <strong>Lettura contrastata</strong>
+      <button class="toggle" id="contrast-toggle" onclick="toggleContrast()"><span class="knob"></span></button>
+    </div>
+    <div class="settings-row">
+      <strong>Ripetizione automatica</strong>
+      <button class="toggle on" id="autorepeat-toggle" onclick="toggleAutoRepeat()"><span class="knob"></span></button>
+    </div>
+    <div class="settings-row">
+      <strong>Quiz semplificato</strong>
+      <button class="toggle on" id="simplequiz-toggle" onclick="toggleSimplifiedQuiz()"><span class="knob"></span></button>
+    </div>
+    
+    <!-- PRONUNCE PERSONALIZZATE -->
     <div class="settings-row">
       <strong>🎙️ Pronunce personalizzate</strong>
       <button class="big-btn btn-lilac" onclick="showScreen('screen-syllable-pronunciations'); renderSyllablePronunciations();">Gestisci</button>
     </div>
+
+    <!-- BACKUP E SALVATAGGIO -->
+    <div class="settings-row" style="flex-direction:column; align-items:flex-start;">
+      <strong>💾 Backup e Salvataggio</strong>
+      <p style="font-size:13px; color:#7a6b8a; font-weight:600;">Esporta o importa tutti i dati (parole, storie, voci).</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+        <button class="big-btn btn-leaf" onclick="exportBackup()">📤 Esporta JSON</button>
+        <button class="big-btn btn-ocean" onclick="document.getElementById('import-backup-input').click()">📥 Importa JSON</button>
+        <input type="file" id="import-backup-input" accept=".json" style="display:none;" onchange="importBackup(event)">
+        <button class="big-btn btn-coral" onclick="resetAllData()">🗑️ Cancella tutto</button>
+      </div>
+    </div>
+
+    <!-- PROGRESSI -->
+    <div class="settings-row" style="flex-direction:column; align-items:flex-start;">
+      <strong>📊 Progressi</strong>
+      <button class="big-btn btn-ocean" style="margin-top:10px;" onclick="showScreen('screen-progress'); renderProgress();">Vedi progressi</button>
+    </div>
+
   </div>
+</div>
+
+<!-- SCHERMATA PROGRESSI -->
+<div class="screen" id="screen-progress">
+  <div class="back-row"><button class="back-btn" onclick="showScreen('screen-settings')">← Indietro</button><h2 class="screen-title">Progressi</h2></div>
+  <div class="panel" id="progress-panel"></div>
 </div>
 
 <!-- SYLLABLE PRONUNCIATIONS -->
