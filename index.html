@@ -105,28 +105,33 @@ h1,h2,h3,.title-font{font-family:'Baloo 2',cursive}.contrast *{letter-spacing:.0
 
 <script>
 /* AUDIO & APPLAUSI & STELLE */
-let audioCtx=null;
-function playJingle(type){
-  try{
-    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    // 50% di probabilità di far partire un suono (Jingle) o un applauso
-    if(Math.random() < 0.5) {
-      const n=type==='success'?[523,659,783]:[300];
-      n.forEach((f,i)=>{
-        let o=audioCtx.createOscillator(),g=audioCtx.createGain();
-        o.connect(g);g.connect(audioCtx.destination);
-        o.frequency.value=f;o.type='sine';
-        g.gain.setValueAtTime(.2,audioCtx.currentTime+i*.1);
-        g.gain.exponentialRampToValueAtTime(.01,audioCtx.currentTime+i*.1+.15);
-        o.start(audioCtx.currentTime+i*.1);o.stop(audioCtx.currentTime+i*.1+.15);
+let audioCtx = null;
+let starInterval = null; // Per gestire la pioggia di stelle
+
+function playJingle(type) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // 1. SCELTA AUDIO: 40% melodia, 40% applauso, 20% campanella
+    let randomSound = Math.random();
+    
+    if (randomSound < 0.4) {
+      // MELODIA ALLEGRA (3 note)
+      const n = type === 'success' ? [523.25, 659.25, 783.99] : [300, 250];
+      n.forEach((f, i) => {
+        let o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination);
+        o.frequency.value = f; o.type = 'sine';
+        g.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.1);
+        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.1 + 0.15);
+        o.start(audioCtx.currentTime + i * 0.1); o.stop(audioCtx.currentTime + i * 0.1 + 0.15);
       });
-    } else {
-      // Suono di applausi (rumore bianco impulsivo)
-      let bufferSize = audioCtx.sampleRate * 0.8; // 0.8 secondi
+    } else if (randomSound < 0.8) {
+      // APPLAUSI (rumore bianco)
+      let bufferSize = audioCtx.sampleRate * 0.8;
       let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
       let data = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
-        // Genera rumore bianco con attenuazione
         data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
       }
       let source = audioCtx.createBufferSource();
@@ -135,10 +140,54 @@ function playJingle(type){
       gain.gain.value = 0.3;
       source.connect(gain); gain.connect(audioCtx.destination);
       source.start();
+    } else {
+      // CAMPANELLA (Tintinnio)
+      for(let i=0; i<5; i++){
+        let o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination);
+        o.frequency.value = 1200 + Math.random() * 500;
+        o.type = 'triangle';
+        g.gain.setValueAtTime(0.15, audioCtx.currentTime + i * 0.08);
+        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.08 + 0.1);
+        o.start(audioCtx.currentTime + i * 0.08); o.stop(audioCtx.currentTime + i * 0.08 + 0.1);
+      }
     }
-    // Sempre: fai partire le stelle che volano!
-    launchStars();
-  }catch(e){}
+
+    // 2. STELLE CHE VOLANO (SEMPRE, OGNI VOLTA)
+    launchStars(20); // Lancia 20 stelle
+
+  } catch (e) {}
+}
+
+function launchStars(count) {
+  let container = document.querySelector('.screen.active .panel');
+  if (!container) container = document.querySelector('.screen.active');
+  if (!container) return;
+
+  // Se esistono già stelle, rimuovile
+  document.querySelectorAll('.dynamic-star').forEach(s => s.remove());
+
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      let star = document.createElement('div');
+      star.className = 'dynamic-star';
+      // Alterna stelle, cuori e scintille
+      let symbols = ['⭐', '✨', '🌟', '💖'];
+      star.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      
+      star.style.cssText = `position:absolute; left:${20 + Math.random() * 60}%; top:50%; font-size:${20 + Math.random() * 30}px; pointer-events:none; opacity:0.9; z-index:9999; transition: transform 1s ease-out, opacity 1s ease-out;`;
+      container.appendChild(star);
+      
+      // Anima la stella
+      setTimeout(() => {
+        star.style.transform = `translateY(-${100 + Math.random() * 50}px) rotate(${Math.random() * 360}deg) scale(1.5)`;
+        star.style.opacity = '0';
+      }, 10);
+
+      // Rimuovi dal DOM
+      setTimeout(() => star.remove(), 1100);
+    }, i * 40);
+  }
 }
 
 /* STELLE CHE VOLANO */
