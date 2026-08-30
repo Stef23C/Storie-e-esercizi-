@@ -1,304 +1,987 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>L'Île aux Syllabes</title>
-<link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Île Syllabes">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0EA5A0">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'Île aux Syllabes - Completo</title>
 <style>
-:root{--ocean:#0EA5A0;--ocean-dark:#0B7F7A;--coral:#FF6B5B;--sunshine:#FFC145;--plum:#3D2352;--sky:#8EE3F5;--cream:#FFFDF7;--pink:#FF9AC1;--lilac:#B497F5;--leaf:#6FCF6F;--radius:26px;}
-*{box-sizing:border-box;}body.contrast{--cream:#fff;--plum:#000;}
-body{margin:0;font-family:'Quicksand',sans-serif;background:linear-gradient(180deg,var(--sky),var(--ocean) 55%,var(--ocean-dark));min-height:100vh;color:var(--plum);overflow-x:hidden}
-h1,h2,h3,.title-font{font-family:'Baloo 2',cursive}.contrast *{letter-spacing:.04em!important}
-#app{max-width:900px;margin:0 auto;padding:18px 18px 60px;min-height:100vh}
-.screen{display:none}.screen.active{display:block;animation:fadein .35s ease}@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.brand{display:flex;align-items:center;gap:10px;color:var(--cream);cursor:pointer}.brand .logo{font-size:34px}.brand h1{font-size:22px;margin:0;color:var(--cream)}.contrast .brand h1{color:#000}
-.stars-badge{background:var(--sunshine);color:var(--plum);font-family:'Baloo 2';font-weight:800;padding:8px 16px;border-radius:999px;display:flex;gap:6px;box-shadow:0 4px 0 #d99a1f;font-size:18px}
-.icon-btn{background:rgba(255,255,255,.25);border:none;border-radius:999px;width:44px;height:44px;font-size:20px;color:var(--cream);cursor:pointer}.contrast .icon-btn{background:#000;color:#fff}
-.home-hero{text-align:center;color:var(--cream);margin:10px 0 26px}.contrast .home-hero{color:#000}.home-hero h2{font-size:32px;margin:0 0 6px}.home-hero p{font-size:17px;margin:0}
-.card-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}@media(max-width:760px){.card-grid{grid-template-columns:1fr 1fr}}@media(max-width:480px){.card-grid{grid-template-columns:1fr}}
-.lang-switch-fixed{position:fixed;top:16px;right:16px;z-index:50}.lang-segmented{display:flex;background:rgba(255,255,255,.95);border-radius:999px;padding:4px;box-shadow:0 4px 0 rgba(0,0,0,.15)}.lang-seg-btn{font-family:'Baloo 2';font-weight:700;font-size:14px;background:transparent;color:#9a8bb0;border:none;padding:8px 14px;border-radius:999px;cursor:pointer}.lang-seg-btn.active{background:var(--coral);color:#fff}
-.menu-card{background:var(--cream);border-radius:var(--radius);padding:22px 18px;text-align:center;cursor:pointer;border:none;box-shadow:0 8px 0 rgba(0,0,0,.15);font-family:'Baloo 2';transition:transform .15s}.menu-card:hover{transform:translateY(-4px)}.menu-card .emoji{font-size:48px;display:block;margin-bottom:8px}.menu-card h3{margin:0 0 4px;font-size:20px}.menu-card p{margin:0;font-size:14px;font-family:'Quicksand';color:#6b5a7a;font-weight:600}.menu-card.c1{background:linear-gradient(160deg,#FFE9C7,var(--sunshine))}.menu-card.c2{background:linear-gradient(160deg,#FFD3CC,var(--coral))}.menu-card.c3{background:linear-gradient(160deg,#D7F5D0,var(--leaf))}.menu-card.c4{background:linear-gradient(160deg,#E3D6FB,var(--lilac))}.menu-card.c5{background:linear-gradient(160deg,#CDEFFA,var(--sky))}.menu-card.c6{background:linear-gradient(160deg,#FFD7EA,var(--pink))}
-.panel{background:var(--cream);border-radius:var(--radius);padding:22px;box-shadow:0 8px 0 rgba(0,0,0,.12);position:relative}.back-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}.back-btn{background:var(--cream);color:var(--plum);border:none;border-radius:999px;padding:10px 18px;font-family:'Baloo 2';font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.15)}.screen-title{color:var(--cream);font-size:26px;margin:0}.contrast .screen-title{color:#000}
-.big-btn{font-family:'Baloo 2';font-weight:700;font-size:17px;border:none;border-radius:18px;padding:14px 22px;cursor:pointer;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.2);display:inline-flex;align-items:center;gap:8px}.btn-coral{background:var(--coral)}.btn-ocean{background:var(--ocean)}.btn-leaf{background:var(--leaf)}.btn-lilac{background:var(--lilac)}.btn-sun{background:var(--sunshine);color:var(--plum)}
-.word-emoji{font-size:80px;text-align:center;margin:6px 0 18px}.target-slots{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:26px}.slot{min-width:64px;height:64px;border-radius:16px;border:3px dashed #cbb8e0;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2';font-size:24px;font-weight:700;background:#faf7ff}.slot.filled{border-style:solid}.stones{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}.stone{font-family:'Baloo 2';font-weight:800;font-size:22px;padding:16px 20px;border-radius:20px;color:#fff;border:none;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.2)}.stone-0{background:var(--coral)}.stone-1{background:var(--ocean)}.stone-2{background:var(--lilac)}.stone-3{background:var(--sunshine);color:var(--plum)}
-.game-controls{display:flex;justify-content:center;gap:12px;margin-top:22px;flex-wrap:wrap}.progress-dots{display:flex;justify-content:center;gap:8px;margin-bottom:18px}.dot{width:12px;height:12px;border-radius:50%;background:#e3dcf0}.dot.done{background:var(--leaf)}.dot.current{background:var(--coral)}
-.flashcard{font-family:'Baloo 2';font-weight:800;font-size:56px;text-align:center;background:#faf7ff;border:4px solid #e0d5f5;border-radius:24px;padding:30px 20px;margin:0 0 18px}
-.celebrate{text-align:center;font-family:'Baloo 2';font-size:22px;color:var(--leaf);min-height:30px}.quiz-emoji{font-size:70px;text-align:center}.quiz-q{text-align:center;font-family:'Baloo 2';font-size:19px;margin-bottom:20px}.quiz-opts{display:grid;gap:12px;max-width:420px;margin:0 auto}.quiz-opt{font-family:'Baloo 2';font-size:20px;font-weight:700;padding:16px;border-radius:16px;border:3px solid #eee;background:#fff;cursor:pointer}.quiz-opt.correct{background:var(--leaf);color:#fff}.quiz-opt.wrong{background:var(--coral);color:#fff}.score-screen{text-align:center}.score-screen .big-emoji{font-size:70px}
-.story-list{display:grid;gap:12px}.story-item{display:flex;align-items:center;gap:14px;background:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 4px 0 rgba(0,0,0,.08);cursor:pointer}.story-item .emoji{font-size:36px}.story-item .info h4{margin:0;font-family:'Baloo 2';font-size:17px}.story-item .info p{margin:2px 0 0;font-size:13px;color:#7a6b8a;font-weight:600}
-.add-story-box{margin-top:18px;padding:16px;border-radius:18px;background:#f5f0ff}.add-story-box textarea,.add-story-box input{width:100%;font-family:'Quicksand';font-weight:600;font-size:15px;border:2px solid #e0d5f5;border-radius:12px;padding:10px;margin-bottom:10px}
-.story-reader{font-size:26px;line-height:1.9;font-weight:600}.sentence{padding:2px 4px;border-radius:6px;cursor:pointer}.sentence.highlight{background:#FFF3B0}
-.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:2px solid #f1ecf9}.toggle{width:52px;height:30px;border-radius:999px;background:#e0d5f5;position:relative;cursor:pointer;border:none}.toggle.on{background:var(--leaf)}.toggle .knob{width:24px;height:24px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:.2s}.toggle.on .knob{left:25px}
-.voice-slot{background:#f5f0ff;border-radius:16px;padding:12px 14px;margin-bottom:12px}.voice-slot-label{font-family:'Baloo 2';font-weight:700;font-size:15px;border:none;border-bottom:2px dashed #cbb8e0;background:#fff;border-radius:8px 8px 0 0;width:100%;margin-bottom:8px;padding:6px 8px}.voice-slot-controls{display:flex;gap:8px;flex-wrap:wrap}.mini-btn{font-family:'Baloo 2';font-weight:700;font-size:13px;border:none;border-radius:12px;padding:8px 12px;cursor:pointer;color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18)}.mini-lilac{background:var(--lilac)}.mini-leaf{background:var(--leaf)}.mini-sun{background:var(--sunshine);color:var(--plum)}.mini-coral{background:var(--coral)}.mini-ocean{background:var(--ocean)}
-.rec-dot{width:10px;height:10px;border-radius:50%;background:var(--coral);display:inline-block;animation:pulse 1s infinite;margin-right:6px}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-@keyframes burst-fly{0%{transform:translateY(0) scale(.6);opacity:1}100%{transform:translateY(-70px) scale(1.3);opacity:0}}
-.tag{display:inline-block;font-size:12px;font-weight:700;background:var(--sky);color:var(--ocean-dark);padding:3px 10px;border-radius:999px;margin-left:8px}
-@keyframes burst-fly{
-  0%{transform:translateY(0) scale(0.6);opacity:1;}
-  100%{transform:translateY(-80px) scale(1.5);opacity:0;}
+:root {
+  --ocean:#0EA5A0; --ocean-dark:#0B7F7A; --coral:#FF6B5B; --sunshine:#FFC145;
+  --plum:#3D2352; --sky:#8EE3F5; --cream:#FFFDF7; --pink:#FF9AC1; --lilac:#B497F5;
+  --leaf:#6FCF6F; --radius:26px;
 }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(180deg, var(--sky), var(--ocean) 55%, var(--ocean-dark));
+  min-height: 100vh;
+  color: var(--plum);
+  overflow-x: hidden;
+}
+h1, h2, h3 { font-family: 'Baloo 2', cursive; }
+#app { max-width: 900px; margin: 0 auto; padding: 18px 18px 60px; min-height: 100vh; }
+.screen { display: none; }
+.screen.active { display: block; animation: fadein .35s ease; }
+@keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--cream); cursor: pointer; }
+.brand .logo { font-size: 34px; }
+.brand h1 { font-size: 22px; margin: 0; color: var(--cream); }
+.stars-badge { background: var(--sunshine); color: var(--plum); font-family: 'Baloo 2'; font-weight: 800; padding: 8px 16px; border-radius: 999px; display: flex; gap: 6px; box-shadow: 0 4px 0 #d99a1f; font-size: 18px; }
+.icon-btn { background: rgba(255,255,255,.25); border: none; border-radius: 999px; width: 44px; height: 44px; font-size: 20px; color: var(--cream); cursor: pointer; }
+.home-hero { text-align: center; color: var(--cream); margin: 10px 0 26px; }
+.home-hero h2 { font-size: 32px; margin: 0 0 6px; }
+.home-hero p { font-size: 17px; margin: 0; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+@media (max-width: 760px) { .card-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .card-grid { grid-template-columns: 1fr; } }
+.menu-card { background: var(--cream); border-radius: var(--radius); padding: 22px 18px; text-align: center; cursor: pointer; border: none; box-shadow: 0 8px 0 rgba(0,0,0,.15); font-family: 'Baloo 2'; transition: transform .15s; }
+.menu-card:hover { transform: translateY(-4px); }
+.menu-card .emoji { font-size: 48px; display: block; margin-bottom: 8px; }
+.menu-card h3 { margin: 0 0 4px; font-size: 20px; }
+.menu-card p { margin: 0; font-size: 14px; font-family: 'Quicksand'; color: #6b5a7a; font-weight: 600; }
+.menu-card.c1 { background: linear-gradient(160deg, #FFE9C7, var(--sunshine)); }
+.menu-card.c2 { background: linear-gradient(160deg, #FFD3CC, var(--coral)); }
+.menu-card.c3 { background: linear-gradient(160deg, #D7F5D0, var(--leaf)); }
+.menu-card.c4 { background: linear-gradient(160deg, #E3D6FB, var(--lilac)); }
+.menu-card.c5 { background: linear-gradient(160deg, #CDEFFA, var(--sky)); }
+.menu-card.c6 { background: linear-gradient(160deg, #FFD7EA, var(--pink)); }
+.panel { background: var(--cream); border-radius: var(--radius); padding: 22px; box-shadow: 0 8px 0 rgba(0,0,0,.12); position: relative; }
+.back-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.back-btn { background: var(--cream); color: var(--plum); border: none; border-radius: 999px; padding: 10px 18px; font-family: 'Baloo 2'; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,.15); }
+.screen-title { color: var(--cream); font-size: 26px; margin: 0; }
+.big-btn { font-family: 'Baloo 2'; font-weight: 700; font-size: 17px; border: none; border-radius: 18px; padding: 14px 22px; cursor: pointer; color: #fff; box-shadow: 0 5px 0 rgba(0,0,0,.2); }
+.btn-coral { background: var(--coral); }
+.btn-ocean { background: var(--ocean); }
+.btn-leaf { background: var(--leaf); }
+.btn-lilac { background: var(--lilac); }
+.btn-sun { background: var(--sunshine); color: var(--plum); }
+.word-emoji { font-size: 80px; text-align: center; margin: 6px 0 18px; }
+.target-slots { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 26px; }
+.slot { min-width: 64px; height: 64px; border-radius: 16px; border: 3px dashed #cbb8e0; display: flex; align-items: center; justify-content: center; font-family: 'Baloo 2'; font-size: 24px; font-weight: 700; background: #faf7ff; }
+.slot.filled { border-style: solid; }
+.stones { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.stone { font-family: 'Baloo 2'; font-weight: 800; font-size: 22px; padding: 16px 20px; border-radius: 20px; color: #fff; border: none; cursor: pointer; box-shadow: 0 6px 0 rgba(0,0,0,.2); }
+.stone-0 { background: var(--coral); }
+.stone-1 { background: var(--ocean); }
+.stone-2 { background: var(--lilac); }
+.stone-3 { background: var(--sunshine); color: var(--plum); }
+.game-controls { display: flex; justify-content: center; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+.progress-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; background: #e3dcf0; }
+.dot.done { background: var(--leaf); }
+.dot.current { background: var(--coral); }
+.flashcard { font-family: 'Baloo 2'; font-weight: 800; font-size: 56px; text-align: center; background: #faf7ff; border: 4px solid #e0d5f5; border-radius: 24px; padding: 30px 20px; margin: 0 0 18px; }
+.celebrate { text-align: center; font-family: 'Baloo 2'; font-size: 22px; color: var(--leaf); min-height: 30px; }
+.quiz-emoji { font-size: 70px; text-align: center; }
+.quiz-q { text-align: center; font-family: 'Baloo 2'; font-size: 19px; margin-bottom: 20px; }
+.quiz-opts { display: grid; gap: 12px; max-width: 420px; margin: 0 auto; }
+.quiz-opt { font-family: 'Baloo 2'; font-size: 20px; font-weight: 700; padding: 16px; border-radius: 16px; border: 3px solid #eee; background: #fff; cursor: pointer; }
+.quiz-opt.correct { background: var(--leaf); color: #fff; }
+.quiz-opt.wrong { background: var(--coral); color: #fff; }
+.score-screen { text-align: center; }
+.score-screen .big-emoji { font-size: 70px; }
+.story-list { display: grid; gap: 12px; }
+.story-item { display: flex; align-items: center; gap: 14px; background: #fff; border-radius: 18px; padding: 14px 16px; box-shadow: 0 4px 0 rgba(0,0,0,.08); cursor: pointer; }
+.story-item .emoji { font-size: 36px; }
+.story-item .info h4 { margin: 0; font-family: 'Baloo 2'; font-size: 17px; }
+.story-item .info p { margin: 2px 0 0; font-size: 13px; color: #7a6b8a; font-weight: 600; }
+.add-story-box { margin-top: 18px; padding: 16px; border-radius: 18px; background: #f5f0ff; }
+.add-story-box textarea, .add-story-box input { width: 100%; font-family: 'Quicksand'; font-weight: 600; font-size: 15px; border: 2px solid #e0d5f5; border-radius: 12px; padding: 10px; margin-bottom: 10px; }
+.story-reader { font-size: 26px; line-height: 1.9; font-weight: 600; }
+.sentence { padding: 2px 4px; border-radius: 6px; cursor: pointer; }
+.sentence.highlight { background: #FFF3B0; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 2px solid #f1ecf9; }
+.toggle { width: 52px; height: 30px; border-radius: 999px; background: #e0d5f5; position: relative; cursor: pointer; border: none; }
+.toggle.on { background: var(--leaf); }
+.toggle .knob { width: 24px; height: 24px; border-radius: 50%; background: #fff; position: absolute; top: 3px; left: 3px; transition: .2s; }
+.toggle.on .knob { left: 25px; }
+.voice-slot { background: #f5f0ff; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; }
+.voice-slot-label { font-family: 'Baloo 2'; font-weight: 700; font-size: 15px; border: none; border-bottom: 2px dashed #cbb8e0; background: #fff; border-radius: 8px 8px 0 0; width: 100%; margin-bottom: 8px; padding: 6px 8px; }
+.voice-slot-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.mini-btn { font-family: 'Baloo 2'; font-weight: 700; font-size: 13px; border: none; border-radius: 12px; padding: 8px 12px; cursor: pointer; color: #fff; box-shadow: 0 3px 0 rgba(0,0,0,.18); }
+.mini-lilac { background: var(--lilac); }
+.mini-leaf { background: var(--leaf); }
+.mini-sun { background: var(--sunshine); color: var(--plum); }
+.mini-coral { background: var(--coral); }
+.mini-ocean { background: var(--ocean); }
+.voice-slot-status { font-size: 12px; color: #7a6b8a; font-weight: 600; margin: 6px 0 0; }
+.rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--coral); display: inline-block; animation: pulse 1s infinite; margin-right: 6px; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+@keyframes dynamic-star { 0% { transform: translate(0,0) scale(.5); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(1.8); opacity: 0; } }
 </style>
 </head>
 <body>
 <div id="app">
-<div class="lang-switch-fixed lang-segmented"><button id="lang-btn-fr" class="lang-seg-btn active" onclick="setLang('fr')">🇫🇷</button><button id="lang-btn-it" class="lang-seg-btn" onclick="setLang('it')">🇮🇹</button></div>
 
+<!-- HOME -->
 <div class="screen active" id="screen-home">
-  <div class="topbar"><div class="brand" onclick="goHome()"><span class="logo">🏝️</span><h1>L'Île aux Syllabes</h1></div><div style="display:flex;gap:10px"><div class="stars-badge">⭐ <span id="star-count">0</span></div><button class="icon-btn" onclick="showScreen('screen-settings')">⚙️</button></div></div>
-  <div class="home-hero"><h2 data-i18n="home_title">Coucou ! Prêt à jouer avec les mots ?</h2><p data-i18n="home_subtitle">Choisis une activité 🌟</p></div>
+  <div class="topbar">
+    <div class="brand" onclick="goHome()"><span class="logo">🏝️</span><h1>L'Île aux Syllabes</h1></div>
+    <div style="display:flex;gap:10px"><div class="stars-badge">⭐ <span id="star-count">0</span></div></div>
+  </div>
+  <div class="home-hero"><h2>Ciao! Pronto a giocare? 🌟</h2><p>Scegli un'attività</p></div>
   <div class="card-grid">
-    <button class="menu-card c1" onclick="openCategoryPicker('syllables')"><span class="emoji">🪨</span><h3 data-i18n="card_syllables_title">Jeu des syllabes</h3><p data-i18n="card_syllables_desc">Assemble les mots</p></button>
-    <button class="menu-card c5" onclick="openCategoryPicker('words')"><span class="emoji">🔤</span><h3 data-i18n="card_words_title">Mots entiers</h3><p data-i18n="card_words_desc">Lis le mot complet</p></button>
-    <button class="menu-card c2" onclick="openCategoryPicker('quiz')"><span class="emoji">🎯</span><h3 data-i18n="card_quiz_title">Quiz</h3><p data-i18n="card_quiz_desc">Devine le bon mot</p></button>
-    <button class="menu-card c7" onclick="openCategoryPicker('sentences')"><span class="emoji">📝</span><h3 data-i18n="card_sentences_title">Phrases</h3><p data-i18n="card_sentences_desc">Remets dans l'ordre</p></button>
-    <button class="menu-card c8" onclick="openCategoryPicker('sound')"><span class="emoji">🔡</span><h3 data-i18n="card_sound_title">Son du début</h3><p data-i18n="card_sound_desc">Trouve l'image</p></button>
-    <button class="menu-card c3" onclick="showScreen('screen-stories'); renderStoryList();"><span class="emoji">📖</span><h3 data-i18n="card_stories_title">Histoires</h3><p data-i18n="card_stories_desc">Écoute et lis</p></button>
-    <button class="menu-card c6" onclick="showScreen('screen-mywords'); renderMyWords();"><span class="emoji">✏️</span><h3 data-i18n="card_mywords_title">Mes mots</h3><p data-i18n="card_mywords_desc">Ajoute tes mots</p></button>
-    <button class="menu-card c4" onclick="showScreen('screen-settings')"><span class="emoji">🎙️</span><h3 data-i18n="card_settings_title">Ma voix</h3><p data-i18n="card_settings_desc">Réglages & voix</p></button>
-    <button class="menu-card c2" onclick="showScreen('screen-custom-quiz'); renderCustomQuizList();"><span class="emoji">🧠</span><h3 data-i18n="card_custom_quiz_title">Quiz Perso</h3><p data-i18n="card_custom_quiz_desc">Crée des questions</p></button>
+    <button class="menu-card c1" onclick="openCategoryPicker('syllables')"><span class="emoji">🪨</span><h3>Sillabe</h3><p>Componi le parole</p></button>
+    <button class="menu-card c5" onclick="openCategoryPicker('words')"><span class="emoji">🔤</span><h3>Parole intere</h3><p>Leggi la parola</p></button>
+    <button class="menu-card c2" onclick="openCategoryPicker('quiz')"><span class="emoji">🎯</span><h3>Quiz</h3><p>Indovina la parola</p></button>
+    <button class="menu-card c7" onclick="openCategoryPicker('sentences')"><span class="emoji">📝</span><h3>Frasi</h3><p>Rimetti in ordine</p></button>
+    <button class="menu-card c8" onclick="openCategoryPicker('sound')"><span class="emoji">🔡</span><h3>Suono iniziale</h3><p>Trova l'immagine</p></button>
+    <button class="menu-card c3" onclick="showScreen('screen-stories'); renderStoryList();"><span class="emoji">📖</span><h3>Storie</h3><p>Leggi e ascolta</p></button>
+    <button class="menu-card c6" onclick="showScreen('screen-mywords'); renderMyWords();"><span class="emoji">✏️</span><h3>Le mie parole</h3><p>Aggiungi le tue</p></button>
   </div>
 </div>
 
-<div class="screen" id="screen-category"><div class="back-row"><button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button><h2 class="screen-title" data-i18n="title_category">Choisis une catégorie</h2></div><div class="panel"><div id="difficulty-row" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:18px"></div><div class="card-grid" id="category-grid"></div></div></div>
-
-<div class="screen" id="screen-game"><div class="back-row"><button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button><h2 class="screen-title"><span data-i18n="title_syllables">Jeu des syllabes</span></h2></div><div class="panel"><div class="progress-dots" id="game-dots"></div><div class="word-emoji" id="game-emoji">🍎</div><div class="target-slots" id="game-slots"></div><div class="stones" id="game-stones"></div><div class="celebrate" id="game-celebrate"></div><div class="game-controls"><button class="big-btn btn-ocean" onclick="speakCurrentWord()">🔊 Écouter</button><button class="big-btn btn-sun" id="game-reveal-btn" onclick="toggleGameImage()">🙈 Cacher</button></div><div class="game-controls"><button class="big-btn btn-lilac" onclick="nextGameWord()">➡️ Suivant</button></div></div></div>
-
-<div class="screen" id="screen-sentence"><div class="back-row"><button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button><h2 class="screen-title" data-i18n="title_sentences">Phrases</h2></div><div class="panel"><div class="progress-dots" id="sentence-dots"></div><div class="word-emoji" id="sentence-emoji">📝</div><div class="target-slots" id="sentence-slots"></div><div class="stones" id="sentence-stones"></div><div class="celebrate" id="sentence-celebrate"></div><div class="game-controls"><button class="big-btn btn-ocean" onclick="speakCurrentSentence()">🔊 Écouter</button></div><div class="game-controls"><button class="big-btn btn-lilac" id="sentence-prev-btn" onclick="prevSentence()">⬅️ Précédent</button><button class="big-btn btn-lilac" onclick="nextSentence()">Suivant ➡️</button></div></div></div>
-
-<div class="screen" id="screen-sentence-manager"><div class="back-row"><button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button><h2 class="screen-title" data-i18n="title_sentence_manager">Mes phrases</h2></div><div class="panel"><div class="add-story-box"><h3 id="sentence-form-title" data-i18n="sentence_form_add_title">➕ Ajouter une phrase</h3><input id="new-sentence-text" placeholder="Écris une phrase courte"><input id="new-sentence-emoji" placeholder="Un emoji (🐶)"><select id="new-sentence-lang"><option value="fr">🇫🇷</option><option value="it">🇮🇹</option></select><button class="big-btn btn-leaf" onclick="addCustomSentence()" data-i18n="sentence_form_add_btn">✅ Ajouter</button></div><div class="game-controls"><button class="big-btn btn-coral" onclick="startSentenceGame(customSentences.length?customSentences:null)">📝 Jouer</button><button class="big-btn btn-lilac" onclick="showScreen('screen-sentence-groups'); renderSentenceGroupsScreen();">👥 Groupes</button></div><div class="story-list" id="sentences-list"></div></div></div>
-
-<div class="screen" id="screen-sound"><div class="back-row"><button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button><h2 class="screen-title" data-i18n="title_sound">Le son du début</h2></div><div class="panel"><div class="progress-dots" id="sound-dots"></div><div class="flashcard" id="sound-letter">A</div><div class="celebrate" id="sound-celebrate"></div><div class="card-grid" id="sound-options"></div><button class="big-btn btn-ocean" onclick="speakCurrentSoundLetter()">🔊 Écouter</button></div></div>
-
-<div class="screen" id="screen-words"><div class="back-row"><button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button><h2 class="screen-title" data-i18n="title_words">Lecture de mots</h2></div><div class="panel"><div class="progress-dots" id="words-dots"></div><div class="flashcard" id="flashcard-word">mot</div><div class="word-emoji" id="words-emoji" style="display:none">🍎</div><div class="celebrate" id="words-celebrate"></div><div class="game-controls"><button class="big-btn btn-ocean" onclick="speakCurrentFlashword()">🔊 Écouter</button><button class="big-btn btn-sun" id="words-reveal-btn" onclick="toggleFlashImage()">👀 Image</button></div><div class="game-controls"><button class="big-btn btn-coral" onclick="rateFlashword(false)">🤔 Revoir</button><button class="big-btn btn-leaf" onclick="rateFlashword(true)">👍 Réussi</button></div></div></div>
-
-<div class="screen" id="screen-mywords"><div class="back-row"><button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button><h2 class="screen-title" data-i18n="title_mywords">Mes mots</h2></div><div class="panel"><div class="add-story-box"><h3 id="word-form-title" data-i18n="word_form_add_title">➕ Ajouter un mot</h3><input id="new-word-text" placeholder="Le mot"><input id="new-word-syllables" placeholder="Syllabes (di-no-saure)"><input id="new-word-emoji" placeholder="Emoji (🦖)"><select id="new-word-lang"><option value="fr">🇫🇷</option><option value="it">🇮🇹</option></select><input id="new-word-category" placeholder="Catégorie"><button class="big-btn btn-leaf" onclick="addCustomWord()" data-i18n="word_form_add_btn">✅ Ajouter</button></div><div class="game-controls"><button class="big-btn btn-coral" onclick="startSyllableGame(customWords.length?customWords:null)">🪨 Syllabes</button><button class="big-btn btn-ocean" onclick="startWordReading(customWords.length?customWords:null)">🔤 Lire</button><button class="big-btn btn-sun" onclick="startQuiz(customWords.length?customWords:null)">🎯 Quiz</button></div><div class="story-list" id="mywords-list"></div></div></div>
-
-<div class="screen" id="screen-quiz"><div class="back-row"><button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button><h2 class="screen-title" data-i18n="title_quiz">Quiz</h2></div><div class="panel" id="quiz-panel"></div></div>
-
-<div class="screen" id="screen-custom-quiz"><div class="back-row"><button class="back-btn" onclick="goHome()">← Retour</button><h2 class="screen-title">🧠 Quiz Perso</h2></div><div class="panel"><div class="add-story-box"><h3 id="quiz-form-title" data-i18n="quiz_form_add_title">➕ Ajouter une question</h3><input id="new-quiz-question" placeholder="Domanda"><input id="new-quiz-correct" placeholder="Risposta corretta"><input id="new-quiz-wrong1" placeholder="Risposta sbagliata 1"><input id="new-quiz-wrong2" placeholder="Risposta sbagliata 2 (opz)"><input id="new-quiz-wrong3" placeholder="Risposta sbagliata 3 (opz)"><select id="new-quiz-lang"><option value="fr">🇫🇷</option><option value="it">🇮🇹</option></select><button class="big-btn btn-leaf" onclick="addCustomQuizQuestion()">✅ Aggiungi</button></div><div class="game-controls"><button class="big-btn btn-coral" onclick="startCustomQuiz()">🎮 Gioca</button><button class="big-btn btn-lilac" onclick="showScreen('screen-custom-quiz-groups'); renderCustomQuizGroupsScreen();">👥 Gruppi</button></div><div class="story-list" id="custom-quiz-list"></div></div></div>
-
-<div class="screen" id="screen-custom-quiz-groups"><div class="back-row"><button class="back-btn" onclick="showScreen('screen-custom-quiz'); renderCustomQuizList();">←</button><h2 class="screen-title">👥 Gruppi Quiz</h2></div><div class="panel"><div class="add-story-box"><input id="new-cquiz-group-name" placeholder="Nome gruppo"><select id="new-cquiz-group-lang" onchange="renderCustomQuizChecklist()"><option value="fr">🇫🇷</option><option value="it">🇮🇹</option></select><div id="cquiz-checklist"></div><button class="big-btn btn-leaf" onclick="saveCustomQuizGroup()">💾 Salva</button></div><div class="story-list" id="cquiz-groups-list"></div></div></div>
-
-<div class="screen" id="screen-stories"><div class="back-row"><button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button><h2 class="screen-title" data-i18n="title_stories">Histoires</h2></div><div class="panel"><input id="story-search" placeholder="Cerca..." oninput="renderStoryList()"><div class="story-list" id="story-list"></div><div class="add-story-box"><h3 id="story-form-title" data-i18n="story_form_add_title">➕ Ajouter une histoire</h3><input id="new-story-title" placeholder="Titre"><textarea id="new-story-text" placeholder="Texte..."></textarea><input id="new-story-emoji" placeholder="Emoji (🐱)"><select id="new-story-lang"><option value="fr">🇫🇷</option><option value="it">🇮🇹</option></select><button class="big-btn btn-leaf" onclick="addStory()" data-i18n="story_form_add_btn">✅ Ajouter</button></div></div></div>
-
-<div class="screen" id="screen-reader"><div class="back-row"><button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();" data-i18n="back">← Retour</button><h2 class="screen-title" id="reader-title">Histoire</h2></div><div class="panel"><div class="story-reader" id="reader-text"></div><div class="reader-controls"><button class="big-btn btn-coral" id="reader-play-btn" onclick="toggleReadStory()">▶️ Lire</button><select id="reader-voice-select"></select><input type="range" id="reader-speed" min="0.5" max="1.3" step="0.1" value="0.7"></div><div id="reader-voice-slots"></div></div></div>
-
-<div class="screen" id="screen-story-groups"><div class="back-row"><button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();">←</button><h2 class="screen-title">📁 Gruppi Storie</h2></div><div class="panel"><div class="add-story-box"><input id="story-group-name" placeholder="Nome"><div id="story-group-stories-checklist"></div><button class="big-btn btn-leaf" onclick="saveStoryGroup()">💾 Salva</button></div><div class="story-list" id="story-groups-list"></div></div></div>
-
-<div class="screen" id="screen-settings"><div class="back-row"><button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button><h2 class="screen-title" data-i18n="title_settings">Réglages</h2></div><div class="panel"><div class="settings-row"><strong data-i18n="settings_voice_fr">Voix FR</strong><select id="settings-voice-select-fr"></select></div><div class="settings-row"><strong data-i18n="settings_voice_it">Voix IT</strong><select id="settings-voice-select-it"></select></div><div class="settings-row"><strong>Lecture contrastée</strong><button class="toggle" id="contrast-toggle" onclick="toggleContrast()"><span class="knob"></span></button></div><div class="settings-row"><strong>Répétition auto</strong><button class="toggle on" id="autorepeat-toggle" onclick="toggleAutoRepeat()"><span class="knob"></span></button></div><div class="settings-row"><strong>Quiz simplifié</strong><button class="toggle on" id="simplequiz-toggle" onclick="toggleSimplifiedQuiz()"><span class="knob"></span></button></div><div class="settings-row"><strong>🎙️ Pronunce</strong><button class="big-btn btn-lilac" onclick="showScreen('screen-syllable-pronunciations'); renderSyllablePronunciations();">Gestisci</button></div><div class="settings-row" style="flex-direction:column"><strong data-i18n="settings_progress">Progrès</strong><button class="big-btn btn-ocean" onclick="showScreen('screen-progress'); renderProgress();">📊 Vedi</button></div></div></div>
-
-<div class="screen" id="screen-progress"><div class="back-row"><button class="back-btn" onclick="showScreen('screen-settings')">←</button><h2 class="screen-title">📊 Progrès</h2></div><div class="panel" id="progress-panel"></div></div>
-
-<div class="screen" id="screen-syllable-pronunciations"><div class="back-row"><button class="back-btn" onclick="showScreen('screen-settings')">←</button><h2 class="screen-title">🎙️ Pronunce</h2></div><div class="panel"><input id="new-pronunciation-syllable" placeholder="Sillaba (CA)" oninput="checkPronunciationInput('syllable')"><span id="syllable-status-msg"></span><div id="syllable-inline-controls" style="display:none;gap:10px;margin-top:10px"><button class="big-btn btn-lilac" id="btn-record-syllable" onclick="toggleInlineRecordSyllable()">🎙️ Registra</button><button class="big-btn btn-sun" id="btn-play-syllable" style="display:none" onclick="playInlineSyllable()">🔊 Ascolta</button><button class="big-btn btn-coral" id="btn-delete-syllable" style="display:none" onclick="deleteInlineSyllable()">🗑️</button></div><div class="story-list" id="syllable-pronunciations-list"></div></div></div>
-
+<!-- CATEGORY PICKER -->
+<div class="screen" id="screen-category">
+  <div class="back-row"><button class="back-btn" onclick="goHome()">← Indietro</button><h2 class="screen-title">Scegli categoria</h2></div>
+  <div class="panel"><div class="card-grid" id="category-grid"></div></div>
+</div><!-- SYLLABLE GAME -->
+<div class="screen" id="screen-game">
+  <div class="back-row"><button class="back-btn" onclick="goHome()">← Indietro</button><h2 class="screen-title">Sillabe</h2></div>
+  <div class="panel">
+    <div class="progress-dots" id="game-dots"></div>
+    <div class="word-emoji" id="game-emoji">🍎</div>
+    <div class="target-slots" id="game-slots"></div>
+    <div class="stones" id="game-stones"></div>
+    <div class="celebrate" id="game-celebrate"></div>
+    <button class="big-btn btn-ocean" onclick="speakCurrentWord()">🔊 Ascolta</button>
+  </div>
 </div>
 
+<!-- SENTENCE GAME -->
+<div class="screen" id="screen-sentence">
+  <div class="back-row"><button class="back-btn" onclick="goHome()">← Indietro</button><h2 class="screen-title">Frasi</h2></div>
+  <div class="panel">
+    <div class="progress-dots" id="sentence-dots"></div>
+    <div class="word-emoji" id="sentence-emoji">📝</div>
+    <div class="target-slots" id="sentence-slots"></div>
+    <div class="stones" id="sentence-stones"></div>
+    <div class="celebrate" id="sentence-celebrate"></div>
+    <button class="big-btn btn-ocean" onclick="speakCurrentSentence()">🔊 Ascolta</button>
+  </div>
+</div>
+
+<!-- SOUND GAME -->
+<div class="screen" id="screen-sound">
+  <div class="back-row"><button class="back-btn" onclick="goHome()">← Indietro</button><h2 class="screen-title">Suono iniziale</h2></div>
+  <div class="panel">
+    <div class="flashcard" id="sound-letter">A</div>
+    <div class="card-grid" id="sound-options"></div>
+    <button class="big-btn btn-ocean" onclick="speakCurrentSoundLetter()">🔊 Ascolta</button>
+  </div>
+</div>
+
+<!-- WORD READING GAME -->
+<div class="screen" id="screen-words">
+  <div class="back-row"><button class="back-btn" onclick="goHome()">← Indietro</button><h2 class="screen-title">Parole intere</h2></div>
+  <div class="panel">
+    <div class="flashcard" id="flashcard-word">mot</div>
+    <div class="word-emoji" id="words-emoji" style="display:none">🍎</div>
+    <div class="celebrate" id="words-celebrate"></div>
+    <button class="big-btn btn-ocean" onclick="speakCurrentFlashword()">🔊 Ascolta</button>
+    <button class="big-btn btn-sun" onclick="toggleFlashImage()">👀 Immagine</button>
+    <button class="big-btn btn-leaf" onclick="rateFlashword(true)">👍 Fatto</button>
+    <button class="big-btn btn-coral" onclick="rateFlashword(false)">🤔 Rivedi</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="screen-quiz">
+  <div class="back-row"><button class="back-btn" onclick="goHome()">← Indietro</button><h2 class="screen-title">Quiz</h2></div>
+  <div class="panel" id="quiz-panel"></div>
+</div><!-- STORIES LIST -->
+<div class="screen" id="screen-stories">
+  <div class="back-row"><button class="back-btn" onclick="goHome()">← Indietro</button><h2 class="screen-title">Storie</h2></div>
+  <div class="panel">
+    <input id="story-search" placeholder="Cerca..." oninput="renderStoryList()">
+    <div class="story-list" id="story-list"></div>
+    <div class="add-story-box">
+      <h3>➕ Aggiungi storia</h3>
+      <input id="new-story-title" placeholder="Titolo">
+      <textarea id="new-story-text" placeholder="Testo"></textarea>
+      <input id="new-story-emoji" placeholder="Emoji">
+      <button class="big-btn btn-leaf" onclick="addStory()">✅ Aggiungi</button>
+    </div>
+  </div>
+</div>
+
+<!-- STORY READER -->
+<div class="screen" id="screen-reader">
+  <div class="back-row"><button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();">← Indietro</button><h2 class="screen-title" id="reader-title">Storia</h2></div>
+  <div class="panel">
+    <div class="story-reader" id="reader-text"></div>
+    <button class="big-btn btn-coral" onclick="toggleReadStory()">▶️ Leggi</button>
+  </div>
+</div>
+
+<!-- MY WORDS -->
+<div class="screen" id="screen-mywords">
+  <div class="back-row"><button class="back-btn" onclick="goHome()">← Indietro</button><h2 class="screen-title">Le mie parole</h2></div>
+  <div class="panel">
+    <div class="add-story-box">
+      <h3>➕ Aggiungi parola</h3>
+      <input id="new-word-text" placeholder="Parola">
+      <input id="new-word-syllables" placeholder="Sillabe (di-no-sa)">
+      <input id="new-word-emoji" placeholder="Emoji">
+      <button class="big-btn btn-leaf" onclick="addCustomWord()">✅ Aggiungi</button>
+    </div>
+    <div class="story-list" id="mywords-list"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="screen" id="screen-settings">
+  <div class="back-row"><button class="back-btn" onclick="goHome()">← Indietro</button><h2 class="screen-title">Impostazioni</h2></div>
+  <div class="panel">
+    <div class="settings-row">
+      <strong>🎙️ Pronunce personalizzate</strong>
+      <button class="big-btn btn-lilac" onclick="showScreen('screen-syllable-pronunciations'); renderSyllablePronunciations();">Gestisci</button>
+    </div>
+  </div>
+</div>
+
+<!-- SYLLABLE PRONUNCIATIONS -->
+<div class="screen" id="screen-syllable-pronunciations">
+  <div class="back-row"><button class="back-btn" onclick="showScreen('screen-settings')">← Indietro</button><h2 class="screen-title">🎙️ Pronunce</h2></div>
+  <div class="panel">
+    <input id="new-pronunciation-syllable" placeholder="Sillaba (CA)" oninput="checkPronunciationInput('syllable')">
+    <span id="syllable-status-msg"></span>
+    <div id="syllable-inline-controls" style="display:none; gap:10px; margin-top:10px">
+      <button class="big-btn btn-lilac" id="btn-record-syllable" onclick="toggleInlineRecordSyllable()">🎙️ Registra</button>
+      <button class="big-btn btn-sun" id="btn-play-syllable" style="display:none" onclick="playInlineSyllable()">🔊 Ascolta</button>
+      <button class="big-btn btn-coral" id="btn-delete-syllable" style="display:none" onclick="deleteInlineSyllable()">🗑️</button>
+    </div>
+    <div class="story-list" id="syllable-pronunciations-list"></div>
+  </div>
+</div>
+
+</div>
 <script>
-/* AUDIO & APPLAUSI & STELLE */
+/* ==========================================
+   AUDIO E STELLE (SUONI ALTERNATI E ANIMAZIONI)
+   ========================================== */
 let audioCtx = null;
-let starInterval = null; // Per gestire la pioggia di stelle
+let lastSound = "";
 
 function playJingle(type) {
   try {
+    // Lancia SEMPRE le stelle volanti
+    launchStars(25);
+
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    // 1. SCELTA AUDIO: 40% melodia, 40% applauso, 20% campanella
-    let randomSound = Math.random();
-    
-    if (randomSound < 0.4) {
+    // Scegli un suono casuale, ma mai lo stesso due volte di fila
+    let sounds = ['success', 'applause', 'sparkle'];
+    let pick = sounds[Math.floor(Math.random() * sounds.length)];
+    if (pick === lastSound) {
+      pick = sounds[(sounds.indexOf(pick) + 1) % sounds.length];
+    }
+    lastSound = pick;
+
+    if (pick === 'success') {
       // MELODIA ALLEGRA (3 note)
-      const n = type === 'success' ? [523.25, 659.25, 783.99] : [300, 250];
-      n.forEach((f, i) => {
+      [523, 659, 783].forEach((f, i) => {
         let o = audioCtx.createOscillator(), g = audioCtx.createGain();
         o.connect(g); g.connect(audioCtx.destination);
         o.frequency.value = f; o.type = 'sine';
-        g.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.1);
-        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.1 + 0.15);
-        o.start(audioCtx.currentTime + i * 0.1); o.stop(audioCtx.currentTime + i * 0.1 + 0.15);
+        g.gain.setValueAtTime(.2, audioCtx.currentTime + i * .1);
+        g.gain.exponentialRampToValueAtTime(.01, audioCtx.currentTime + i * .1 + .15);
+        o.start(audioCtx.currentTime + i * .1); o.stop(audioCtx.currentTime + i * .1 + .15);
       });
-    } else if (randomSound < 0.8) {
+    } else if (pick === 'applause') {
       // APPLAUSI (rumore bianco)
-      let bufferSize = audioCtx.sampleRate * 0.8;
-      let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      let data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+      let bs = audioCtx.sampleRate * .8;
+      let bf = audioCtx.createBuffer(1, bs, audioCtx.sampleRate);
+      let dt = bf.getChannelData(0);
+      for (let i = 0; i < bs; i++) {
+        dt[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bs, 2);
       }
-      let source = audioCtx.createBufferSource();
-      source.buffer = buffer;
-      let gain = audioCtx.createGain();
-      gain.gain.value = 0.3;
-      source.connect(gain); gain.connect(audioCtx.destination);
-      source.start();
+      let src = audioCtx.createBufferSource();
+      src.buffer = bf;
+      let g = audioCtx.createGain();
+      g.gain.value = .3;
+      src.connect(g); g.connect(audioCtx.destination);
+      src.start();
     } else {
-      // CAMPANELLA (Tintinnio)
-      for(let i=0; i<5; i++){
+      // CAMPANELLA (tintinnio)
+      for (let i = 0; i < 5; i++) {
         let o = audioCtx.createOscillator(), g = audioCtx.createGain();
         o.connect(g); g.connect(audioCtx.destination);
         o.frequency.value = 1200 + Math.random() * 500;
         o.type = 'triangle';
-        g.gain.setValueAtTime(0.15, audioCtx.currentTime + i * 0.08);
-        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.08 + 0.1);
-        o.start(audioCtx.currentTime + i * 0.08); o.stop(audioCtx.currentTime + i * 0.08 + 0.1);
+        g.gain.setValueAtTime(.15, audioCtx.currentTime + i * .08);
+        g.gain.exponentialRampToValueAtTime(.01, audioCtx.currentTime + i * .08 + .1);
+        o.start(audioCtx.currentTime + i * .08); o.stop(audioCtx.currentTime + i * .08 + .1);
       }
     }
-
-    // 2. STELLE CHE VOLANO (SEMPRE, OGNI VOLTA)
-    launchStars(20); // Lancia 20 stelle
-
   } catch (e) {}
 }
 
-function launchStars(count) {
-  let container = document.querySelector('.screen.active .panel');
-  if (!container) container = document.querySelector('.screen.active');
-  if (!container) return;
+/* STELLE CHE VOLANO */
+function launchStars(n) {
+  let c = document.querySelector('.screen.active .panel');
+  if (!c) return;
 
-  // Se esistono già stelle, rimuovile
   document.querySelectorAll('.dynamic-star').forEach(s => s.remove());
 
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < n; i++) {
     setTimeout(() => {
-      let star = document.createElement('div');
-      star.className = 'dynamic-star';
-      // Alterna stelle, cuori e scintille
-      let symbols = ['⭐', '✨', '🌟', '💖'];
-      star.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-      
-      star.style.cssText = `position:absolute; left:${20 + Math.random() * 60}%; top:50%; font-size:${20 + Math.random() * 30}px; pointer-events:none; opacity:0.9; z-index:9999; transition: transform 1s ease-out, opacity 1s ease-out;`;
-      container.appendChild(star);
-      
-      // Anima la stella
-      setTimeout(() => {
-        star.style.transform = `translateY(-${100 + Math.random() * 50}px) rotate(${Math.random() * 360}deg) scale(1.5)`;
-        star.style.opacity = '0';
-      }, 10);
+      let s = document.createElement('div');
+      s.className = 'dynamic-star';
+      s.textContent = ['⭐', '✨', '🌟', '💖'][Math.floor(Math.random() * 4)];
+      s.style.cssText = `position:absolute; left:50%; top:50%; font-size:${25 + Math.random() * 30}px; pointer-events:none; z-index:9999; opacity:1`;
+      c.appendChild(s);
+      s.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+      s.style.setProperty('--ty', (-(150 + Math.random() * 100)) + 'px');
+      s.style.setProperty('--rot', (Math.random() * 360) + 'deg');
+      s.style.animation = 'dynamic-star 1.2s ease-out forwards';
+      setTimeout(() => s.remove(), 1300);
+    }, i * 30);
+  }
+}
+/* ==========================================
+   DATI INIZIALI E VARIABILI GLOBALI
+   ========================================== */
+let stars = 0;
+let currentLang = 'it';
+let customWords = [];
+let customSentences = [];
 
-      // Rimuovi dal DOM
-      setTimeout(() => star.remove(), 1100);
-    }, i * 40);
+// Storie di esempio (bilingue)
+let stories = [
+  { id: 1, lang: "it", title: "Il gattino", emoji: "🐱", text: "Un piccolo gatto vive in giardino. Gli piace cacciare le farfalle." },
+  { id: 2, lang: "fr", title: "Le petit chat", emoji: "🐱", text: "Un petit chat vit dans un jardin. Il aime chasser les papillons." }
+];
+
+// Parole precaricate in Italiano
+const WORDS_IT = [
+  { word: "casa", syllables: ["ca", "sa"], emoji: "🏠", category: "Casa" },
+  { word: "gatto", syllables: ["gat", "to"], emoji: "🐱", category: "Animali" },
+  { word: "cane", syllables: ["ca", "ne"], emoji: "🐶", category: "Animali" },
+  { word: "sole", syllables: ["so", "le"], emoji: "☀️", category: "Natura" },
+  { word: "luna", syllables: ["lu", "na"], emoji: "🌙", category: "Natura" },
+  { word: "mela", syllables: ["me", "la"], emoji: "🍎", category: "Cibo" },
+  { word: "treno", syllables: ["tre", "no"], emoji: "🚂", category: "Trasporti" },
+  { word: "pesce", syllables: ["pe", "sce"], emoji: "🐟", category: "Animali" },
+  { word: "auto", syllables: ["au", "to"], emoji: "🚗", category: "Trasporti" },
+  { word: "fiore", syllables: ["fio", "re"], emoji: "🌸", category: "Natura" },
+  { word: "pane", syllables: ["pa", "ne"], emoji: "🍞", category: "Cibo" },
+  { word: "stella", syllables: ["stel", "la"], emoji: "⭐", category: "Natura" }
+];
+
+// Parole precaricate in Francese
+const WORDS_FR = [
+  { word: "maison", syllables: ["mai", "son"], emoji: "🏠", category: "Maison" },
+  { word: "chat", syllables: ["chat"], emoji: "🐱", category: "Animaux" },
+  { word: "chien", syllables: ["chien"], emoji: "🐶", category: "Animaux" },
+  { word: "soleil", syllables: ["so", "leil"], emoji: "☀️", category: "Nature" },
+  { word: "lune", syllables: ["lu", "ne"], emoji: "🌙", category: "Nature" },
+  { word: "pomme", syllables: ["pom", "me"], emoji: "🍎", category: "Nourriture" },
+  { word: "train", syllables: ["train"], emoji: "🚂", category: "Transports" },
+  { word: "poisson", syllables: ["pois", "son"], emoji: "🐟", category: "Animaux" },
+  { word: "voiture", syllables: ["voi", "tu", "re"], emoji: "🚗", category: "Transports" },
+  { word: "fleur", syllables: ["fleur"], emoji: "🌸", category: "Nature" },
+  { word: "pain", syllables: ["pain"], emoji: "🍞", category: "Nourriture" },
+  { word: "étoile", syllables: ["é", "toi", "le"], emoji: "⭐", category: "Nature" }
+];
+
+/* ==========================================
+   SALVATAGGIO AUTOMATICO
+   ========================================== */
+let save = () => localStorage.setItem('data', JSON.stringify({
+  stars, currentLang, customWords, customSentences, stories
+}));
+
+let load = () => {
+  try {
+    let d = JSON.parse(localStorage.getItem('data'));
+    if (d) {
+      stars = d.stars || 0;
+      currentLang = d.currentLang || 'it';
+      customWords = d.customWords || [];
+      customSentences = d.customSentences || [];
+      stories = d.stories || stories;
+    }
+  } catch (e) {}
+};
+/* ==========================================
+   FUNZIONI BASE (NAVIGAZIONE, VOCE, CATEGORIE)
+   ========================================== */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.speechSynthesis.cancel();
+}
+
+function goHome() { showScreen('screen-home'); }
+
+function addStars(n) {
+  stars += n;
+  document.getElementById('star-count').textContent = stars;
+  save();
+}
+
+/* Sintesi vocale */
+function speak(text, rate, onend, lang) {
+  let u = new SpeechSynthesisUtterance(text);
+  u.lang = (lang === 'fr') ? 'fr-FR' : 'it-IT';
+  u.rate = rate || 0.9;
+  if (onend) u.onend = onend;
+  window.speechSynthesis.speak(u);
+}
+
+/* Lista parole per lingua */
+function wordPool(lang) {
+  return (lang === 'fr' ? WORDS_FR : WORDS_IT).concat(customWords.filter(w => w.lang === lang));
+}
+
+/* Mostra emoji o immagine */
+function iconHtml(w, size) {
+  return `<span style="font-size:${size * 0.8}px">${w.emoji || ''}</span>`;
+}
+
+/* Apri schermata categorie */
+function openCategoryPicker(type) {
+  let cats = [...new Set(wordPool(currentLang).map(w => w.category))];
+  document.getElementById('category-grid').innerHTML = 
+    `<button class="menu-card c1" onclick="pickCategory(null, '${type}')"><span class="emoji">🌈</span><h3>Tutti</h3></button>` +
+    cats.map(c => `<button class="menu-card c5" onclick="pickCategory('${c}', '${type}')"><span class="emoji">🏷️</span><h3>${c}</h3></button>`).join('');
+  showScreen('screen-category');
+}
+
+/* Scegli categoria e avvia gioco */
+function pickCategory(cat, type) {
+  let pool = wordPool(currentLang);
+  if (cat) pool = pool.filter(w => w.category === cat);
+  if (type === 'syllables') startSyllableGame(pool);
+  else if (type === 'words') startWordReading(pool);
+  else if (type === 'quiz') startQuiz(pool);
+  else if (type === 'sound') startSoundGame(pool);
+  else if (type === 'sentences') startSentenceGame(null);
+}/* ==========================================
+   GIOCO DELLE SILLABE
+   ========================================== */
+let gw = [];  // Parole del gioco
+let gi = 0;   // Indice parola corrente
+let ge = 0;   // Indice sillaba corrente
+
+function startSyllableGame(list) {
+  gw = [...list].sort(() => Math.random() - .5).slice(0, 6);
+  gi = 0;
+  showScreen('screen-game');
+  loadGameWord();
+}
+
+function loadGameWord() {
+  let w = gw[gi];
+  ge = 0;
+  document.getElementById('game-emoji').innerHTML = iconHtml(w, 90);
+  document.getElementById('game-celebrate').textContent = '';
+
+  // Crea gli slot (spazi vuoti)
+  let se = document.getElementById('game-slots');
+  se.innerHTML = '';
+  w.syllables.forEach(() => {
+    let d = document.createElement('div');
+    d.className = 'slot';
+    se.appendChild(d);
+  });
+
+  // Crea le tessere mescolate
+  let st = document.getElementById('game-stones');
+  st.innerHTML = '';
+  w.syllables.map((s, i) => ({ s, i }))
+    .sort(() => Math.random() - .5)
+    .forEach(x => {
+      let b = document.createElement('button');
+      b.className = 'stone stone-' + (x.i % 4);
+      b.textContent = x.s;
+      b.onclick = () => pickSyllable(x.i, x.s, b);
+      st.appendChild(b);
+    });
+
+  setTimeout(() => speak(w.word, 1, null, w.lang), 150);
+}
+
+function pickSyllable(i, s, b) {
+  if (i === ge) {
+    b.disabled = true;
+    document.getElementById('game-slots').children[ge].textContent = s;
+    ge++;
+    if (ge === gw[gi].syllables.length) {
+      addStars(1);
+      playJingle('success');
+      document.getElementById('game-celebrate').textContent = '🎉 Bravo!';
+    }
+  } else {
+    b.style.transform = 'translateX(-6px)';
+    setTimeout(() => b.style.transform = '', 150);
   }
 }
 
-/* STELLE CHE VOLANO */
-function launchStars(){
-  let container = document.querySelector('.screen.active .panel');
-  if(!container) return;
-  for(let i=0; i<12; i++){
-    let star = document.createElement('div');
-    star.textContent = '⭐';
-    star.style.cssText = `position:absolute; left:${20+Math.random()*60}%; top:50%; font-size:${20+Math.random()*30}px; pointer-events:none; animation:burst-fly ${0.8+Math.random()*0.6}s ease-out forwards; animation-delay:${i*0.05}s; opacity:0.8; z-index:1000;`;
-    container.appendChild(star);
-    setTimeout(()=> star.remove(), 1600);
+function speakCurrentWord() {
+  speak(gw[gi].word, 1, null, gw[gi].lang);
+}/* ==========================================
+   GIOCO DEL QUIZ
+   ========================================== */
+let qq = [];  // Domande del quiz
+let qi = 0;   // Indice domanda corrente
+let qs = 0;   // Punteggio
+
+function startQuiz(list) {
+  let pool = list || wordPool(currentLang);
+  qq = [...pool].sort(() => Math.random() - .5).slice(0, 5)
+    .map(w => {
+      let wrongs = wordPool(w.lang)
+        .filter(x => x.word !== w.word)
+        .sort(() => Math.random() - .5)
+        .slice(0, 2)
+        .map(x => x.word);
+      return {
+        emoji: w.emoji,
+        answer: w.word,
+        options: [w.word, ...wrongs].sort(() => Math.random() - .5)
+      };
+    });
+  qi = 0;
+  qs = 0;
+  showScreen('screen-quiz');
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  let q = qq[qi];
+  document.getElementById('quiz-panel').innerHTML = `
+    <div class="quiz-emoji">${q.emoji}</div>
+    <div class="quiz-q">Qual è questa parola?</div>
+    <div class="quiz-opts">
+      ${q.options.map(o => `<button class="quiz-opt" onclick="answerQuiz('${o}', this)">${o}</button>`).join('')}
+    </div>
+  `;
+}
+
+function answerQuiz(choice, btn) {
+  let q = qq[qi];
+  let ok = (choice === q.answer);
+
+  if (ok) {
+    btn.classList.add('correct');
+    playJingle('success');
+    addStars(1);
+  } else {
+    playJingle('wrong');
+    btn.classList.add('wrong');
+  }
+
+  document.querySelectorAll('.quiz-opt').forEach(x => x.disabled = true);
+  qi++;
+
+  setTimeout(() => {
+    if (qi < qq.length) {
+      renderQuizQuestion();
+    } else {
+      document.getElementById('quiz-panel').innerHTML = `
+        <div class="score-screen">
+          <div class="big-emoji">🏆</div>
+          <h2>${qs} / ${qq.length}</h2>
+          <button class="big-btn btn-coral" onclick="startQuiz()">Rigioca</button>
+        </div>
+      `;
+    }
+  }, 1200);
+}/* ==========================================
+   STORIE
+   ========================================== */
+function renderStoryList() {
+  let el = document.getElementById('story-list');
+  el.innerHTML = '';
+
+  stories.forEach(s => {
+    let d = document.createElement('div');
+    d.className = 'story-item';
+    d.onclick = () => openStory(s.id);
+    d.innerHTML = `
+      <div class="emoji">${s.emoji}</div>
+      <div class="info">
+        <h4>${s.title}</h4>
+        <p>${s.text.slice(0, 40)}...</p>
+      </div>
+    `;
+    el.appendChild(d);
+  });
+}
+
+function addStory() {
+  let title = document.getElementById('new-story-title').value.trim();
+  let text = document.getElementById('new-story-text').value.trim();
+  let emoji = document.getElementById('new-story-emoji').value.trim() || '📘';
+
+  if (title && text) {
+    stories.push({
+      id: Date.now(),
+      lang: currentLang,
+      title: title,
+      text: text,
+      emoji: emoji
+    });
+    document.getElementById('new-story-title').value = '';
+    document.getElementById('new-story-text').value = '';
+    document.getElementById('new-story-emoji').value = '';
+    renderStoryList();
+    save();
   }
 }
-/* STATE */
-let stars=0,contrastMode=false,autoRepeat=true,simplifiedQuiz=true,currentLang='fr',storageAvailable=true;
-let selectedVoiceURI={fr:null,it:null},voicesList=[];
-const STORAGE_KEY='ile_aux_syllabes_v1';
-let customWords=[],customSentences=[],wordStats={},customGroups=[],customSentenceGroups=[];
-let customQuiz=[],customQuizGroups=[],editingQuizIndex=null,editingCustomQuizGroupIndex=null;
-let activeCustomQuizQueue=[],activeCustomQuizIndex=0;
-let stories=[{id:1,lang:"fr",title:"Le petit chat",emoji:"🐱",text:"Un petit chat vit dans un jardin. Il aime chasser les papillons."},{id:2,lang:"it",title:"Il gattino",emoji:"🐱",text:"Un piccolo gatto vive in giardino. Gli piace cacciare le farfalle."}];
-let storyRecordings={},storyGroups=[],currentStoryId=null,mediaRecorder=null,recordedChunks=[],currentRecordingSlot=null,readerSentenceIndex=0;
 
-/* I18N */
-const I18N={fr:{home_title:"Coucou ! Prêt à jouer ?",home_subtitle:"Choisis une activité 🌟",card_syllables_title:"Syllabes",card_syllables_desc:"Assemble les mots",card_words_title:"Mots entiers",card_words_desc:"Lis le mot",card_quiz_title:"Quiz",card_quiz_desc:"Devine le mot",card_sentences_title:"Phrases",card_sentences_desc:"Remets en ordre",card_sound_title:"Son du début",card_sound_desc:"Trouve l'image",card_stories_title:"Histoires",card_stories_desc:"Écoute et lis",card_mywords_title:"Mes mots",card_mywords_desc:"Ajoute tes mots",card_settings_title:"Ma voix",card_settings_desc:"Réglages",card_custom_quiz_title:"Quiz Perso",card_custom_quiz_desc:"Crée des questions",back:"← Retour",title_category:"Choisis une catégorie",title_syllables:"Syllabes",title_sentences:"Phrases",title_sound:"Son du début",title_words:"Mots",title_quiz:"Quiz",title_stories:"Histoires",title_mywords:"Mes mots",title_settings:"Réglages",title_progress:"Progrès",title_sentence_manager:"Mes phrases",title_custom_quiz:"Quiz Perso",btn_listen:"🔊 Écouter",btn_next_word:"➡️ Suivant",btn_prev_word:"⬅️ Précédent",btn_success:"👍 Réussi",btn_retry:"🤔 Revoir",no_words_lang:"Aucun mot disponible.",no_stories_lang:"Aucune histoire.",all_words_read:"Bravo ! Tout est lu !",sentence_form_add_title:"➕ Ajouter une phrase",sentence_form_add_btn:"✅ Ajouter",word_form_add_title:"➕ Ajouter un mot",word_form_add_btn:"✅ Ajouter",story_form_add_title:"➕ Ajouter une histoire",story_form_add_btn:"✅ Ajouter",quiz_form_add_title:"➕ Ajouter une question",quiz_form_add_btn:"✅ Ajouter",settings_voice_fr:"Voix FR",settings_voice_it:"Voix IT",settings_progress:"Progrès"},it:{home_title:"Ciao! Pronto a giocare?",home_subtitle:"Scegli un'attività 🌟",card_syllables_title:"Sillabe",card_syllables_desc:"Componi le parole",card_words_title:"Parole intere",card_words_desc:"Leggi la parola",card_quiz_title:"Quiz",card_quiz_desc:"Indovina la parola",card_sentences_title:"Frasi",card_sentences_desc:"Rimetti in ordine",card_sound_title:"Suono iniziale",card_sound_desc:"Trova l'immagine",card_stories_title:"Storie",card_stories_desc:"Ascolta e leggi",card_mywords_title:"Le mie parole",card_mywords_desc:"Aggiungi le tue",card_settings_title:"La mia voce",card_settings_desc:"Impostazioni",card_custom_quiz_title:"Quiz Perso",card_custom_quiz_desc:"Crea domande",back:"← Indietro",title_category:"Scegli categoria",title_syllables:"Sillabe",title_sentences:"Frasi",title_sound:"Suono iniziale",title_words:"Parole",title_quiz:"Quiz",title_stories:"Storie",title_mywords:"Le mie parole",title_settings:"Impostazioni",title_progress:"Progressi",title_sentence_manager:"Le mie frasi",title_custom_quiz:"Quiz Perso",btn_listen:"🔊 Ascolta",btn_next_word:"➡️ Successiva",btn_prev_word:"⬅️ Precedente",btn_success:"👍 Fatto",btn_retry:"🤔 Rivedi",no_words_lang:"Nessuna parola disponibile.",no_stories_lang:"Nessuna storia.",all_words_read:"Bravo! Tutto letto!",sentence_form_add_title:"➕ Aggiungi frase",sentence_form_add_btn:"✅ Aggiungi",word_form_add_title:"➕ Aggiungi parola",word_form_add_btn:"✅ Aggiungi",story_form_add_title:"➕ Aggiungi storia",story_form_add_btn:"✅ Aggiungi",quiz_form_add_title:"➕ Aggiungi domanda",quiz_form_add_btn:"✅ Aggiungi",settings_voice_fr:"Voce FR",settings_voice_it:"Voce IT",settings_progress:"Progressi"}};
-function applyUILang(){document.querySelectorAll('[data-i18n]').forEach(e=>{let k=e.getAttribute('data-i18n');if(I18N[currentLang][k])e.textContent=I18N[currentLang][k]})}
-function t(k){return(I18N[currentLang]&&I18N[currentLang][k])||I18N.fr[k]||k}
+function openStory(id) {
+  let s = stories.find(x => x.id === id);
+  document.getElementById('reader-title').textContent = s.title;
+  
+  // Dividi il testo in frasi per evidenziarle
+  let sentences = s.text.split(/(?<=[.!?])\s+/);
+  document.getElementById('reader-text').innerHTML = sentences
+    .map(x => `<span class="sentence">${x}</span>`)
+    .join(' ');
+  
+  showScreen('screen-reader');
+}
 
-/* WORDS */
-const WORDS_FR=[{word:"maison",syllables:["mai","son"],emoji:"🏠",lang:"fr",category:"Maison"},{word:"table",syllables:["ta","ble"],emoji:"🍽️",lang:"fr",category:"Maison"},{word:"chaise",syllables:["chai","se"],emoji:"🪑",lang:"fr",category:"Maison"},{word:"soleil",syllables:["so","leil"],emoji:"☀️",lang:"fr",category:"Nature"},{word:"lune",syllables:["lu","ne"],emoji:"🌙",lang:"fr",category:"Nature"},{word:"arbre",syllables:["ar","bre"],emoji:"🌳",lang:"fr",category:"Nature"},{word:"chocolat",syllables:["cho","co","lat"],emoji:"🍫",lang:"fr",category:"Nourriture"},{word:"banane",syllables:["ba","na","ne"],emoji:"🍌",lang:"fr",category:"Nourriture"},{word:"pomme",syllables:["pom","me"],emoji:"🍎",lang:"fr",category:"Nourriture"},{word:"chat",syllables:["chat"],emoji:"🐱",lang:"fr",category:"Animaux"},{word:"chien",syllables:["chien"],emoji:"🐶",lang:"fr",category:"Animaux"},{word:"poisson",syllables:["pois","son"],emoji:"🐟",lang:"fr",category:"Animaux"},{word:"lapin",syllables:["la","pin"],emoji:"🐰",lang:"fr",category:"Animaux"},{word:"voiture",syllables:["voi","tu","re"],emoji:"🚗",lang:"fr",category:"Transports"},{word:"bateau",syllables:["ba","teau"],emoji:"⛵",lang:"fr",category:"Transports"},{word:"avion",syllables:["a","vion"],emoji:"✈️",lang:"fr",category:"Transports"}];
-const WORDS_IT=[{word:"casa",syllables:["ca","sa"],emoji:"🏠",lang:"it",category:"Casa"},{word:"tavolo",syllables:["ta","vo","lo"],emoji:"🍽️",lang:"it",category:"Casa"},{word:"sedia",syllables:["se","dia"],emoji:"🪑",lang:"it",category:"Casa"},{word:"sole",syllables:["so","le"],emoji:"☀️",lang:"it",category:"Natura"},{word:"luna",syllables:["lu","na"],emoji:"🌙",lang:"it",category:"Natura"},{word:"albero",syllables:["al","be","ro"],emoji:"🌳",lang:"it",category:"Natura"},{word:"cioccolato",syllables:["cioc","co","la","to"],emoji:"🍫",lang:"it",category:"Cibo"},{word:"banana",syllables:["ba","na","na"],emoji:"🍌",lang:"it",category:"Cibo"},{word:"mela",syllables:["me","la"],emoji:"🍎",lang:"it",category:"Cibo"},{word:"gatto",syllables:["gat","to"],emoji:"🐱",lang:"it",category:"Animali"},{word:"cane",syllables:["ca","ne"],emoji:"🐶",lang:"it",category:"Animali"},{word:"pesce",syllables:["pe","sce"],emoji:"🐟",lang:"it",category:"Animali"},{word:"coniglio",syllables:["co","ni","glio"],emoji:"🐰",lang:"it",category:"Animali"},{word:"macchina",syllables:["mac","chi","na"],emoji:"🚗",lang:"it",category:"Trasporti"},{word:"barca",syllables:["bar","ca"],emoji:"⛵",lang:"it",category:"Trasporti"},{word:"aereo",syllables:["a","e","re","o"],emoji:"✈️",lang:"it",category:"Trasporti"}];
+function toggleReadStory() {
+  let s = stories.find(x => x.id === currentStoryId);
+  let i = 0;
+  let sentences = s.text.split(/(?<=[.!?])\s+/);
+  
+  function next() {
+    if (i >= sentences.length) return;
+    speak(sentences[i], 0.9, next, s.lang);
+    i++;
+  }
+  next();
+}
 
-/* FUNCTIONS */
-function wordKey(w){return(w.lang||currentLang)+':'+(w.word||'').toLowerCase()}
-function wordPool(lang){return(lang==='it'?WORDS_IT:WORDS_FR).concat(customWords.filter(w=>w.lang===lang))}
-function categoriesForLang(lang){return[...new Set(wordPool(lang).map(w=>w.category||'Général'))]}
-function recordWordResult(w,s){let k=wordKey(w);if(!wordStats[k])wordStats[k]={streak:0};if(s)wordStats[k].streak++;else wordStats[k].streak=0;saveState()}
-function wordStreak(w){return wordStats[wordKey(w)]?.streak||0}
+// Variabile per salvare l'ID della storia corrente
+let currentStoryId = null;
+/* ==========================================
+   PAROLE INTERE (LETTURA)
+   ========================================== */
+let wq = [];  // Coda parole
+let wi = 0;   // Indice parola corrente
 
-function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({stars,currentLang,contrastMode,autoRepeat,simplifiedQuiz,selectedVoiceURI,customWords,customSentences,wordStats,stories,storyGroups,customGroups,customSentenceGroups,customQuiz,customQuizGroups}))}catch(e){}}
-function loadState(){try{let d=JSON.parse(localStorage.getItem(STORAGE_KEY));if(d){stars=d.stars||0;currentLang=d.currentLang||'fr';contrastMode=d.contrastMode||false;autoRepeat=d.autoRepeat??true;simplifiedQuiz=d.simplifiedQuiz??true;selectedVoiceURI=d.selectedVoiceURI||{};customWords=d.customWords||[];customSentences=d.customSentences||[];wordStats=d.wordStats||{};stories=d.stories||stories;storyGroups=d.storyGroups||[];customGroups=d.customGroups||[];customSentenceGroups=d.customSentenceGroups||[];customQuiz=d.customQuiz||[];customQuizGroups=d.customQuizGroups||[]}}catch(e){}}
-function applyLoadedStateToUI(){document.getElementById('star-count').textContent=stars;document.body.classList.toggle('contrast',contrastMode);document.getElementById('contrast-toggle').classList.toggle('on',contrastMode);document.getElementById('autorepeat-toggle').classList.toggle('on',autoRepeat);document.getElementById('simplequiz-toggle').classList.toggle('on',simplifiedQuiz);applyUILang()}
+function startWordReading(list) {
+  wq = [...list].sort(() => Math.random() - .5);
+  wi = 0;
+  showScreen('screen-words');
+  loadFlashword();
+}
 
-function setLang(l){currentLang=l;document.getElementById('lang-btn-fr').classList.toggle('active',l==='fr');document.getElementById('lang-btn-it').classList.toggle('active',l==='it');applyUILang();saveState()}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.speechSynthesis.cancel()}
-function goHome(){showScreen('screen-home')}
+function loadFlashword() {
+  let w = wq[wi];
+  document.getElementById('flashcard-word').textContent = w.word;
+  document.getElementById('words-celebrate').textContent = '';
+  setTimeout(() => speak(w.word, 0.8, null, w.lang), 150);
+}
 
-function iconHtml(w,s){s=s||60;return`<span style="font-size:${s*.8}px">${w.emoji||''}</span>`}
-function playJingle(type){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();const n=type==='success'?[523,659,783]:[300];n.forEach((f,i)=>{let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(.2,audioCtx.currentTime+i*.1);g.gain.exponentialRampToValueAtTime(.01,audioCtx.currentTime+i*.1+.15);o.start(audioCtx.currentTime+i*.1);o.stop(audioCtx.currentTime+i*.1+.15)})}catch(e){}}
+function speakCurrentFlashword() {
+  speak(wq[wi].word, 0.8, null, wq[wi].lang);
+}
 
-function speak(text,rate,onend,lang){let u=new SpeechSynthesisUtterance(text);let l=lang||currentLang;let v=voicesList.find(v=>v.lang&&v.lang.toLowerCase().startsWith(l));if(v)u.voice=v;u.lang=l==='it'?'it-IT':'fr-FR';u.rate=rate||.95;if(onend)u.onend=onend;window.speechSynthesis.speak(u)}
-function loadVoices(){voicesList=window.speechSynthesis.getVoices();populateVoiceSelect('settings-voice-select-fr','fr');populateVoiceSelect('settings-voice-select-it','it')}
-function populateVoiceSelect(id,lang){let sel=document.getElementById(id);let opts=voicesList.filter(v=>v.lang&&v.lang.toLowerCase().startsWith(lang));sel.innerHTML='';opts.forEach(v=>{let o=document.createElement('option');o.value=v.name;o.textContent=v.name;sel.appendChild(o)})}
-window.speechSynthesis.onvoiceschanged=loadVoices;
+function toggleFlashImage() {
+  let e = document.getElementById('words-emoji');
+  e.style.display = e.style.display === 'none' ? 'block' : 'none';
+}
 
-function toggleContrast(){contrastMode=!contrastMode;document.body.classList.toggle('contrast',contrastMode);document.getElementById('contrast-toggle').classList.toggle('on',contrastMode);saveState()}
-function toggleAutoRepeat(){autoRepeat=!autoRepeat;document.getElementById('autorepeat-toggle').classList.toggle('on',autoRepeat);saveState()}
-function toggleSimplifiedQuiz(){simplifiedQuiz=!simplifiedQuiz;document.getElementById('simplequiz-toggle').classList.toggle('on',simplifiedQuiz);saveState()}
+function rateFlashword(ok) {
+  let w = wq[wi];
+  if (ok) {
+    playJingle('success');
+    addStars(1);
+    document.getElementById('words-celebrate').textContent = '⭐ Bravo!';
+  } else {
+    document.getElementById('words-celebrate').textContent = '🤔 Riprova!';
+  }
+  wi++;
+  if (wi >= wq.length) {
+    setTimeout(goHome, 1500);
+    return;
+  }
+  loadFlashword();
+}
 
-/* CATEGORY PICKER */
-function openCategoryPicker(type){let cats=type==='sentences'?['Toutes']:categoriesForLang(currentLang);let grid=document.getElementById('category-grid');grid.innerHTML=`<button class="menu-card c1" onclick="pickCategory(null,'${type}')"><span class="emoji">🌈</span><h3>${type==='sentences'?'Toutes les phrases':'Tous les mots'}</h3></button>`+cats.map(c=>`<button class="menu-card c5" onclick="pickCategory('${c}','${type}')"><span class="emoji">🏷️</span><h3>${c}</h3></button>`).join('');showScreen('screen-category')}
-function pickCategory(cat,type){let pool=wordPool(currentLang);if(cat&&cat!=='Toutes')pool=pool.filter(w=>w.category===cat);if(type==='syllables')startSyllableGame(pool);else if(type==='words')startWordReading(pool);else if(type==='quiz')startQuiz(pool);else if(type==='sound')startSoundGame(pool);else if(type==='sentences')startSentenceGame(null)}
+/* ==========================================
+   SUONO INIZIALE
+   ========================================== */
+let soundQ = [];
+let soundI = 0;
 
-/* SYLLABLE GAME */
-let gameWords=[],gameIndex=0,gameNextExpected=0;function startSyllableGame(list){gameWords=[...list].sort(()=>Math.random()-.5).slice(0,6);gameIndex=0;showScreen('screen-game');loadGameWord()}function loadGameWord(){let w=gameWords[gameIndex];gameNextExpected=0;document.getElementById('game-emoji').innerHTML=iconHtml(w,90);document.getElementById('game-celebrate').textContent='';let slotsEl=document.getElementById('game-slots');slotsEl.innerHTML='';w.syllables.forEach(()=>{let d=document.createElement('div');d.className='slot';slotsEl.appendChild(d)});let stonesEl=document.getElementById('game-stones');stonesEl.innerHTML='';w.syllables.map((s,i)=>({s,i})).sort(()=>Math.random()-.5).forEach(item=>{let b=document.createElement('button');b.className='stone stone-'+(item.i%4);b.textContent=item.s;b.onclick=()=>pickSyllable(item.i,item.s,b);stonesEl.appendChild(b)});let dots=document.getElementById('game-dots');dots.innerHTML='';gameWords.forEach((_,i)=>{let d=document.createElement('div');d.className='dot'+(i===gameIndex?' current':'');dots.appendChild(d)});setTimeout(()=>speak(w.word,1,null,w.lang),150)}function pickSyllable(idx,s,b){if(idx===gameNextExpected){b.disabled=true;document.getElementById('game-slots').children[gameNextExpected].textContent=s;gameNextExpected++;if(gameNextExpected===gameWords[gameIndex].syllables.length){addStars(1);playJingle('success');document.getElementById('game-celebrate').textContent='🎉 Bravo!';recordWordResult(gameWords[gameIndex],true)}}else{b.style.transform='translateX(-6px)';setTimeout(()=>b.style.transform='',150)}}function speakCurrentWord(){speak(gameWords[gameIndex].word,1,null,gameWords[gameIndex].lang)}function toggleGameImage(){let e=document.getElementById('game-emoji');e.style.display=e.style.display==='none'?'block':'none'}function nextGameWord(){gameIndex++;if(gameIndex>=gameWords.length){document.getElementById('game-celebrate').textContent='🏆 Terminé!';setTimeout(goHome,1500);return}loadGameWord()}
+function startSoundGame(list) {
+  let pool = list || wordPool(currentLang);
+  soundQ = [...pool].sort(() => Math.random() - .5).slice(0, 5);
+  soundI = 0;
+  showScreen('screen-sound');
+  loadSoundRound();
+}
 
-/* SENTENCES */
-let sentenceQueue=[],sentenceIndex=0,sentenceNextExpected=0;function startSentenceGame(list){let pool=list||[{words:["Le","chat","dort"],emoji:"🐱",lang:"fr"},{words:["La","lune","brille"],emoji:"🌙",lang:"fr"},{words:["Il","gatto","dorme"],emoji:"🐱",lang:"it"}];sentenceQueue=[...pool].sort(()=>Math.random()-.5).slice(0,4);sentenceIndex=0;showScreen('screen-sentence');loadSentence()}function loadSentence(){let s=sentenceQueue[sentenceIndex];sentenceNextExpected=0;document.getElementById('sentence-emoji').innerHTML=iconHtml(s,70);let slotsEl=document.getElementById('sentence-slots');slotsEl.innerHTML='';s.words.forEach(()=>{let d=document.createElement('div');d.className='slot';slotsEl.appendChild(d)});let stonesEl=document.getElementById('sentence-stones');stonesEl.innerHTML='';s.words.map((w,i)=>({w,i})).sort(()=>Math.random()-.5).forEach(item=>{let b=document.createElement('button');b.className='stone stone-'+(item.i%4);b.textContent=item.w;b.onclick=()=>pickSentenceWord(item.i,item.w,b);stonesEl.appendChild(b)})}function pickSentenceWord(idx,w,b){if(idx===sentenceNextExpected){b.disabled=true;document.getElementById('sentence-slots').children[sentenceNextExpected].textContent=w;sentenceNextExpected++;if(sentenceNextExpected===sentenceQueue[sentenceIndex].words.length){playJingle('success');document.getElementById('sentence-celebrate').textContent='🎉 Bravo!'}}}function speakCurrentSentence(){speak(sentenceQueue[sentenceIndex].words.join(' '),.9,null,sentenceQueue[sentenceIndex].lang)}function prevSentence(){if(sentenceIndex>0){sentenceIndex--;loadSentence()}}function nextSentence(){sentenceIndex++;if(sentenceIndex>=sentenceQueue.length){setTimeout(goHome,1500);return}loadSentence()}
-function addCustomSentence(){let text=document.getElementById('new-sentence-text').value.trim();let emoji=document.getElementById('new-sentence-emoji').value.trim()||'📘';let lang=document.getElementById('new-sentence-lang').value;if(text){customSentences.push({words:text.split(/\s+/),emoji,lang});document.getElementById('new-sentence-text').value='';renderSentenceManager();saveState()}}function renderSentenceManager(){let el=document.getElementById('sentences-list');el.innerHTML='';customSentences.forEach((s,i)=>{let d=document.createElement('div');d.className='story-item';d.innerHTML=`<div class="emoji">${s.emoji}</div><div class="info"><h4>${s.words.join(' ')}</h4></div><button class="icon-btn" style="background:var(--coral)" onclick="customSentences.splice(${i},1);renderSentenceManager();saveState()">🗑️</button>`;el.appendChild(d)})}
+function loadSoundRound() {
+  if (soundI >= soundQ.length) {
+    setTimeout(goHome, 1500);
+    return;
+  }
 
-/* QUIZ */
-let quizQuestions=[],quizIndex=0,quizScore=0;function startQuiz(list){let pool=list||wordPool(currentLang);quizQuestions=[...pool].sort(()=>Math.random()-.5).slice(0,5).map(w=>{let wrongs=wordPool(w.lang).filter(x=>x.word!==w.word).sort(()=>Math.random()-.5).slice(0,2).map(x=>x.word);return{emoji:w.emoji,answer:w.word,options:[w.word,...wrongs].sort(()=>Math.random()-.5),lang:w.lang}});quizIndex=0;quizScore=0;showScreen('screen-quiz');renderQuizQuestion()}function renderQuizQuestion(){let q=quizQuestions[quizIndex];document.getElementById('quiz-panel').innerHTML=`<div class="quiz-emoji">${q.emoji}</div><div class="quiz-q">${t('card_quiz_title')}</div><div class="quiz-opts">${q.options.map(o=>`<button class="quiz-opt" onclick="answerQuiz('${o}',this)">${o}</button>`).join('')}</div><button class="big-btn btn-ocean" style="margin-top:15px" onclick="speak('${q.answer}')">🔊 Écouter</button>`}function answerQuiz(c,b){let q=quizQuestions[quizIndex];let ok=c===q.answer;if(ok){b.classList.add('correct');playJingle('success');quizScore++;addStars(1)}else{playJingle('wrong');b.classList.add('wrong');document.querySelectorAll('.quiz-opt').forEach(x=>{if(x.textContent===q.answer)x.classList.add('correct')})}document.querySelectorAll('.quiz-opt').forEach(x=>x.disabled=true);quizIndex++;if(quizIndex<quizQuestions.length)setTimeout(renderQuizQuestion,1000);else document.getElementById('quiz-panel').innerHTML=`<div class="score-screen"><div class="big-emoji">🏆</div><h2>${quizScore}/${quizQuestions.length}</h2><button class="big-btn btn-coral" onclick="startQuiz()">🔁 Rejouer</button></div>`}
+  let target = soundQ[soundI];
+  let letter = target.word.trim()[0].toUpperCase();
 
-/* CUSTOM QUIZ */
-function renderCustomQuizList(){let el=document.getElementById('custom-quiz-list');el.innerHTML='';customQuiz.forEach((q,i)=>{let d=document.createElement('div');d.className='story-item';d.innerHTML=`<div class="info"><h4>${q.question}</h4></div><button class="icon-btn" style="background:var(--coral)" onclick="customQuiz.splice(${i},1);renderCustomQuizList();saveState()">🗑️</button>`;el.appendChild(d)})}
-function addCustomQuizQuestion(){let q=document.getElementById('new-quiz-question').value.trim(),c=document.getElementById('new-quiz-correct').value.trim(),w1=document.getElementById('new-quiz-wrong1').value.trim(),w2=document.getElementById('new-quiz-wrong2').value.trim(),w3=document.getElementById('new-quiz-wrong3').value.trim(),lang=document.getElementById('new-quiz-lang').value;if(q&&c&&w1){let wrongs=[w1];if(w2)wrongs.push(w2);if(w3)wrongs.push(w3);customQuiz.push({question:q,correct:c,wrongs,lang});document.getElementById('new-quiz-question').value='';document.getElementById('new-quiz-correct').value='';document.getElementById('new-quiz-wrong1').value='';document.getElementById('new-quiz-wrong2').value='';document.getElementById('new-quiz-wrong3').value='';renderCustomQuizList();saveState()}}
-function startCustomQuiz(){let pool=customQuiz.filter(q=>q.lang===currentLang);if(!pool.length){alert('Crea prima una domanda!');return}activeCustomQuizQueue=[...pool].sort(()=>Math.random()-.5).slice(0,5);activeCustomQuizIndex=0;showScreen('screen-quiz');renderCustomQuizQuestion()}function renderCustomQuizQuestion(){let q=activeCustomQuizQueue[activeCustomQuizIndex];document.getElementById('quiz-panel').innerHTML=`<div class="quiz-q" style="font-size:20px">${q.question}</div><div class="quiz-opts">${[q.correct,...q.wrongs].sort(()=>Math.random()-.5).map(o=>`<button class="quiz-opt" onclick="answerCustomQuiz('${o}',this)">${o}</button>`).join('')}</div>`}function answerCustomQuiz(c,b){let q=activeCustomQuizQueue[activeCustomQuizIndex];if(c===q.correct){b.classList.add('correct');playJingle('success');addStars(1)}else{playJingle('wrong');b.classList.add('wrong');document.querySelectorAll('.quiz-opt').forEach(x=>{if(x.textContent===q.correct)x.classList.add('correct')})}document.querySelectorAll('.quiz-opt').forEach(x=>x.disabled=true);activeCustomQuizIndex++;setTimeout(()=>{if(activeCustomQuizIndex<activeCustomQuizQueue.length)renderCustomQuizQuestion();else showScreen('screen-custom-quiz')},1200)}
-function renderCustomQuizChecklist(){let lang=document.getElementById('new-cquiz-group-lang').value;document.getElementById('cquiz-checklist').innerHTML=customQuiz.filter(q=>q.lang===lang).map((q,i)=>`<label><input type="checkbox" value="${i}"> ${q.question}</label>`).join('')}
-function saveCustomQuizGroup(){let name=document.getElementById('new-cquiz-group-name').value.trim(),lang=document.getElementById('new-cquiz-group-lang').value,checked=[...document.querySelectorAll('#cquiz-checklist input:checked')].map(c=>parseInt(c.value));if(name&&checked.length)customQuizGroups.push({name,lang,questionIndexes:checked});renderCustomQuizGroupsScreen();saveState()}
-function renderCustomQuizGroupsScreen(){renderCustomQuizChecklist();let el=document.getElementById('cquiz-groups-list');el.innerHTML='';customQuizGroups.forEach((g,i)=>{el.innerHTML+=`<div class="story-item"><div class="info"><h4>${g.name}</h4></div><button class="icon-btn" style="background:var(--coral)" onclick="customQuizGroups.splice(${i},1);renderCustomQuizGroupsScreen();saveState()">🗑️</button></div>`})}
+  // Prendi 2 parole sbagliate che iniziano con lettere diverse
+  let wrongs = wordPool(target.lang)
+    .filter(w => w.word[0].toUpperCase() !== letter && w.word !== target.word)
+    .sort(() => Math.random() - .5)
+    .slice(0, 2);
 
-/* WORD READING */
-let wordsQueue=[],wordsIndex=0;function startWordReading(list){wordsQueue=[...list].sort(()=>Math.random()-.5);wordsIndex=0;showScreen('screen-words');loadFlashword()}function loadFlashword(){if(wordsIndex>=wordsQueue.length){document.getElementById('flashcard-word').textContent='🏆';document.getElementById('words-celebrate').textContent=t('all_words_read');return}let w=wordsQueue[wordsIndex];document.getElementById('flashcard-word').textContent=w.word;document.getElementById('words-emoji').style.display='none';document.getElementById('words-celebrate').textContent=''}function speakCurrentFlashword(){speak(wordsQueue[wordsIndex].word,.8,null,wordsQueue[wordsIndex].lang)}function toggleFlashImage(){let e=document.getElementById('words-emoji');e.style.display=e.style.display==='none'?'block':'none'}function rateFlashword(ok){let w=wordsQueue[wordsIndex];recordWordResult(w,ok);if(ok){playJingle('success');addStars(1);document.getElementById('words-celebrate').textContent='⭐ Bravo!'}else playJingle('wrong');wordsIndex++;setTimeout(loadFlashword,800)}
+  document.getElementById('sound-letter').textContent = letter;
+  document.getElementById('sound-options').innerHTML =
+    [target, ...wrongs].sort(() => Math.random() - .5)
+      .map(w => `<button class="menu-card c5" onclick="answerSound('${w.word === target.word}', this)"><h3>${w.word}</h3></button>`)
+      .join('');
+}
 
-/* MY WORDS */
-function renderMyWords(){let el=document.getElementById('mywords-list');el.innerHTML='';customWords.forEach((w,i)=>{let d=document.createElement('div');d.className='story-item';d.innerHTML=`<div class="emoji">${w.emoji}</div><div class="info"><h4>${w.word}</h4><p>${w.syllables.join('-')}</p></div><button class="icon-btn" style="background:var(--coral)" onclick="customWords.splice(${i},1);renderMyWords();saveState()">🗑️</button>`;el.appendChild(d)})}
-function addCustomWord(){let word=document.getElementById('new-word-text').value.trim(),syl=document.getElementById('new-word-syllables').value.trim(),emoji=document.getElementById('new-word-emoji').value.trim()||'📘',lang=document.getElementById('new-word-lang').value,cat=document.getElementById('new-word-category').value.trim()||'Général';if(word){customWords.push({word,syllables:syl?syl.split('-'):[word],emoji,lang,category:cat});document.getElementById('new-word-text').value='';document.getElementById('new-word-syllables').value='';document.getElementById('new-word-emoji').value='';renderMyWords();saveState()}}
+function answerSound(ok, btn) {
+  if (ok) {
+    playJingle('success');
+    addStars(1);
+    btn.style.outline = '3px solid var(--leaf)';
+  } else {
+    btn.style.outline = '3px solid var(--coral)';
+  }
 
-/* STORIES */
-function renderStoryList(){let el=document.getElementById('story-list');el.innerHTML='';stories.forEach(s=>{let d=document.createElement('div');d.className='story-item';d.onclick=()=>openStory(s.id);d.innerHTML=`<div class="emoji">${s.emoji}</div><div class="info"><h4>${s.title}</h4><p>${s.text.slice(0,30)}...</p></div>`;el.appendChild(d)})}
-function addStory(){let title=document.getElementById('new-story-title').value.trim(),text=document.getElementById('new-story-text').value.trim(),emoji=document.getElementById('new-story-emoji').value.trim()||'📘',lang=document.getElementById('new-story-lang').value;if(title&&text){stories.push({id:Date.now(),title,text,emoji,lang});document.getElementById('new-story-title').value='';document.getElementById('new-story-text').value='';renderStoryList();saveState()}}
-function openStory(id){currentStoryId=id;let s=stories.find(x=>x.id===id);document.getElementById('reader-title').textContent=s.title;let sentences=s.text.split(/(?<=[.!?])\s+/);document.getElementById('reader-text').innerHTML=sentences.map((x,i)=>`<span class="sentence" id="sent-${i}">${x}</span>`).join('');showScreen('screen-reader')}
-function toggleReadStory(){let s=stories.find(x=>x.id===currentStoryId),sentences=s.text.split(/(?<=[.!?])\s+/),rate=parseFloat(document.getElementById('reader-speed').value),btn=document.getElementById('reader-play-btn');if(isSpeaking){window.speechSynthesis.cancel();isSpeaking=false;btn.textContent='▶️ Lire';return}isSpeaking=true;btn.textContent='⏸️ Pause';let i=0;function readNext(){if(i>=sentences.length){isSpeaking=false;btn.textContent='▶️ Lire';return}speak(sentences[i],rate,()=>{i++;readNext()},s.lang)}readNext()}
+  document.querySelectorAll('#sound-options button').forEach(x => x.disabled = true);
+  soundI++;
+  setTimeout(loadSoundRound, 1000);
+}
 
-/* SYLLABLE PRONUNCIATIONS */
-let syllableRecordings={};function syllableRecordingKey(s,l){return l+':'+s.toLowerCase()}
-function renderSyllablePronunciations(){let el=document.getElementById('syllable-pronunciations-list');el.innerHTML='';Object.entries(syllableRecordings).forEach(([k,v])=>{el.innerHTML+=`<div class="story-item"><div class="info"><h4>${v.syllable}</h4></div><button class="icon-btn" style="background:var(--coral)" onclick="delete syllableRecordings['${k}'];renderSyllablePronunciations();saveState()">🗑️</button></div>`})}
-function checkPronunciationInput(type){let input=document.getElementById('new-pronunciation-syllable'),status=document.getElementById('syllable-status-msg'),controls=document.getElementById('syllable-inline-controls');if(input.value.trim()){status.textContent=syllableRecordings[syllableRecordingKey(input.value.trim(),currentLang)]?'✅ Esiste':'🆕 Nuova';controls.style.display='flex'}else{controls.style.display='none'}}
-async function toggleInlineRecordSyllable(){let s=document.getElementById('new-pronunciation-syllable').value.trim();if(!s)return;let key=syllableRecordingKey(s,currentLang);try{let stream=await navigator.mediaDevices.getUserMedia({audio:true}),rec=new MediaRecorder(stream),chunks=[];rec.ondataavailable=e=>chunks.push(e.data);rec.onstop=()=>{let blob=new Blob(chunks,{type:'audio/webm'}),r=new FileReader();r.onload=()=>{syllableRecordings[key]={syllable:s,url:r.result};saveState();renderSyllablePronunciations();document.getElementById('btn-play-syllable').style.display='inline-flex';document.getElementById('btn-delete-syllable').style.display='inline-flex'};r.readAsDataURL(blob)};rec.start();setTimeout(()=>rec.stop(),2000)}catch(e){alert('Microfono non disponibile')}}
-function playInlineSyllable(){let s=document.getElementById('new-pronunciation-syllable').value.trim(),r=syllableRecordings[syllableRecordingKey(s,currentLang)];if(r)new Audio(r.url).play()}
-function deleteInlineSyllable(){let s=document.getElementById('new-pronunciation-syllable').value.trim();delete syllableRecordings[syllableRecordingKey(s,currentLang)];renderSyllablePronunciations();saveState()}
+function speakCurrentSoundLetter() {
+  speak(document.getElementById('sound-letter').textContent);
+}/* ==========================================
+   MIE PAROLE (PAROLE PERSONALIZZATE)
+   ========================================== */
+function renderMyWords() {
+  let el = document.getElementById('mywords-list');
+  el.innerHTML = '';
 
-/* SOUND GAME */
-let soundQueue=[],soundIndex=0;function startSoundGame(){let pool=wordPool(currentLang);soundQueue=[...pool].sort(()=>Math.random()-.5).slice(0,5);soundIndex=0;showScreen('screen-sound');loadSoundRound()}function loadSoundRound(){if(soundIndex>=soundQueue.length){setTimeout(goHome,1500);return}let target=soundQueue[soundIndex],letter=target.word.trim()[0].toUpperCase(),wrongs=wordPool(target.lang).filter(w=>w.word[0].toUpperCase()!==letter&&w.word!==target.word).sort(()=>Math.random()-.5).slice(0,2);document.getElementById('sound-letter').textContent=letter;document.getElementById('sound-options').innerHTML=[target,...wrongs].sort(()=>Math.random()-.5).map(w=>`<button class="menu-card c5" onclick="answerSound('${w.word===target.word}',this)"><h3>${w.word}</h3></button>`).join('')}function answerSound(ok,b){if(ok){playJingle('success');addStars(1);b.style.outline='3px solid var(--leaf)'}else b.style.outline='3px solid var(--coral)';document.querySelectorAll('#sound-options button').forEach(x=>x.disabled=true);soundIndex++;setTimeout(loadSoundRound,1000)}function speakCurrentSoundLetter(){speak(document.getElementById('sound-letter').textContent)}
+  customWords.forEach((w, i) => {
+    let d = document.createElement('div');
+    d.className = 'story-item';
+    d.innerHTML = `
+      <div class="emoji">${w.emoji}</div>
+      <div class="info">
+        <h4>${w.word}</h4>
+        <p>${w.syllables.join('-')}</p>
+      </div>
+      <button class="icon-btn" style="background:var(--coral)" onclick="customWords.splice(${i},1); renderMyWords(); save()">🗑️</button>
+    `;
+    el.appendChild(d);
+  });
+}
 
-/* UTILS */
-function addStars(n){stars+=n;document.getElementById('star-count').textContent=stars;saveState()}
+function addCustomWord() {
+  let word = document.getElementById('new-word-text').value.trim();
+  let syll = document.getElementById('new-word-syllables').value.trim();
+  let emoji = document.getElementById('new-word-emoji').value.trim() || '📘';
 
-/* INIT */
-loadState();applyLoadedStateToUI();loadVoices();
+  if (word) {
+    customWords.push({
+      word: word,
+      syllables: syll ? syll.split('-') : [word],
+      emoji: emoji,
+      lang: currentLang
+    });
+    document.getElementById('new-word-text').value = '';
+    document.getElementById('new-word-syllables').value = '';
+    document.getElementById('new-word-emoji').value = '';
+    renderMyWords();
+    save();
+  }
+}
+
+/* ==========================================
+   GIOCO DELLE FRASI
+   ========================================== */
+let sq = [];   // Frasi del gioco
+let si = 0;    // Indice frase corrente
+let sne = 0;   // Indice parola corrente
+
+// Frasi di esempio
+let defaultSentences = [
+  { words: ["Le", "chat", "dort"], emoji: "🐱", lang: "fr" },
+  { words: ["La", "lune", "brille"], emoji: "🌙", lang: "fr" },
+  { words: ["Il", "gatto", "dorme"], emoji: "🐱", lang: "it" },
+  { words: ["Il", "sole", "splende"], emoji: "☀️", lang: "it" }
+];
+
+function startSentenceGame(list) {
+  let pool = list || defaultSentences;
+  sq = [...pool].sort(() => Math.random() - .5).slice(0, 4);
+  si = 0;
+  showScreen('screen-sentence');
+  loadSentence();
+}
+
+function loadSentence() {
+  let s = sq[si];
+  sne = 0;
+  document.getElementById('sentence-emoji').innerHTML = iconHtml(s, 70);
+  document.getElementById('sentence-celebrate').textContent = '';
+
+  let se = document.getElementById('sentence-slots');
+  se.innerHTML = '';
+  s.words.forEach(() => {
+    let d = document.createElement('div');
+    d.className = 'slot';
+    se.appendChild(d);
+  });
+
+  let st = document.getElementById('sentence-stones');
+  st.innerHTML = '';
+  s.words.map((w, i) => ({ w, i }))
+    .sort(() => Math.random() - .5)
+    .forEach(x => {
+      let b = document.createElement('button');
+      b.className = 'stone stone-' + (x.i % 4);
+      b.textContent = x.w;
+      b.onclick = () => pickSentenceWord(x.i, x.w, b);
+      st.appendChild(b);
+    });
+}
+
+function pickSentenceWord(i, w, b) {
+  if (i === sne) {
+    b.disabled = true;
+    document.getElementById('sentence-slots').children[sne].textContent = w;
+    sne++;
+    if (sne === sq[si].words.length) {
+      playJingle('success');
+      document.getElementById('sentence-celebrate').textContent = '🎉 Bravo!';
+    }
+  } else {
+    b.style.transform = 'translateX(-6px)';
+    setTimeout(() => b.style.transform = '', 150);
+  }
+}
+
+function speakCurrentSentence() {
+  speak(sq[si].words.join(' '), 0.9, null, sq[si].lang);
+}/* ==========================================
+   PRONUNCE PERSONALIZZATE (REGISTRAZIONE VOCE)
+   ========================================== */
+let syllableRecordings = {};
+
+// Crea la chiave univoca per una sillaba (lingua + sillaba)
+function syllableRecordingKey(syllable, lang) {
+  return lang + ':' + syllable.toLowerCase();
+}
+
+// Mostra la lista delle pronunce registrate
+function renderSyllablePronunciations() {
+  let el = document.getElementById('syllable-pronunciations-list');
+  el.innerHTML = '';
+
+  Object.entries(syllableRecordings).forEach(([key, value]) => {
+    el.innerHTML += `
+      <div class="story-item">
+        <div class="info">
+          <h4>${value.syllable}</h4>
+        </div>
+        <button class="icon-btn" style="background:var(--coral)" 
+          onclick="delete syllableRecordings['${key}']; renderSyllablePronunciations(); save()">🗑️</button>
+      </div>
+    `;
+  });
+}
+
+// Controlla se la sillaba scritta esiste già o è nuova
+function checkPronunciationInput(type) {
+  let input = document.getElementById('new-pronunciation-syllable');
+  let status = document.getElementById('syllable-status-msg');
+  let controls = document.getElementById('syllable-inline-controls');
+
+  if (input.value.trim()) {
+    status.textContent = syllableRecordings[syllableRecordingKey(input.value.trim(), currentLang)] 
+      ? '✅ Esiste' 
+      : '🆕 Nuova';
+    controls.style.display = 'flex';
+  } else {
+    controls.style.display = 'none';
+  }
+}
+
+// Registra la voce per una sillaba
+async function toggleInlineRecordSyllable() {
+  let syllable = document.getElementById('new-pronunciation-syllable').value.trim();
+  if (!syllable) return;
+
+  let key = syllableRecordingKey(syllable, currentLang);
+
+  try {
+    let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    let recorder = new MediaRecorder(stream);
+    let chunks = [];
+
+    recorder.ondataavailable = e => chunks.push(e.data);
+    recorder.onstop = () => {
+      let blob = new Blob(chunks, { type: 'audio/webm' });
+      let reader = new FileReader();
+      reader.onload = () => {
+        syllableRecordings[key] = { syllable: syllable, url: reader.result };
+        save();
+        renderSyllablePronunciations();
+        document.getElementById('btn-play-syllable').style.display = 'inline-flex';
+        document.getElementById('btn-delete-syllable').style.display = 'inline-flex';
+      };
+      reader.readAsDataURL(blob);
+    };
+
+    recorder.start();
+    setTimeout(() => recorder.stop(), 2000); // Registra per 2 secondi
+  } catch (e) {
+    alert('Microfono non disponibile');
+  }
+}
+
+// Ascolta la sillaba registrata
+function playInlineSyllable() {
+  let syllable = document.getElementById('new-pronunciation-syllable').value.trim();
+  let recording = syllableRecordings[syllableRecordingKey(syllable, currentLang)];
+  if (recording) new Audio(recording.url).play();
+}
+
+// Cancella la sillaba registrata
+function deleteInlineSyllable() {
+  let syllable = document.getElementById('new-pronunciation-syllable').value.trim();
+  delete syllableRecordings[syllableRecordingKey(syllable, currentLang)];
+  renderSyllablePronunciations();
+  save();
+}/* ==========================================
+   INIZIALIZZAZIONE DELL'APP
+   ========================================== */
+function initApp() {
+  // Carica i dati salvati
+  load();
+  
+  // Aggiorna il contatore delle stelle
+  document.getElementById('star-count').textContent = stars;
+  
+  // Imposta la lingua iniziale (ITALIANO)
+  // Se vuoi il francese, cambia qui!
+  currentLang = 'it';
+  
+  // Prepara tutte le schermate
+  renderStoryList();
+  renderMyWords();
+  renderSyllablePronunciations();
+}
+
+// Avvia l'app quando la pagina è caricata
+window.onload = initApp;
+
 </script>
 </body>
 </html>
