@@ -1087,4 +1087,132 @@ function toggleReadStory() {
   }
   next();
 }
+</script><script>
+/* ==========================================
+   LINGUA E VOCI (ITALIANO / FRANCESE)
+   ========================================== */
+let voicesList = [];
+let selectedVoiceURI = { fr: null, it: null };
+
+function setLang(lang) {
+  currentLang = lang;
+  // Aggiorna il pulsante attivo
+  document.querySelectorAll('.lang-seg-btn').forEach(b => b.classList.remove('active'));
+  if (lang === 'fr') {
+    document.getElementById('lang-btn-fr').classList.add('active');
+  } else {
+    document.getElementById('lang-btn-it').classList.add('active');
+  }
+  save();
+  // Aggiorna le schermate
+  renderStoryList();
+  renderMyWords();
+}
+
+function loadVoices() {
+  voicesList = window.speechSynthesis.getVoices();
+  
+  // Scegli voci di default per lingua
+  let itVoice = voicesList.find(v => v.lang && v.lang.toLowerCase().startsWith('it'));
+  let frVoice = voicesList.find(v => v.lang && v.lang.toLowerCase().startsWith('fr'));
+  
+  if (itVoice && !selectedVoiceURI.it) selectedVoiceURI.it = itVoice.name;
+  if (frVoice && !selectedVoiceURI.fr) selectedVoiceURI.fr = frVoice.name;
+  
+  // Aggiorna i menu a tendina nelle impostazioni
+  populateVoiceSelect('settings-voice-select-fr', 'fr');
+  populateVoiceSelect('settings-voice-select-it', 'it');
+}
+
+function populateVoiceSelect(id, lang) {
+  let sel = document.getElementById(id);
+  if (!sel) return;
+  sel.innerHTML = '';
+  let opts = voicesList.filter(v => v.lang && v.lang.toLowerCase().startsWith(lang));
+  
+  opts.forEach(v => {
+    let o = document.createElement('option');
+    o.value = v.name;
+    o.textContent = v.name + ' (' + v.lang + ')';
+    sel.appendChild(o);
+  });
+  
+  if (selectedVoiceURI[lang]) sel.value = selectedVoiceURI[lang];
+}
+
+function speak(text, rate, onend, lang) {
+  let u = new SpeechSynthesisUtterance(text);
+  let targetLang = lang || currentLang;
+  u.lang = targetLang === 'fr' ? 'fr-FR' : 'it-IT';
+  u.rate = rate || 0.9;
+  
+  // Cerca la voce selezionata
+  let voice = voicesList.find(v => v.name === selectedVoiceURI[targetLang]);
+  if (!voice) voice = voicesList.find(v => v.lang && v.lang.toLowerCase().startsWith(targetLang));
+  if (voice) u.voice = voice;
+  
+  if (onend) u.onend = onend;
+  window.speechSynthesis.speak(u);
+}
+
+// Inizializza le voci
+window.speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+</script><script>
+/* ==========================================
+   IMPOSTAZIONI VOCI (MENU A TENDINA)
+   ========================================== */
+function renderSettings() {
+  // Mostra il menu delle impostazioni
+  showScreen('screen-settings');
+  
+  // Popola i menu a tendina con le voci disponibili
+  populateVoiceSelect('settings-voice-select-fr', 'fr');
+  populateVoiceSelect('settings-voice-select-it', 'it');
+}
+
+// Funzione per testare la voce selezionata
+function testVoice(lang) {
+  let text = lang === 'fr' ? 'Bonjour! Comment ça va?' : 'Ciao! Come stai?';
+  speak(text, 0.9, null, lang);
+}
+
+// Salva la voce scelta quando si cambia selezione
+function saveVoiceSelection(lang) {
+  let selId = lang === 'fr' ? 'settings-voice-select-fr' : 'settings-voice-select-it';
+  let sel = document.getElementById(selId);
+  if (sel) {
+    selectedVoiceURI[lang] = sel.value;
+    save();
+  }
+}
+
+// Aggiungi gli eventi di ascolto ai menu
+document.addEventListener('DOMContentLoaded', () => {
+  let frSel = document.getElementById('settings-voice-select-fr');
+  let itSel = document.getElementById('settings-voice-select-it');
+  
+  if (frSel) frSel.addEventListener('change', () => saveVoiceSelection('fr'));
+  if (itSel) itSel.addEventListener('change', () => saveVoiceSelection('it'));
+});
+</script><script>
+/* ==========================================
+   AGGIUNGI PULSANTE IMPOSTAZIONI NELLA HOME
+   ========================================== */
+// Questa funzione viene chiamata quando si clicca sul pulsante Impostazioni
+function openSettings() {
+  renderSettings();
+}
+
+// Aggiungi il pulsante Impostazioni alla barra superiore
+document.addEventListener('DOMContentLoaded', () => {
+  let topbar = document.querySelector('#screen-home .topbar');
+  if (topbar) {
+    let settingsBtn = document.createElement('button');
+    settingsBtn.className = 'icon-btn';
+    settingsBtn.innerHTML = '⚙️';
+    settingsBtn.onclick = openSettings;
+    topbar.appendChild(settingsBtn);
+  }
+});
 </script>
