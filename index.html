@@ -686,6 +686,7 @@ select, input[type=range]{
         <div style="display:flex;gap:10px;">
           <button class="big-btn btn-leaf" id="story-form-submit" onclick="addStory()" data-i18n="story_form_add_btn">✅ Ajouter l'histoire</button>
           <button class="big-btn btn-lilac" id="story-form-cancel" onclick="cancelEditStory()" style="display:none;" data-i18n="btn_cancel">✖️ Annuler</button>
+          <button class="big-btn btn-lilac" onclick="showScreen('screen-syllable-pronunciations'); renderSyllablePronunciations();">🎙️ Gestisci pronunce</button>
         </div>
         <div style="margin-top:16px;padding-top:16px;border-top:2px dashed #e0d5f5;">
           <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="import_stories_hint">Ou importe plusieurs histoires d'un coup depuis un fichier .txt (une histoire par ligne : "titre|texte|emoji") :</p>
