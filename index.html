@@ -710,6 +710,31 @@ select, input[type=range]{
   </div>
 
   <!-- STORY GROUPS -->
+<div class="screen" id="screen-story-groups">
+  <div class="back-row">
+    <button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();" data-i18n="back">← Retour</button>
+    <h2 class="screen-title" data-i18n="title_story_groups">Mes groupes d'histoires</h2>
+  </div>
+  <div class="panel">
+    <p style="font-weight:600;color:#7a6b8a;margin-top:0;" data-i18n="story_groups_intro">Rassemble plusieurs histoires dans un groupe pour les lire en continu.</p>
+    <div class="add-story-box">
+      <h3 style="margin-top:0;font-family:'Baloo 2';" id="story-group-form-title" data-i18n="story_group_form_add_title">➕ Créer un groupe d'histoires</h3>
+      <input id="new-story-group-name" data-i18n-ph="story_group_ph_name" placeholder="Nom du groupe (ex : Histoires du soir)">
+      <select id="new-story-group-lang" style="width:100%;margin-bottom:10px;" onchange="renderStoryGroupChecklist()">
+        <option value="fr">🇫🇷 Français</option>
+        <option value="it">🇮🇹 Italiano</option>
+      </select>
+      <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="story_groups_pick_hint">Coche les histoires à inclure :</p>
+      <div id="story-group-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
+      <div style="display:flex;gap:10px;">
+        <button class="big-btn btn-leaf" id="story-group-form-submit" onclick="saveStoryGroup()" data-i18n="story_group_form_add_btn">✅ Enregistrer le groupe</button>
+        <button class="big-btn btn-lilac" id="story-group-form-cancel" onclick="cancelEditStoryGroup()" style="display:none;" data-i18n="btn_cancel">✖️ Annuler</button>
+      </div>
+    </div>
+    <h3 style="font-family:'Baloo 2';" data-i18n="story_groups_list_title">Groupes créés</h3>
+    <div class="story-list" id="story-groups-list"></div>
+  </div>
+</div>
   <div class="screen" id="screen-story-groups">
     <div class="back-row">
       <button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();" data-i18n="back">← Retour</button>
@@ -737,6 +762,37 @@ select, input[type=range]{
   </div>
 
   <!-- CUSTOM QUIZ BUILDER -->
+  <!-- CUSTOM QUIZ BUILDER -->
+<div class="screen" id="screen-quiz-builder">
+  <div class="back-row">
+    <button class="back-btn" onclick="showScreen('screen-settings')" data-i18n="back">← Retour</button>
+    <h2 class="screen-title" data-i18n="title_quiz_builder">📝 Créer un quiz personnalisé</h2>
+  </div>
+  <div class="panel">
+    <p style="font-weight:600;color:#7a6b8a;margin-top:0;" data-i18n="quiz_builder_intro">Choisis les mots pour ton quiz, puis enregistre-le pour le relancer plus tard.</p>
+    <div class="add-story-box">
+      <h3 style="margin-top:0;font-family:'Baloo 2';" id="quiz-form-title" data-i18n="quiz_form_add_title">➕ Nouveau quiz</h3>
+      <input id="new-quiz-name" data-i18n-ph="quiz_ph_name" placeholder="Nom du quiz (ex : Les animaux)">
+      <select id="new-quiz-lang" style="width:100%;margin-bottom:10px;" onchange="renderQuizWordChecklist()">
+        <option value="fr">🇫🇷 Français</option>
+        <option value="it">🇮🇹 Italiano</option>
+      </select>
+      <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="quiz_pick_hint">Coche les mots à inclure dans le quiz :</p>
+      <div id="quiz-word-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
+      <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="quiz_extra_options">Options supplémentaires :</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+        <label style="display:flex;align-items:center;gap:6px;font-weight:600;"><input type="checkbox" id="quiz-allow-replay" checked> 🔁 Autoriser la réécoute</label>
+        <label style="display:flex;align-items:center;gap:6px;font-weight:600;"><input type="checkbox" id="quiz-shuffle-options" checked> 🔀 Mélanger les réponses</label>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="big-btn btn-leaf" id="quiz-form-submit" onclick="saveCustomQuiz()" data-i18n="quiz_form_add_btn">✅ Enregistrer le quiz</button>
+        <button class="big-btn btn-lilac" id="quiz-form-cancel" onclick="cancelEditQuiz()" style="display:none;" data-i18n="btn_cancel">✖️ Annuler</button>
+      </div>
+    </div>
+    <h3 style="font-family:'Baloo 2';" data-i18n="quiz_list_title">Mes quiz enregistrés</h3>
+    <div class="story-list" id="quiz-list"></div>
+  </div>
+</div>
   <div class="screen" id="screen-quiz-builder">
     <div class="back-row">
       <button class="back-btn" onclick="showScreen('screen-settings')" data-i18n="back">← Retour</button>
@@ -778,6 +834,12 @@ select, input[type=range]{
   </div>
 
   <!-- STORIES LIST -->
+  <!-- Nella barra superiore di screen-stories, aggiungi questo pulsante -->
+<div class="back-row">
+  <button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button>
+  <h2 class="screen-title" data-i18n="title_stories">Histoires</h2>
+  <button class="icon-btn" style="background:rgba(255,255,255,.25);color:var(--cream);font-size:16px;" onclick="showScreen('screen-story-groups'); renderStoryGroupsScreen();" title="Groupes d'histoires">👥</button>
+</div>
   <div class="screen" id="screen-stories">
     <div class="back-row">
       <button class="back-btn" onclick="goHome()" data-i18n="back">← Retour</button>
@@ -874,6 +936,9 @@ select, input[type=range]{
         <button class="toggle on" id="autorepeat-toggle" onclick="toggleAutoRepeat()"><span class="knob"></span></button>
       </div>
       <div class="settings-row">
+  <div><strong data-i18n="settings_applause">👏 Applause</strong><br><span style="font-size:13px;color:#7a6b8a;" data-i18n="settings_applause_desc">Jouer des applaudissements quand l'enfant réussit</span></div>
+  <button class="toggle on" id="applause-toggle" onclick="toggleApplause()"><span class="knob"></span></button>
+</div>
         <div><strong data-i18n="settings_simplequiz">Quiz simplifié</strong><br><span style="font-size:13px;color:#7a6b8a;" data-i18n="settings_simplequiz_desc">2 choix au lieu de 3, sans précipitation</span></div>
         <button class="toggle on" id="simplequiz-toggle" onclick="toggleSimplifiedQuiz()"><span class="knob"></span></button>
       </div>
