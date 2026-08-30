@@ -100,9 +100,55 @@ h1,h2,h3,.title-font{font-family:'Baloo 2',cursive}.contrast *{letter-spacing:.0
 </div>
 
 <script>
-/* AUDIO JINGLE */
-let audioCtx=null;function playJingle(t){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();const n=t==='success'?[523,659,783]:t==='wrong'?[300,250]:[400,600];n.forEach((f,i)=>{let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(.3,audioCtx.currentTime+i*.15);g.gain.exponentialRampToValueAtTime(.01,audioCtx.currentTime+i*.15+.2);o.start(audioCtx.currentTime+i*.15);o.stop(audioCtx.currentTime+i*.15+.2)})}catch(e){}}
+/* AUDIO & APPLAUSI & STELLE */
+let audioCtx=null;
+function playJingle(type){
+  try{
+    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    // 50% di probabilità di far partire un suono (Jingle) o un applauso
+    if(Math.random() < 0.5) {
+      const n=type==='success'?[523,659,783]:[300];
+      n.forEach((f,i)=>{
+        let o=audioCtx.createOscillator(),g=audioCtx.createGain();
+        o.connect(g);g.connect(audioCtx.destination);
+        o.frequency.value=f;o.type='sine';
+        g.gain.setValueAtTime(.2,audioCtx.currentTime+i*.1);
+        g.gain.exponentialRampToValueAtTime(.01,audioCtx.currentTime+i*.1+.15);
+        o.start(audioCtx.currentTime+i*.1);o.stop(audioCtx.currentTime+i*.1+.15);
+      });
+    } else {
+      // Suono di applausi (rumore bianco impulsivo)
+      let bufferSize = audioCtx.sampleRate * 0.8; // 0.8 secondi
+      let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      let data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        // Genera rumore bianco con attenuazione
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+      }
+      let source = audioCtx.createBufferSource();
+      source.buffer = buffer;
+      let gain = audioCtx.createGain();
+      gain.gain.value = 0.3;
+      source.connect(gain); gain.connect(audioCtx.destination);
+      source.start();
+    }
+    // Sempre: fai partire le stelle che volano!
+    launchStars();
+  }catch(e){}
+}
 
+/* STELLE CHE VOLANO */
+function launchStars(){
+  let container = document.querySelector('.screen.active .panel');
+  if(!container) return;
+  for(let i=0; i<12; i++){
+    let star = document.createElement('div');
+    star.textContent = '⭐';
+    star.style.cssText = `position:absolute; left:${20+Math.random()*60}%; top:50%; font-size:${20+Math.random()*30}px; pointer-events:none; animation:burst-fly ${0.8+Math.random()*0.6}s ease-out forwards; animation-delay:${i*0.05}s; opacity:0.8; z-index:1000;`;
+    container.appendChild(star);
+    setTimeout(()=> star.remove(), 1600);
+  }
+}
 /* STATE */
 let stars=0,contrastMode=false,autoRepeat=true,simplifiedQuiz=true,currentLang='fr',storageAvailable=true;
 let selectedVoiceURI={fr:null,it:null},voicesList=[];
