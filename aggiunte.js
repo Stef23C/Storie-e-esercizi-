@@ -1,38 +1,10 @@
-/* ==========================================
-   AGGIUNTE SICURE: STELLE, APPLAUSI E SILLABE
-   ========================================== */
+/* ==========================================================
+   AGGIUNTE COMPLETE: APPLAUSI, STELLE, SILLABE, GRUPPI
+   ========================================================== */
 
-let syllableRecordings = {};
-let syllableMediaRecorder = null;
-let syllableRecordedChunks = [];
-let recordingSyllableKey = null;
-let wordRecordings = {};
-let wordPronunciationMediaRecorder = null;
-let wordPronunciationChunks = [];
-let recordingWordPronunciationKey = null;
-
+/* ===== AUDIO & STELLE ===== */
 let audioCtx = null;
 let lastSound = "";
-
-function launchStars(n) {
-  let c = document.querySelector('.screen.active .panel');
-  if (!c) return;
-  document.querySelectorAll('.dynamic-star').forEach(s => s.remove());
-  for (let i = 0; i < n; i++) {
-    setTimeout(() => {
-      let s = document.createElement('div');
-      s.className = 'dynamic-star';
-      s.textContent = ['⭐', '✨', '🌟', '💖'][Math.floor(Math.random() * 4)];
-      s.style.cssText = `position:absolute;left:50%;top:50%;font-size:${25 + Math.random() * 30}px;pointer-events:none;z-index:9999;opacity:1`;
-      c.appendChild(s);
-      s.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
-      s.style.setProperty('--ty', (-(150 + Math.random() * 100)) + 'px');
-      s.style.setProperty('--rot', (Math.random() * 360) + 'deg');
-      s.style.animation = 'dynamic-star 1.2s ease-out forwards';
-      setTimeout(() => s.remove(), 1300);
-    }, i * 30);
-  }
-}
 
 function playJingle() {
   try {
@@ -76,14 +48,43 @@ function playJingle() {
   } catch (e) {}
 }
 
-// Sovrascrive celebrateBurst per farla usare stelle e suoni
+function launchStars(n) {
+  let c = document.querySelector('.screen.active .panel');
+  if (!c) return;
+  document.querySelectorAll('.dynamic-star').forEach(s => s.remove());
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      let s = document.createElement('div');
+      s.className = 'dynamic-star';
+      s.textContent = ['⭐', '✨', '🌟', '💖'][Math.floor(Math.random() * 4)];
+      s.style.cssText = `position:absolute;left:50%;top:50%;font-size:${25 + Math.random() * 30}px;pointer-events:none;z-index:9999;opacity:1`;
+      c.appendChild(s);
+      s.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+      s.style.setProperty('--ty', (-(150 + Math.random() * 100)) + 'px');
+      s.style.setProperty('--rot', (Math.random() * 360) + 'deg');
+      s.style.animation = 'dynamic-star 1.2s ease-out forwards';
+      setTimeout(() => s.remove(), 1300);
+    }, i * 30);
+  }
+}
+
 function celebrateBurst(container) {
   if (!container) return;
   launchStars(25);
   playJingle();
 }
 
-// ===== REGISTRAZIONE SILLABE =====
+/* ===== REGISTRAZIONE SILLABE ===== */
+let syllableRecordings = {};
+let syllableMediaRecorder = null;
+let syllableRecordedChunks = [];
+let recordingSyllableKey = null;
+
+let wordRecordings = {};
+let wordPronunciationMediaRecorder = null;
+let wordPronunciationChunks = [];
+let recordingWordPronunciationKey = null;
+
 function syllableRecordingKey(syllable, lang) {
   return lang + ':' + syllable.toLowerCase();
 }
@@ -170,7 +171,6 @@ function addAndRecordSyllable() {
   setTimeout(() => toggleRecordSyllable(key), 200);
 }
 
-// Importa MP3
 function uploadSyllableMp3(evt) {
   let file = evt.target.files[0];
   if (!file) return;
@@ -189,6 +189,213 @@ function uploadSyllableMp3(evt) {
   reader.readAsDataURL(file);
 }
 
+/* ===== GRUPPI DI PAROLE ===== */
+let customGroups = [];
+let editingGroupIndex = null;
+
+function saveGroup() {
+  let name = document.getElementById('new-group-name').value.trim();
+  let lang = document.getElementById('new-group-lang').value;
+  if (!name) { alert('Scrivi un nome per il gruppo.'); return; }
+  let checked = Array.from(document.querySelectorAll('#group-word-checklist input:checked')).map(cb => cb.value);
+  if (checked.length === 0) { alert('Seleziona almeno una parola.'); return; }
+  let groupData = { name, lang, wordKeys: checked };
+  if (editingGroupIndex !== null) {
+    customGroups[editingGroupIndex] = groupData;
+  } else {
+    customGroups.push(groupData);
+  }
+  cancelEditGroup();
+  renderGroupsScreen();
+  saveState();
+}
+
+function editGroup(idx) {
+  let g = customGroups[idx];
+  editingGroupIndex = idx;
+  document.getElementById('new-group-name').value = g.name;
+  document.getElementById('new-group-lang').value = g.lang;
+  renderGroupWordChecklist();
+  document.getElementById('group-form-title').textContent = '✏️ Modifica gruppo';
+  document.getElementById('group-form-submit').textContent = '💾 Salva';
+  document.getElementById('group-form-cancel').style.display = 'inline-flex';
+}
+
+function cancelEditGroup() {
+  editingGroupIndex = null;
+  document.getElementById('new-group-name').value = '';
+  document.getElementById('group-form-title').textContent = t('group_form_add_title');
+  document.getElementById('group-form-submit').textContent = t('group_form_add_btn');
+  document.getElementById('group-form-cancel').style.display = 'none';
+  renderGroupWordChecklist();
+}
+
+function deleteGroup(idx) {
+  customGroups.splice(idx, 1);
+  if (editingGroupIndex === idx) cancelEditGroup();
+  renderGroupsScreen();
+  saveState();
+}
+
+function groupWords(idx) {
+  let g = customGroups[idx];
+  return wordPool(g.lang).filter(w => g.wordKeys.includes(wordKey(w)));
+}
+
+function playGroup(idx, gameType) {
+  let list = groupWords(idx);
+  if (list.length === 0) { alert(t('no_words_lang')); return; }
+  if (gameType === 'syllables') startSyllableGame(list);
+  else if (gameType === 'words') startWordReading(list);
+  else if (gameType === 'quiz') startQuiz(list);
+}
+
+function renderGroupsScreen() {
+  let langSel = document.getElementById('new-group-lang');
+  if (langSel) langSel.value = currentLang;
+  renderGroupWordChecklist();
+  let el = document.getElementById('groups-list');
+  if (customGroups.length === 0) {
+    el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">Nessun gruppo creato ancora.</p>`;
+    return;
+  }
+  el.innerHTML = '';
+  customGroups.forEach((g, idx) => {
+    let item = document.createElement('div');
+    item.className = 'story-item';
+    item.style.cursor = 'default';
+    item.innerHTML = `
+      <div class="info" style="flex:1;">
+        <h4>${g.name} <span class="tag">${g.lang === 'it' ? '🇮🇹' : '🇫🇷'}</span></h4>
+        <p>${g.wordKeys.length} parole</p>
+      </div>
+      <button class="icon-btn" style="background:var(--coral);" onclick="playGroup(${idx},'syllables')">🪨</button>
+      <button class="icon-btn" style="background:var(--ocean);" onclick="playGroup(${idx},'words')">🔤</button>
+      <button class="icon-btn" style="background:var(--sunshine);" onclick="playGroup(${idx},'quiz')">🎯</button>
+      <button class="icon-btn" style="background:var(--lilac);" onclick="editGroup(${idx})">✏️</button>
+      <button class="icon-btn" style="background:var(--coral);" onclick="deleteGroup(${idx})">🗑️</button>
+    `;
+    el.appendChild(item);
+  });
+}
+
+function renderGroupWordChecklist() {
+  let lang = document.getElementById('new-group-lang').value;
+  let container = document.getElementById('group-word-checklist');
+  let words = wordPool(lang);
+  let checkedKeys = (editingGroupIndex !== null) ? customGroups[editingGroupIndex].wordKeys : [];
+  container.innerHTML = words.map(w => {
+    let key = wordKey(w);
+    let checked = checkedKeys.includes(key) ? 'checked' : '';
+    return `<label style="display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:600;">
+      <input type="checkbox" value="${key}" ${checked} style="width:18px;height:18px;">
+      ${iconHtml(w, 26)} ${w.word}
+    </label>`;
+  }).join('') || `<p style="font-weight:600;color:#7a6b8a;">${t('no_words_lang')}</p>`;
+}
+
+/* ===== GRUPPI DI FRASI ===== */
+let customSentenceGroups = [];
+let editingSentenceGroupIndex = null;
+
+function saveSentenceGroup() {
+  let name = document.getElementById('new-sgroup-name').value.trim();
+  let lang = document.getElementById('new-sgroup-lang').value;
+  if (!name) { alert('Scrivi un nome per il gruppo.'); return; }
+  let checked = Array.from(document.querySelectorAll('#sgroup-checklist input:checked')).map(cb => cb.value);
+  if (checked.length === 0) { alert('Seleziona almeno una frase.'); return; }
+  let groupData = { name, lang, sentenceKeys: checked };
+  if (editingSentenceGroupIndex !== null) {
+    customSentenceGroups[editingSentenceGroupIndex] = groupData;
+  } else {
+    customSentenceGroups.push(groupData);
+  }
+  cancelEditSentenceGroup();
+  renderSentenceGroupsScreen();
+  saveState();
+}
+
+function editSentenceGroup(idx) {
+  let g = customSentenceGroups[idx];
+  editingSentenceGroupIndex = idx;
+  document.getElementById('new-sgroup-name').value = g.name;
+  document.getElementById('new-sgroup-lang').value = g.lang;
+  renderSentenceGroupChecklist();
+  document.getElementById('sgroup-form-title').textContent = '✏️ Modifica gruppo';
+  document.getElementById('sgroup-form-submit').textContent = '💾 Salva';
+  document.getElementById('sgroup-form-cancel').style.display = 'inline-flex';
+}
+
+function cancelEditSentenceGroup() {
+  editingSentenceGroupIndex = null;
+  document.getElementById('new-sgroup-name').value = '';
+  document.getElementById('sgroup-form-title').textContent = t('sgroup_form_add_title');
+  document.getElementById('sgroup-form-submit').textContent = t('sgroup_form_add_btn');
+  document.getElementById('sgroup-form-cancel').style.display = 'none';
+  renderSentenceGroupChecklist();
+}
+
+function deleteSentenceGroup(idx) {
+  customSentenceGroups.splice(idx, 1);
+  if (editingSentenceGroupIndex === idx) cancelEditSentenceGroup();
+  renderSentenceGroupsScreen();
+  saveState();
+}
+
+function sentenceGroupItems(idx) {
+  let g = customSentenceGroups[idx];
+  return sentencePool(g.lang).filter(s => g.sentenceKeys.includes(sentenceKey(s)));
+}
+
+function playSentenceGroup(idx) {
+  let list = sentenceGroupItems(idx);
+  if (list.length === 0) { alert(t('no_words_lang')); return; }
+  startSentenceGame(list);
+}
+
+function renderSentenceGroupsScreen() {
+  let langSel = document.getElementById('new-sgroup-lang');
+  if (langSel) langSel.value = currentLang;
+  renderSentenceGroupChecklist();
+  let el = document.getElementById('sgroups-list');
+  if (customSentenceGroups.length === 0) {
+    el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">Nessun gruppo di frasi creato.</p>`;
+    return;
+  }
+  el.innerHTML = '';
+  customSentenceGroups.forEach((g, idx) => {
+    let item = document.createElement('div');
+    item.className = 'story-item';
+    item.style.cursor = 'default';
+    item.innerHTML = `
+      <div class="info" style="flex:1;">
+        <h4>${g.name} <span class="tag">${g.lang === 'it' ? '🇮🇹' : '🇫🇷'}</span></h4>
+        <p>${g.sentenceKeys.length} frasi</p>
+      </div>
+      <button class="icon-btn" style="background:var(--ocean);" onclick="playSentenceGroup(${idx})">📝</button>
+      <button class="icon-btn" style="background:var(--lilac);" onclick="editSentenceGroup(${idx})">✏️</button>
+      <button class="icon-btn" style="background:var(--coral);" onclick="deleteSentenceGroup(${idx})">🗑️</button>
+    `;
+    el.appendChild(item);
+  });
+}
+
+function renderSentenceGroupChecklist() {
+  let lang = document.getElementById('new-sgroup-lang').value;
+  let container = document.getElementById('sgroup-checklist');
+  let sentences = sentencePool(lang);
+  let checkedKeys = (editingSentenceGroupIndex !== null) ? customSentenceGroups[editingSentenceGroupIndex].sentenceKeys : [];
+  container.innerHTML = sentences.map(s => {
+    let key = sentenceKey(s);
+    let checked = checkedKeys.includes(key) ? 'checked' : '';
+    return `<label style="display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:600;">
+      <input type="checkbox" value="${key}" ${checked} style="width:18px;height:18px;">
+      ${iconHtml(s, 26)} ${s.words.join(' ')}
+    </label>`;
+  }).join('') || `<p style="font-weight:600;color:#7a6b8a;">${t('no_words_lang')}</p>`;
+}
+
+/* ===== AGGIUNGE PULSANTI ===== */
 function openSettings() {
   showScreen('screen-settings');
 }
@@ -215,9 +422,6 @@ document.addEventListener('DOMContentLoaded', () => {
       showScreen('screen-syllable-pronunciations');
       renderSyllablePronunciations();
     };
-    settingsPanel.appendChild(btn);
-  }
-});
     settingsPanel.appendChild(btn);
   }
 });
