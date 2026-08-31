@@ -904,8 +904,7 @@ select, input[type=range]{
       <div class="story-list" id="story-groups-list"></div>
     </div>
   </div>
-
-  <!-- CUSTOM QUIZ BUILDER -->
+  
   <!-- CUSTOM QUIZ BUILDER -->
 <div class="screen" id="screen-quiz-builder">
   <div class="back-row">
@@ -1137,6 +1136,9 @@ let simplifiedQuiz = true;
 let applauseEnabled = true;
 let selectedVoiceURI = {fr:null, it:null};
 let voicesList = [];
+  // Per le storie
+let editingStoryId = null;
+let newStoryImageData = null;
 
 let currentLang = 'fr';
 const STORAGE_KEY = 'ile_aux_syllabes_v2';
@@ -3725,6 +3727,7 @@ function addStory(){
     if(idx !== -1){
       stories[idx] = Object.assign({}, stories[idx], {title, emoji, image:newStoryImageData || stories[idx].image, text, lang});
     }
+    editingStoryId = null; // <-- AGGIUNGI QUESTA RIGA!
   } else {
     const id = Date.now();
     stories.push({id, title, emoji, image:newStoryImageData, text, lang});
