@@ -864,7 +864,7 @@ select, input[type=range]{
   <!-- STORY READER -->
   <div class="screen" id="screen-reader">
     <div class="back-row">
-      <button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();" data-i18n="back">← Retour</button>
+      <button class="back-btn" onclick="goBackFromStory();" data-i18n="back">← Retour</button>
       <h2 class="screen-title" id="reader-title">Histoire</h2>
     </div>
     <div class="panel">
@@ -981,6 +981,10 @@ const STORAGE_KEY = 'ile_aux_syllabes_v2';
 let storageAvailable = true;
 let editingStoryId = null;
 let newStoryImageData = null;
+
+// Per i gruppi di storie
+window._storyGroupQueue = null;
+window._storyGroupIndex = 0;
 
 // WORDS
 const WORDS_FR = [
@@ -1545,7 +1549,26 @@ function showScreen(id){
   isSpeaking = false;
 }
 
-function goHome(){ showScreen('screen-home'); }
+function goHome(){ 
+  // Reset gruppo quando si torna alla home
+  window._storyGroupQueue = null;
+  window._storyGroupIndex = 0;
+  showScreen('screen-home'); 
+}
+
+function goBackFromStory(){
+  // Se eravamo in un gruppo, torna alla lista dei gruppi
+  if(window._storyGroupQueue && window._storyGroupQueue.length > 1) {
+    showScreen('screen-story-groups');
+    renderStoryGroupsScreen();
+    // Non resettare la coda per permettere di riprendere
+  } else {
+    window._storyGroupQueue = null;
+    window._storyGroupIndex = 0;
+    showScreen('screen-stories');
+    renderStoryList();
+  }
+}
 
 function wordKey(w){ return (w.lang || currentLang) + ':' + (w.word || '').toLowerCase(); }
 function sentenceKey(s){ return (s.lang || currentLang) + ':' + s.words.join(' ').toLowerCase(); }
@@ -2587,7 +2610,7 @@ function renderQuizScore(){
 }
 
 // ========================================
-// STORIES FUNCTIONS
+// STORIES FUNCTIONS (CORRETTE CON GRUPPI)
 // ========================================
 function renderStoryList(){
   const el = document.getElementById('story-list');
@@ -2701,24 +2724,84 @@ function openStory(id){
   currentStoryId = id;
   const s = stories.find(x => x.id === id);
   if(!s) return;
+  
   const titleEl = document.getElementById('reader-title');
-  if(titleEl) titleEl.innerHTML = iconHtml(s, 34) + ' ' + s.title + ' ' + (s.lang==='it' ? '🇮🇹' : '🇫🇷');
+  if(titleEl) {
+    // Mostra anche il titolo del gruppo se siamo in modalità gruppo
+    let groupInfo = '';
+    if(window._storyGroupQueue && window._storyGroupQueue.length > 1) {
+      const currentIdx = window._storyGroupQueue.findIndex(st => st.id === id);
+      if(currentIdx !== -1) {
+        groupInfo = ` (${currentIdx + 1}/${window._storyGroupQueue.length})`;
+      }
+    }
+    titleEl.innerHTML = iconHtml(s, 34) + ' ' + s.title + ' ' + (s.lang==='it' ? '🇮🇹' : '🇫🇷') + groupInfo;
+  }
+  
   populateVoiceSelect('reader-voice-select', s.lang);
   const sentences = s.text.split(/(?<=[.!?])\s+/).filter(Boolean);
   const readerEl = document.getElementById('reader-text');
   if(readerEl) {
     readerEl.innerHTML = sentences.map((sent,i)=>`<span class="sentence" id="sent-${i}" onclick="jumpToSentence(${i})">${sent}</span>`).join(' ');
   }
+  
   const playBtn = document.getElementById('reader-play-btn');
   if(playBtn) playBtn.textContent = "▶️ Lire l'histoire";
   isSpeaking = false;
+  
   if(!isSameStory) readerSentenceIndex = 0;
   else if(readerSentenceIndex > 0 && readerSentenceIndex < sentences.length){
     setTimeout(()=>{ const el = document.getElementById('sent-'+readerSentenceIndex); if(el) el.classList.add('highlight'); }, 0);
   }
+  
   currentRecordingSlot = null;
   renderVoiceSlots();
   showScreen('screen-reader');
+  
+  // Aggiungi pulsanti per navigare tra le storie del gruppo
+  const readerControls = document.querySelector('.reader-controls');
+  if(readerControls && window._storyGroupQueue && window._storyGroupQueue.length > 1) {
+    // Rimuovi pulsanti vecchi se esistono
+    const oldNav = document.getElementById('story-group-nav');
+    if(oldNav) oldNav.remove();
+    
+    const navDiv = document.createElement('div');
+    navDiv.id = 'story-group-nav';
+    navDiv.style.cssText = 'display:flex;gap:8px;align-items:center;width:100%;margin-top:8px;flex-wrap:wrap;';
+    
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'big-btn btn-lilac';
+    prevBtn.textContent = '⬅️ ' + (currentLang==='it' ? 'Storia precedente' : 'Histoire précédente');
+    prevBtn.style.fontSize = '14px';
+    prevBtn.style.padding = '10px 16px';
+    prevBtn.onclick = function() {
+      const currentIdx = window._storyGroupQueue.findIndex(st => st.id === currentStoryId);
+      if(currentIdx > 0) {
+        openStory(window._storyGroupQueue[currentIdx - 1].id);
+      } else {
+        alert(currentLang==='it' ? '⚠️ Questa è la prima storia del gruppo!' : '⚠️ C\'est la première histoire du groupe !');
+      }
+    };
+    navDiv.appendChild(prevBtn);
+    
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'big-btn btn-lilac';
+    nextBtn.textContent = (currentLang==='it' ? 'Storia successiva' : 'Histoire suivante') + ' ➡️';
+    nextBtn.style.fontSize = '14px';
+    nextBtn.style.padding = '10px 16px';
+    nextBtn.onclick = function() {
+      const currentIdx = window._storyGroupQueue.findIndex(st => st.id === currentStoryId);
+      if(currentIdx < window._storyGroupQueue.length - 1) {
+        openStory(window._storyGroupQueue[currentIdx + 1].id);
+      } else {
+        alert('🏁 ' + (currentLang==='it' ? 'Questa è l\'ultima storia del gruppo!' : 'C\'est la dernière histoire du groupe !'));
+        playApplause();
+      }
+    };
+    navDiv.appendChild(nextBtn);
+    
+    readerControls.appendChild(navDiv);
+  }
 }
 
 function toggleReadStory(){
@@ -2761,6 +2844,22 @@ function jumpToSentence(i){
   const el = document.getElementById('sent-'+i);
   if(el) el.classList.add('highlight');
   if(wasSpeaking) toggleReadStory();
+}
+
+function playStoryGroup(idx){
+  const g = storyGroups[idx];
+  const storyList = stories.filter(s => g.storyIds.includes(s.id) && s.lang === g.lang);
+  if(storyList.length === 0){ 
+    alert(t('no_stories_lang')); 
+    return; 
+  }
+  
+  // Salva la lista di storie del gruppo per poterle scorrere
+  window._storyGroupQueue = storyList;
+  window._storyGroupIndex = 0;
+  
+  // Apri la prima storia del gruppo
+  openStory(storyList[0].id);
 }
 
 // ========================================
@@ -3453,13 +3552,6 @@ function deleteStoryGroup(idx){
   if(editingStoryGroupIndex === idx) cancelEditStoryGroup();
   renderStoryGroupsScreen();
   saveState();
-}
-
-function playStoryGroup(idx){
-  const g = storyGroups[idx];
-  const storyList = stories.filter(s => g.storyIds.includes(s.id) && s.lang === g.lang);
-  if(storyList.length === 0){ alert(t('no_stories_lang')); return; }
-  openStory(storyList[0].id);
 }
 
 function renderStoryGroupsScreen(){
