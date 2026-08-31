@@ -708,6 +708,122 @@ select, input[type=range]{
       <div class="story-list" id="sgroups-list"></div>
     </div>
   </div>
+    <!-- CUSTOM QUIZ BUILDER -->
+  <div class="screen" id="screen-quiz-builder">
+    <div class="back-row">
+      <button class="back-btn" onclick="showScreen('screen-settings')" data-i18n="back">← Retour</button>
+      <h2 class="screen-title">📝 Créer un quiz personnalisé</h2>
+    </div>
+    <div class="panel">
+      <p style="font-weight:600;color:#7a6b8a;margin-top:0;">Choisis le type de quiz et les mots, puis enregistre-le pour le relancer plus tard.</p>
+      
+      <div class="add-story-box">
+        <h3 style="margin-top:0;font-family:'Baloo 2';" id="quiz-form-title">➕ Nouveau quiz</h3>
+        
+        <input id="new-quiz-name" placeholder="Nom du quiz (ex : Les animaux)">
+        
+        <select id="new-quiz-lang" style="width:100%;margin-bottom:10px;" onchange="renderQuizWordChecklist()">
+          <option value="fr">🇫🇷 Français</option>
+          <option value="it">🇮🇹 Italiano</option>
+        </select>
+        
+        <!-- TIPO DI QUIZ -->
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:13px;font-weight:700;color:#7a6b8a;margin-bottom:6px;">📋 Type de quiz :</label>
+          <select id="new-quiz-type" style="width:100%;padding:10px;border-radius:12px;border:2px solid #e0d5f5;font-weight:600;">
+            <option value="word_to_image">📝 Parole → Image (trouve l'image)</option>
+            <option value="image_to_word">🖼️ Image → Parole (trouve le mot)</option>
+            <option value="audio_to_word">🔊 Écoute → Parole (trouve le mot entendu)</option>
+            <option value="complete_word">📖 Complète la parola (lettre manquante)</option>
+            <option value="true_false">🔀 Vrai/Faux (affirmations)</option>
+            <option value="syllable_count">🔢 Compte les syllabes</option>
+            <option value="category_sort">🏷️ Trouve la catégorie</option>
+          </select>
+        </div>
+        
+        <!-- Opzioni specifiche per tipo -->
+        <div id="quiz-type-options" style="margin-bottom:12px;padding:12px;background:#faf7ff;border-radius:12px;">
+          <div id="quiz-options-word_to_image" class="quiz-type-option" style="display:block;">
+            <label style="font-size:13px;font-weight:600;color:#7a6b8a;">🖼️ L'image est affichée avec le mot ?</label>
+            <select id="quiz-show-image" style="width:100%;margin-top:4px;padding:8px;border-radius:10px;border:2px solid #e0d5f5;">
+              <option value="yes">Oui, montrer l'image avec le mot</option>
+              <option value="no">Non, seulement l'image</option>
+            </select>
+          </div>
+          
+          <div id="quiz-options-complete_word" class="quiz-type-option" style="display:none;">
+            <label style="font-size:13px;font-weight:600;color:#7a6b8a;">🔤 Position de la lettre manquante :</label>
+            <select id="quiz-missing-letter-position" style="width:100%;margin-top:4px;padding:8px;border-radius:10px;border:2px solid #e0d5f5;">
+              <option value="random">Aléatoire</option>
+              <option value="first">Première lettre</option>
+              <option value="middle">Lettre du milieu</option>
+              <option value="last">Dernière lettre</option>
+            </select>
+          </div>
+          
+          <div id="quiz-options-true_false" class="quiz-type-option" style="display:none;">
+            <label style="font-size:13px;font-weight:600;color:#7a6b8a;">📝 Type d'affirmations :</label>
+            <select id="quiz-tf-mode" style="width:100%;margin-top:4px;padding:8px;border-radius:10px;border:2px solid #e0d5f5;">
+              <option value="category">Catégorie correcte ?</option>
+              <option value="definition">Définition correcte ?</option>
+              <option value="mixed">Mélangé</option>
+            </select>
+          </div>
+        </div>
+        
+        <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;">Coche les mots à inclure dans le quiz :</p>
+        <div id="quiz-word-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
+        
+        <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;">Options supplémentaires :</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+          <label style="display:flex;align-items:center;gap:6px;font-weight:600;">
+            <input type="checkbox" id="quiz-allow-replay" checked> 🔁 Réécoute
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-weight:600;">
+            <input type="checkbox" id="quiz-shuffle-options" checked> 🔀 Mélanger
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-weight:600;">
+            <input type="checkbox" id="quiz-show-feedback" checked> 💡 Correction
+          </label>
+        </div>
+        
+        <div style="display:flex;gap:10px;">
+          <button class="big-btn btn-leaf" id="quiz-form-submit" onclick="saveCustomQuiz()">✅ Enregistrer le quiz</button>
+          <button class="big-btn btn-lilac" id="quiz-form-cancel" onclick="cancelEditQuiz()" style="display:none;">✖️ Annuler</button>
+        </div>
+      </div>
+      
+      <h3 style="font-family:'Baloo 2';">Mes quiz enregistrés</h3>
+      <div class="story-list" id="quiz-list"></div>
+    </div>
+  </div>
+
+  <!-- STORY GROUPS -->
+  <div class="screen" id="screen-story-groups">
+    <div class="back-row">
+      <button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();" data-i18n="back">← Retour</button>
+      <h2 class="screen-title">Mes groupes d'histoires</h2>
+    </div>
+    <div class="panel">
+      <p style="font-weight:600;color:#7a6b8a;margin-top:0;">Rassemble plusieurs histoires dans un groupe pour les lire en continu.</p>
+      <div class="add-story-box">
+        <h3 style="margin-top:0;font-family:'Baloo 2';" id="story-group-form-title">➕ Créer un groupe d'histoires</h3>
+        <input id="new-story-group-name" placeholder="Nom du groupe (ex : Histoires du soir)">
+        <select id="new-story-group-lang" style="width:100%;margin-bottom:10px;" onchange="renderStoryGroupChecklist()">
+          <option value="fr">🇫🇷 Français</option>
+          <option value="it">🇮🇹 Italiano</option>
+        </select>
+        <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;">Coche les histoires à inclure :</p>
+        <div id="story-group-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
+        <div style="display:flex;gap:10px;">
+          <button class="big-btn btn-leaf" id="story-group-form-submit" onclick="saveStoryGroup()">✅ Enregistrer le groupe</button>
+          <button class="big-btn btn-lilac" id="story-group-form-cancel" onclick="cancelEditStoryGroup()" style="display:none;">✖️ Annuler</button>
+        </div>
+      </div>
+      <h3 style="font-family:'Baloo 2';">Groupes créés</h3>
+      <div class="story-list" id="story-groups-list"></div>
+    </div>
+  </div>
 
   <!-- STORY GROUPS -->
 <div class="screen" id="screen-story-groups">
