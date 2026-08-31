@@ -351,8 +351,6 @@ select, input[type=range]{
 .target-slots{
   display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:26px;min-height:70px;
 }
-.quiz-opts{display:grid;gap:12px;max-width:420px;margin:0 auto;}
-.quiz-footer{display:flex;justify-content:center;margin-top:22px;flex-direction:column;gap:10px;}
 </style>
 </head>
 <body>
@@ -1032,7 +1030,7 @@ window._storyGroupQueue = null;
 window._storyGroupIndex = 0;
 
 // ========================================
-// I18N
+// FUNZIONI DI BASE
 // ========================================
 function t(key){ 
   const translations = {
@@ -1181,7 +1179,6 @@ function sentenceExists(words, lang, excludeSentence){
 function playApplause(){
   if(!applauseEnabled) return;
   try {
-    // Suono di applausi con Web Audio API
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const gain = audioCtx.createGain();
     gain.connect(audioCtx.destination);
@@ -1199,7 +1196,6 @@ function playApplause(){
     noise.start();
     noise.stop(audioCtx.currentTime + 0.6);
   } catch(e) {
-    // Fallback: emoji animati
     const container = document.createElement('div');
     container.className = 'clap-container';
     document.body.appendChild(container);
@@ -1528,7 +1524,7 @@ function jumpToSentence(i){
 }
 
 // ========================================
-// STORY AUDIO
+// STORY AUDIO (registrazione e import)
 // ========================================
 async function toggleRecordStoryAudio(){
   const statusEl = document.getElementById('story-audio-status');
@@ -2714,7 +2710,6 @@ function startCustomQuiz(words, quizType, options, customQuestions){
       options: generateWrongOptions(q.answer)
     }));
   } else {
-    // Altri tipi di quiz (semplificato)
     const distractorCount = simplifiedQuiz ? 1 : 2;
     const allWords = wordPool(currentLang);
     questions = words.map(w => ({
@@ -3219,7 +3214,6 @@ document.addEventListener('DOMContentLoaded', function() {
   applyLoadedStateToUI();
   loadVoices();
   
-  // Event listener per mostrare/nascondere le domande personalizzate
   document.getElementById('new-quiz-type').addEventListener('change', function(){
     const customArea = document.getElementById('custom-question-area');
     const wordList = document.getElementById('quiz-word-checklist');
