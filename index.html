@@ -709,6 +709,7 @@ select, input[type=range]{
     </div>
   </div>
     <!-- CUSTOM QUIZ BUILDER -->
+    <!-- CUSTOM QUIZ BUILDER -->
   <div class="screen" id="screen-quiz-builder">
     <div class="back-row">
       <button class="back-btn" onclick="showScreen('screen-settings')" data-i18n="back">← Retour</button>
@@ -795,6 +796,33 @@ select, input[type=range]{
       
       <h3 style="font-family:'Baloo 2';">Mes quiz enregistrés</h3>
       <div class="story-list" id="quiz-list"></div>
+    </div>
+  </div>
+
+  <!-- STORY GROUPS -->
+  <div class="screen" id="screen-story-groups">
+    <div class="back-row">
+      <button class="back-btn" onclick="showScreen('screen-stories'); renderStoryList();" data-i18n="back">← Retour</button>
+      <h2 class="screen-title">Mes groupes d'histoires</h2>
+    </div>
+    <div class="panel">
+      <p style="font-weight:600;color:#7a6b8a;margin-top:0;">Rassemble plusieurs histoires dans un groupe pour les lire en continu.</p>
+      <div class="add-story-box">
+        <h3 style="margin-top:0;font-family:'Baloo 2';" id="story-group-form-title">➕ Créer un groupe d'histoires</h3>
+        <input id="new-story-group-name" placeholder="Nom du groupe (ex : Histoires du soir)">
+        <select id="new-story-group-lang" style="width:100%;margin-bottom:10px;" onchange="renderStoryGroupChecklist()">
+          <option value="fr">🇫🇷 Français</option>
+          <option value="it">🇮🇹 Italiano</option>
+        </select>
+        <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;">Coche les histoires à inclure :</p>
+        <div id="story-group-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
+        <div style="display:flex;gap:10px;">
+          <button class="big-btn btn-leaf" id="story-group-form-submit" onclick="saveStoryGroup()">✅ Enregistrer le groupe</button>
+          <button class="big-btn btn-lilac" id="story-group-form-cancel" onclick="cancelEditStoryGroup()" style="display:none;">✖️ Annuler</button>
+        </div>
+      </div>
+      <h3 style="font-family:'Baloo 2';">Groupes créés</h3>
+      <div class="story-list" id="story-groups-list"></div>
     </div>
   </div>
 
