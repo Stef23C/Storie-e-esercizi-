@@ -668,6 +668,7 @@ select, input[type=range]{
           <option value="it">🇮🇹 Italiano</option>
         </select>
         <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="groups_pick_hint">Coche les mots à inclure :</p>
+        <input id="group-word-search" data-i18n-ph="group_search_words_ph" placeholder="🔎 Rechercher un mot..." oninput="filterChecklist('group-word-search','group-word-checklist')" style="margin-bottom:10px;">
         <div id="group-word-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
         <div style="display:flex;gap:10px;">
           <button class="big-btn btn-leaf" id="group-form-submit" onclick="saveGroup()" data-i18n="group_form_add_btn">✅ Enregistrer le groupe</button>
@@ -675,6 +676,7 @@ select, input[type=range]{
         </div>
       </div>
       <h3 style="font-family:'Baloo 2';" data-i18n="groups_list_title">Groupes créés</h3>
+      <input id="groups-list-search" data-i18n-ph="groups_list_search_ph" placeholder="🔎 Chercher un mot dans mes groupes déjà créés" oninput="renderGroupsScreen()" style="margin-bottom:10px;border:2px solid var(--ocean);background:#eafbfa;">
       <div class="story-list" id="groups-list"></div>
     </div>
   </div>
@@ -695,6 +697,7 @@ select, input[type=range]{
           <option value="it">🇮🇹 Italiano</option>
         </select>
         <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="sgroups_pick_hint">Coche les phrases à inclure :</p>
+        <input id="sgroup-search" data-i18n-ph="group_search_sentences_ph" placeholder="🔎 Rechercher une phrase..." oninput="filterChecklist('sgroup-search','sgroup-checklist')" style="margin-bottom:10px;">
         <div id="sgroup-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
         <div style="display:flex;gap:10px;">
           <button class="big-btn btn-leaf" id="sgroup-form-submit" onclick="saveSentenceGroup()" data-i18n="sgroup_form_add_btn">✅ Enregistrer le groupe</button>
@@ -702,6 +705,7 @@ select, input[type=range]{
         </div>
       </div>
       <h3 style="font-family:'Baloo 2';" data-i18n="sgroups_list_title">Groupes créés</h3>
+      <input id="sgroups-list-search" data-i18n-ph="sgroups_list_search_ph" placeholder="🔎 Chercher une phrase dans mes groupes déjà créés" oninput="renderSentenceGroupsScreen()" style="margin-bottom:10px;border:2px solid var(--ocean);background:#eafbfa;">
       <div class="story-list" id="sgroups-list"></div>
     </div>
   </div>
@@ -722,6 +726,7 @@ select, input[type=range]{
           <option value="it">🇮🇹 Italiano</option>
         </select>
         <p style="font-size:13px;font-weight:700;color:#7a6b8a;margin:0 0 8px;" data-i18n="stgroups_pick_hint">Coche les histoires à inclure :</p>
+        <input id="stgroup-search" data-i18n-ph="group_search_stories_ph" placeholder="🔎 Rechercher une histoire..." oninput="filterChecklist('stgroup-search','stgroup-checklist')" style="margin-bottom:10px;">
         <div id="stgroup-checklist" style="max-height:260px;overflow-y:auto;background:#faf7ff;border-radius:12px;padding:10px;margin-bottom:12px;"></div>
         <div style="display:flex;gap:10px;">
           <button class="big-btn btn-leaf" id="stgroup-form-submit" onclick="saveStoryGroup()" data-i18n="stgroup_form_add_btn">✅ Enregistrer le groupe</button>
@@ -729,6 +734,7 @@ select, input[type=range]{
         </div>
       </div>
       <h3 style="font-family:'Baloo 2';" data-i18n="stgroups_list_title">Groupes créés</h3>
+      <input id="stgroups-list-search" data-i18n-ph="stgroups_list_search_ph" placeholder="🔎 Chercher une histoire dans mes groupes déjà créés" oninput="renderStoryGroupsScreen()" style="margin-bottom:10px;border:2px solid var(--ocean);background:#eafbfa;">
       <div class="story-list" id="stgroups-list"></div>
     </div>
   </div>
@@ -816,6 +822,7 @@ select, input[type=range]{
       <div class="game-controls" style="margin-bottom:14px;">
         <button class="big-btn btn-lilac" onclick="showScreen('screen-story-groups'); renderStoryGroupsScreen();" data-i18n="btn_manage_story_groups">👥 Gérer mes groupes d'histoires</button>
       </div>
+      <input id="stories-search" data-i18n-ph="stories_search_ph" placeholder="🔎 Chercher une histoire (titre ou texte)..." oninput="renderStoryList()" style="margin-bottom:14px;border:2px solid var(--ocean);background:#eafbfa;">
       <div id="story-group-filter-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;"></div>
       <div class="game-controls" style="margin-bottom:14px;">
         <button class="big-btn btn-leaf" onclick="exportStoriesData()" data-i18n="btn_export_stories">💾 Exporter mes histoires</button>
@@ -1136,6 +1143,13 @@ const I18N = {
     btn_import_sentences_json:"📂 Importer des phrases",
     btn_export_stories:"💾 Exporter mes histoires",
     btn_import_stories_json:"📂 Importer des histoires",
+    group_search_words_ph:"🔎 Rechercher un mot...",
+    group_search_sentences_ph:"🔎 Rechercher une phrase...",
+    group_search_stories_ph:"🔎 Rechercher une histoire...",
+    groups_list_search_ph:"🔎 Chercher un mot dans mes groupes déjà créés",
+    sgroups_list_search_ph:"🔎 Chercher une phrase dans mes groupes déjà créés",
+    stgroups_list_search_ph:"🔎 Chercher une histoire dans mes groupes déjà créés",
+    stories_search_ph:"🔎 Chercher une histoire (titre ou texte)...",
     quiz_question_image:"Trouve la bonne image !",
     quiz_question_audio:"Écoute bien... quel est ce mot ?"
   },
@@ -1312,6 +1326,13 @@ const I18N = {
     btn_import_sentences_json:"📂 Importa frasi",
     btn_export_stories:"💾 Esporta le mie storie",
     btn_import_stories_json:"📂 Importa storie",
+    group_search_words_ph:"🔎 Cerca una parola...",
+    group_search_sentences_ph:"🔎 Cerca una frase...",
+    group_search_stories_ph:"🔎 Cerca una storia...",
+    groups_list_search_ph:"🔎 Cerca una parola nei gruppi già creati",
+    sgroups_list_search_ph:"🔎 Cerca una frase nei gruppi già creati",
+    stgroups_list_search_ph:"🔎 Cerca una storia nei gruppi già creati",
+    stories_search_ph:"🔎 Cerca una storia (titolo o testo)...",
     quiz_question_image:"Trova l'immagine giusta!",
     quiz_question_audio:"Ascolta bene... qual è questa parola?"
   }
@@ -1609,15 +1630,48 @@ function sentenceKey(s){
 }
 let customSentenceGroups = []; // {name, lang, sentenceKeys:[...]}
 let editingSentenceGroupIndex = null;
+// filters any group checklist in place (toggles visibility only, so checked boxes are never lost)
+// returns a short excerpt of `text` centered on the first occurrence of `query`, for search results
+// opens the syllable game for a single word found via search inside a word group
+function playWordByKeyFromGroup(key){
+  const lang = key.split(':')[0];
+  const w = wordPool(lang).find(x=>wordKey(x)===key);
+  if(w) startSyllableGame([w]);
+}
+// opens the sentence-ordering game for a single sentence found via search inside a sentence group
+function playSentenceByKeyFromGroup(key){
+  const lang = key.split(':')[0];
+  const s = sentencePool(lang).find(x=>sentenceKey(x)===key);
+  if(s) startSentenceGame([s]);
+}
+function matchSnippet(text, query){
+  const idx = text.toLowerCase().indexOf(query);
+  if(idx === -1) return '';
+  const start = Math.max(0, idx - 20);
+  const end = Math.min(text.length, idx + query.length + 20);
+  return text.slice(start, end).trim();
+}
+function filterChecklist(searchInputId, checklistId){
+  const searchEl = document.getElementById(searchInputId);
+  const container = document.getElementById(checklistId);
+  if(!searchEl || !container) return;
+  const query = searchEl.value.trim().toLowerCase();
+  container.querySelectorAll('label[data-search]').forEach(label=>{
+    const matches = !query || label.dataset.search.includes(query);
+    label.style.display = matches ? 'flex' : 'none';
+  });
+}
 function renderSentenceGroupChecklist(){
   const lang = document.getElementById('new-sgroup-lang').value;
   const container = document.getElementById('sgroup-checklist');
+  const searchEl = document.getElementById('sgroup-search');
+  if(searchEl) searchEl.value = '';
   const sentences = sentencePool(lang);
   const checkedKeys = (editingSentenceGroupIndex !== null) ? customSentenceGroups[editingSentenceGroupIndex].sentenceKeys : [];
   container.innerHTML = sentences.map(s=>{
     const key = sentenceKey(s);
     const checked = checkedKeys.includes(key) ? 'checked' : '';
-    return `<label style="display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:600;">
+    return `<label data-search="${s.words.join(' ').toLowerCase().replace(/"/g,'&quot;')}" style="display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:600;">
       <input type="checkbox" value="${key}" ${checked} style="width:18px;height:18px;">
       ${iconHtml(s, 26)} ${s.words.join(' ')}
     </label>`;
@@ -1675,27 +1729,47 @@ function renderSentenceGroupsScreen(){
   if(langSel) langSel.value = currentLang;
   renderSentenceGroupChecklist();
   const el = document.getElementById('sgroups-list');
+  const searchEl = document.getElementById('sgroups-list-search');
+  const query = searchEl ? searchEl.value.trim().toLowerCase() : '';
   if(customSentenceGroups.length === 0){
     el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it' ? 'Nessun gruppo creato ancora.' : "Aucun groupe créé pour l'instant."}</p>`;
     return;
   }
   el.innerHTML = '';
+  let anyShown = false;
   customSentenceGroups.forEach((g,idx)=>{
+    const matchingSentences = query ? sentenceGroupItems(idx).filter(s=>s.words.join(' ').toLowerCase().includes(query)) : null;
+    if(query && matchingSentences.length === 0) return;
+    anyShown = true;
     const item = document.createElement('div');
     item.className = 'story-item';
     item.style.cursor = 'default';
     item.style.flexWrap = 'wrap';
+    const matchesHtml = matchingSentences ? `
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;width:100%;">
+        ${matchingSentences.map(s=>`
+          <div class="story-item" style="padding:8px 10px;" onclick="playSentenceByKeyFromGroup('${sentenceKey(s).replace(/'/g,"\\'")}')">
+            <div class="emoji">${iconHtml(s, 30)}</div>
+            <div class="info" style="flex:1;"><h4 style="font-size:15px;">${s.words.join(' ')}</h4></div>
+          </div>`).join('')}
+      </div>` : '';
     item.innerHTML = `
-      <div class="info" style="flex:1;min-width:160px;">
-        <h4>${g.name} <span class="tag">${g.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span></h4>
-        <p>${g.sentenceKeys.length} ${currentLang==='it' ? 'frasi' : 'phrases'}</p>
+      <div style="display:flex;align-items:center;gap:10px;width:100%;">
+        <div class="info" style="flex:1;min-width:160px;">
+          <h4>${g.name} <span class="tag">${g.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span></h4>
+          <p>${g.sentenceKeys.length} ${currentLang==='it' ? 'frasi' : 'phrases'}</p>
+        </div>
+        <button class="icon-btn" style="background:var(--ocean);" onclick="playSentenceGroup(${idx})" title="Jouer">📝</button>
+        <button class="icon-btn" style="background:var(--lilac);" onclick="editSentenceGroup(${idx})" title="Modifier">✏️</button>
+        <button class="icon-btn" style="background:var(--coral);" onclick="deleteSentenceGroup(${idx})" title="Supprimer">🗑️</button>
       </div>
-      <button class="icon-btn" style="background:var(--ocean);" onclick="playSentenceGroup(${idx})" title="Jouer">📝</button>
-      <button class="icon-btn" style="background:var(--lilac);" onclick="editSentenceGroup(${idx})" title="Modifier">✏️</button>
-      <button class="icon-btn" style="background:var(--coral);" onclick="deleteSentenceGroup(${idx})" title="Supprimer">🗑️</button>
+      ${matchesHtml}
     `;
     el.appendChild(item);
   });
+  if(query && !anyShown){
+    el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it' ? 'Nessun gruppo contiene questa frase.' : 'Aucun groupe ne contient cette phrase.'}</p>`;
+  }
 }
 
 /* ---------------- STORY GROUPS ---------------- */
@@ -1704,11 +1778,13 @@ let editingStoryGroupIndex = null;
 function renderStoryGroupChecklist(){
   const lang = document.getElementById('new-stgroup-lang').value;
   const container = document.getElementById('stgroup-checklist');
+  const searchEl = document.getElementById('stgroup-search');
+  if(searchEl) searchEl.value = '';
   const pool = stories.filter(s=>s.lang===lang);
   const checkedIds = (editingStoryGroupIndex !== null) ? customStoryGroups[editingStoryGroupIndex].storyIds : [];
   container.innerHTML = pool.map(s=>{
     const checked = checkedIds.includes(s.id) ? 'checked' : '';
-    return `<label style="display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:600;">
+    return `<label data-search="${s.title.toLowerCase().replace(/"/g,'&quot;')}" style="display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:600;">
       <input type="checkbox" value="${s.id}" ${checked} style="width:18px;height:18px;">
       ${iconHtml(s, 26)} ${s.title}
     </label>`;
@@ -1762,38 +1838,54 @@ function renderStoryGroupsScreen(){
   if(langSel) langSel.value = currentLang;
   renderStoryGroupChecklist();
   const el = document.getElementById('stgroups-list');
+  const searchEl = document.getElementById('stgroups-list-search');
+  const query = searchEl ? searchEl.value.trim().toLowerCase() : '';
   if(customStoryGroups.length === 0){
     el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it' ? 'Nessun gruppo creato ancora.' : "Aucun groupe créé pour l'instant."}</p>`;
     return;
   }
   el.innerHTML = '';
+  let anyShown = false;
   customStoryGroups.forEach((g,idx)=>{
+    const allGroupStories = storyGroupItems(idx);
+    const groupStories = query ? allGroupStories.filter(s=> s.title.toLowerCase().includes(query) || s.text.toLowerCase().includes(query)) : allGroupStories;
+    if(query && groupStories.length === 0) return;
+    anyShown = true;
     const item = document.createElement('div');
     item.className = 'story-item';
     item.style.cursor = 'default';
     item.style.flexWrap = 'wrap';
     item.style.flexDirection = 'column';
     item.style.alignItems = 'stretch';
-    const groupStories = storyGroupItems(idx);
     item.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;width:100%;">
         <div class="info" style="flex:1;">
           <h4>${g.name} <span class="tag">${g.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span></h4>
-          <p>${groupStories.length} ${currentLang==='it' ? 'storie' : 'histoires'}</p>
+          <p>${allGroupStories.length} ${currentLang==='it' ? 'storie' : 'histoires'}</p>
         </div>
         <button class="icon-btn" style="background:var(--lilac);" onclick="editStoryGroup(${idx})" title="Modifier">✏️</button>
         <button class="icon-btn" style="background:var(--coral);" onclick="deleteStoryGroup(${idx})" title="Supprimer">🗑️</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;width:100%;">
-        ${groupStories.map(s=>`
+        ${groupStories.map(s=>{
+          const titleMatches = query && s.title.toLowerCase().includes(query);
+          const snippet = (query && !titleMatches) ? matchSnippet(s.text, query) : '';
+          return `
           <div class="story-item" style="padding:8px 10px;" onclick="openStory(${s.id})">
             <div class="emoji">${iconHtml(s, 30)}</div>
-            <div class="info" style="flex:1;"><h4 style="font-size:15px;">${s.title}</h4></div>
-          </div>`).join('')}
+            <div class="info" style="flex:1;">
+              <h4 style="font-size:15px;">${s.title}</h4>
+              ${snippet ? `<p style="font-size:12px;">…${snippet}…</p>` : ''}
+            </div>
+          </div>`;
+        }).join('')}
       </div>
     `;
     el.appendChild(item);
   });
+  if(query && !anyShown){
+    el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it' ? 'Nessun gruppo contiene questa storia.' : 'Aucun groupe ne contient cette histoire.'}</p>`;
+  }
 }
 
 let customGroups = []; // {name, lang, wordKeys:[...]}
@@ -1801,12 +1893,14 @@ let editingGroupIndex = null;
 function renderGroupWordChecklist(){
   const lang = document.getElementById('new-group-lang').value;
   const container = document.getElementById('group-word-checklist');
+  const searchEl = document.getElementById('group-word-search');
+  if(searchEl) searchEl.value = '';
   const words = wordPool(lang);
   const checkedKeys = (editingGroupIndex !== null) ? customGroups[editingGroupIndex].wordKeys : [];
   container.innerHTML = words.map(w=>{
     const key = wordKey(w);
     const checked = checkedKeys.includes(key) ? 'checked' : '';
-    return `<label style="display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:600;">
+    return `<label data-search="${w.word.toLowerCase().replace(/"/g,'&quot;')}" style="display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:600;">
       <input type="checkbox" value="${key}" ${checked} style="width:18px;height:18px;">
       ${iconHtml(w, 26)} ${w.word}
     </label>`;
@@ -1866,29 +1960,49 @@ function renderGroupsScreen(){
   if(langSel) langSel.value = currentLang;
   renderGroupWordChecklist();
   const el = document.getElementById('groups-list');
+  const searchEl = document.getElementById('groups-list-search');
+  const query = searchEl ? searchEl.value.trim().toLowerCase() : '';
   if(customGroups.length === 0){
     el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it' ? 'Nessun gruppo creato ancora.' : "Aucun groupe créé pour l'instant."}</p>`;
     return;
   }
   el.innerHTML = '';
+  let anyShown = false;
   customGroups.forEach((g,idx)=>{
+    const matchingWords = query ? groupWords(idx).filter(w=>w.word.toLowerCase().includes(query)) : null;
+    if(query && matchingWords.length === 0) return; // this group has no word matching the search — skip it
+    anyShown = true;
     const item = document.createElement('div');
     item.className = 'story-item';
     item.style.cursor = 'default';
     item.style.flexWrap = 'wrap';
+    const matchesHtml = matchingWords ? `
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;width:100%;">
+        ${matchingWords.map(w=>`
+          <div class="story-item" style="padding:8px 10px;" onclick="playWordByKeyFromGroup('${wordKey(w).replace(/'/g,"\\'")}')">
+            <div class="emoji">${iconHtml(w, 30)}</div>
+            <div class="info" style="flex:1;"><h4 style="font-size:15px;">${w.word}</h4></div>
+          </div>`).join('')}
+      </div>` : '';
     item.innerHTML = `
-      <div class="info" style="flex:1;min-width:160px;">
-        <h4>${g.name} <span class="tag">${g.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span></h4>
-        <p>${g.wordKeys.length} ${currentLang==='it' ? 'parole' : 'mots'}</p>
+      <div style="display:flex;align-items:center;gap:10px;width:100%;">
+        <div class="info" style="flex:1;min-width:160px;">
+          <h4>${g.name} <span class="tag">${g.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français'}</span></h4>
+          <p>${g.wordKeys.length} ${currentLang==='it' ? 'parole' : 'mots'}</p>
+        </div>
+        <button class="icon-btn" style="background:var(--coral);" onclick="playGroup(${idx},'syllables')" title="Jouer aux syllabes">🪨</button>
+        <button class="icon-btn" style="background:var(--ocean);" onclick="playGroup(${idx},'words')" title="Lire les mots">🔤</button>
+        <button class="icon-btn" style="background:var(--sunshine);" onclick="playGroup(${idx},'quiz')" title="Quiz">🎯</button>
+        <button class="icon-btn" style="background:var(--lilac);" onclick="editGroup(${idx})" title="Modifier">✏️</button>
+        <button class="icon-btn" style="background:var(--coral);" onclick="deleteGroup(${idx})" title="Supprimer">🗑️</button>
       </div>
-      <button class="icon-btn" style="background:var(--coral);" onclick="playGroup(${idx},'syllables')" title="Jouer aux syllabes">🪨</button>
-      <button class="icon-btn" style="background:var(--ocean);" onclick="playGroup(${idx},'words')" title="Lire les mots">🔤</button>
-      <button class="icon-btn" style="background:var(--sunshine);" onclick="playGroup(${idx},'quiz')" title="Quiz">🎯</button>
-      <button class="icon-btn" style="background:var(--lilac);" onclick="editGroup(${idx})" title="Modifier">✏️</button>
-      <button class="icon-btn" style="background:var(--coral);" onclick="deleteGroup(${idx})" title="Supprimer">🗑️</button>
+      ${matchesHtml}
     `;
     el.appendChild(item);
   });
+  if(query && !anyShown){
+    el.innerHTML = `<p style="font-weight:600;color:#7a6b8a;">${currentLang==='it' ? 'Nessun gruppo non contiene questa parola.' : 'Aucun groupe ne contient ce mot.'}</p>`;
+  }
 }
 
 
@@ -3562,11 +3676,16 @@ function renderStoryList(){
   renderStoryGroupFilterRow();
   // show every story regardless of language (like Mes mots) — filtering by the active
   // language toggle used to hide stories saved in the other language, looking like data loss
-  const baseList = (selectedStoryGroupFilter !== null && customStoryGroups[selectedStoryGroupFilter])
+  const groupFiltered = (selectedStoryGroupFilter !== null && customStoryGroups[selectedStoryGroupFilter])
     ? storyGroupItems(selectedStoryGroupFilter)
     : stories;
+  const searchEl = document.getElementById('stories-search');
+  const query = searchEl ? searchEl.value.trim().toLowerCase() : '';
+  const baseList = query
+    ? groupFiltered.filter(s=> s.title.toLowerCase().includes(query) || s.text.toLowerCase().includes(query))
+    : groupFiltered;
   if(baseList.length===0){
-    el.innerHTML = '<p style="font-weight:600;color:#7a6b8a;">' + t('no_stories_lang') + '</p>';
+    el.innerHTML = '<p style="font-weight:600;color:#7a6b8a;">' + (query ? (currentLang==='it' ? 'Nessuna storia contiene questa parola.' : 'Aucune histoire ne contient ce mot.') : t('no_stories_lang')) + '</p>';
     return;
   }
   const sorted = [...baseList].sort((a,b)=> (a.lang===currentLang ? -1 : 1) - (b.lang===currentLang ? -1 : 1));
@@ -3575,11 +3694,14 @@ function renderStoryList(){
     item.className = 'story-item';
     item.onclick = ()=>openStory(s.id);
     const langTag = s.lang==='it' ? '🇮🇹 Italiano' : '🇫🇷 Français';
+    const titleMatches = query && s.title.toLowerCase().includes(query);
+    const snippet = (query && !titleMatches) ? matchSnippet(s.text, query) : '';
+    const previewText = snippet ? `…${snippet}…` : (s.text.slice(0,50)+'...');
     item.innerHTML = `
       <div class="emoji">${iconHtml(s, 44)}</div>
       <div class="info" style="flex:1;">
         <h4>${s.title} <span class="tag">${langTag}</span> ${(Array.isArray(storyRecordings[s.id]) ? storyRecordings[s.id].some(x=>x) : !!storyRecordings[s.id]) ? '<span class="tag">🎙️ Ma voix</span>' : ''}</h4>
-        <p>${s.text.slice(0,50)}...</p>
+        <p>${previewText}</p>
       </div>
       <button class="icon-btn" style="background:var(--sunshine);" onclick="event.stopPropagation(); editStory(${s.id})" title="Modifier">✏️</button>
       <button class="icon-btn" style="background:var(--coral);" onclick="event.stopPropagation(); deleteStory(${s.id})" title="Supprimer">🗑️</button>
